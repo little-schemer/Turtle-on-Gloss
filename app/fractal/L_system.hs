@@ -36,17 +36,14 @@ drawLine :: (Float, Point, Color) -- 亀の初期状態 (向き, 位置, 色)
          -> Float                 -- 亀が 1 step で回る角度 th
          -> String                -- L-system で作成された文字列
          -> Picture               -- 作成された図形
-drawLine (h, p, c) n th cs = Pictures $ fst $ loop (h, p, c, True) cs []
+drawLine (h, p, c) n th cs = Pictures $ loop (h, p, c, True) cs []
   where
-    loop :: TurtleST -> String -> [Picture] -> ([Picture], String)
-    loop _ [] pList = (pList, [])
-    loop tST ('F' : cs) pList = loop st' cs (pic : pList)
-      where (st', pic) = forward n tST
-    loop tST ('f' : cs) pList = loop st' cs pList
-      where (st', _) = forward n tST
-    loop (h, p, c, pen) ('+' : cs) pList = loop (h + th, p, c, pen) cs pList
-    loop (h, p, c, pen) ('-' : cs) pList = loop (h - th, p, c, pen) cs pList
-    loop tST ('[' : cs) pList = loop tST cs' (pic ++ pList)
-      where (pic, cs') = loop tST cs []
-    loop tST (']' : cs) pList = (pList, cs)
-    loop tST ( _  : cs) pList = loop tST cs pList
+    loop _ [] _ = []
+    loop st ('F' : cs) stack = pic : loop st' cs stack
+      where (st', pic) = forward n st
+    loop st ('f' : cs) stack = loop (fst $ forward n st) cs stack
+    loop (h, p, c, pen) ('+' : cs) stack = loop (h + th, p, c, pen) cs stack
+    loop (h, p, c, pen) ('-' : cs) stack = loop (h - th, p, c, pen) cs stack
+    loop st ('[' : cs) stack        = loop st cs (st : stack)
+    loop _  (']' : cs) (st : stack) = loop st cs stack
+    loop st ( _  : cs) stack        = loop st cs stack

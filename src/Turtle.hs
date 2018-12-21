@@ -27,12 +27,12 @@ backward :: Float -> Command
 backward n tST = forward (- n) tST
 
 -- th 度だけ左旋回する
-turnLeft :: Float -> Command
-turnLeft th (h, p, c, pen) = ((h + th, p, c, pen), Blank)
+left :: Float -> Command
+left th (h, p, c, pen) = ((h + th, p, c, pen), Blank)
 
 -- th 度だけ右旋回する
-turnRight :: Float -> Command
-turnRight th tST = turnLeft (- th) tST
+right :: Float -> Command
+right th (h, p, c, pen) = ((h - th, p, c, pen), Blank)
 
 -- p へ移動する
 goto :: Point -> Command

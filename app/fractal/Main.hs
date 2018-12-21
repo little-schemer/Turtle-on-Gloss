@@ -12,7 +12,7 @@ main = display window white pic
       [ Color red $ grid
       , Translate (-200)   150  $ Scale 0.5 0.5 $ kochCurve 3
       , Translate   200    150  $ Scale 0.5 0.5 $ hilbertCurve 5
-      , Translate (-200) (-150) $ Scale 0.5 0.5 $ sierpinskiTriangle 7
+      , Translate (-200) (-150) $ Scale 0.5 0.5 $ sierpinskiTriangle 6
       , Translate   200  (-150) $ Scale 0.5 0.5 $ tree 5 ]
 
 
