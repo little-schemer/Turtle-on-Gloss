@@ -25,8 +25,8 @@ kochCurve n = drawLine initST (size / 3 ^ n) 60 string
   where
     size   = 500
     initST = (0, (- size / 2, size / 2 / sqrt 3), blue) -- 亀の初期状態
-    axiom = "F--F--F"                                   -- 初期文字列
-    rules = [('F', "F+F--F+F")]                         -- 変換規則
+    axiom  = "F--F--F"                                  -- 初期文字列
+    rules  = [('F', "F+F--F+F")]                        -- 変換規則
     string = l_system axiom rules n                     -- n : 繰り返し回数
 
 -- ヒルベルト曲線
