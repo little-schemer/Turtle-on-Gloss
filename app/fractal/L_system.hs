@@ -41,9 +41,9 @@ drawLine (h, p, c) n th cs = Pictures $ fst $ loop (h, p, c, True) cs []
     loop :: TurtleST -> String -> [Picture] -> ([Picture], String)
     loop _ [] pList = (pList, [])
     loop tST ('F' : cs) pList = loop st' cs (pic : pList)
-      where (st', pic) = turtle tST (Forward n)
+      where (st', pic) = forward n tST
     loop tST ('f' : cs) pList = loop st' cs pList
-      where (st', _) = turtle tST (Forward n)
+      where (st', _) = forward n tST
     loop (h, p, c, pen) ('+' : cs) pList = loop (h + th, p, c, pen) cs pList
     loop (h, p, c, pen) ('-' : cs) pList = loop (h - th, p, c, pen) cs pList
     loop tST ('[' : cs) pList = loop tST cs' (pic ++ pList)
