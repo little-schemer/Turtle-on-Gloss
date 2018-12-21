@@ -37,35 +37,35 @@ executables:
     dependencies:
     - Turtle-on-Gloss
 
-  Fractal:
-    main:                Main.hs
-    source-dirs:         app/fractal
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - Turtle-on-Gloss
+  # Fractal:
+  #   main:                Main.hs
+  #   source-dirs:         app/fractal
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   - Turtle-on-Gloss
 
-  Spiral:
-    main:                Main.hs
-    source-dirs:         app/spiral
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - Turtle-on-Gloss
+  # Spiral:
+  #   main:                Main.hs
+  #   source-dirs:         app/spiral
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   - Turtle-on-Gloss
 
-  Star:
-    main:                Main.hs
-    source-dirs:         app/star
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - Turtle-on-Gloss
+  # Star:
+  #   main:                Main.hs
+  #   source-dirs:         app/star
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   - Turtle-on-Gloss
 
 tests:
   Turtle-on-Gloss-test:
