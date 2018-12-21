@@ -37,19 +37,19 @@ goto :: Point -> TurtleST -> (TurtleST, Picture)
 goto p (h, p', c, pen) = ((h, p, c, pen), pic)
   where pic = if pen then (Color c $ Line [p', p]) else Blank
 
--- | 線を描く
+-- | 移動時に線を描く
 penDown :: TurtleST -> (TurtleST, Picture)
 penDown (h, p, c, _) = ((h, p, c, True), Blank)
 
--- | 線を描かない
+-- | 移動時に線を描かない
 penUp :: TurtleST -> (TurtleST, Picture)
 penUp (h, p, c, _) = ((h, p, c, False), Blank)
 
--- | 色を設定する
+-- | 線の色を設定する
 setColor :: Color -> TurtleST -> (TurtleST, Picture)
 setColor c (h, p, _, pen) = ((h, p, c, pen), Blank)
 
--- | 位置を設定する
+-- | 亀の位置を設定する
 setPoint :: Point -> TurtleST -> (TurtleST, Picture)
 setPoint p (h, _, c, pen) = ((h, p, c, pen), Blank)
 
