@@ -31,11 +31,11 @@ l_system axiom rule n = l_system (concatMap f axiom) rule (n - 1)
 --   ']' : 亀の状態をスタックからポップする。
 --   その他 : 何もしない。
 --
-drawLine :: (Float, Point, Color) -- ^ 亀の初期状態 (向き, 位置, 色)
-         -> Float                 -- ^ 亀が 1 step で進む距離 n
-         -> Float                 -- ^ 亀が 1 step で回る角度 th
-         -> String                -- ^ L-system で作成された文字列
-         -> Picture               -- ^ 作成された図形
+drawLine :: (Float, Point, Color) -- 亀の初期状態 (向き, 位置, 色)
+         -> Float                 -- 亀が 1 step で進む距離 n
+         -> Float                 -- 亀が 1 step で回る角度 th
+         -> String                -- L-system で作成された文字列
+         -> Picture               -- 作成された図形
 drawLine (h, p, c) n th cs = Pictures $ fst $ loop (h, p, c, True) cs []
   where
     loop :: TurtleST -> String -> [Picture] -> ([Picture], String)
