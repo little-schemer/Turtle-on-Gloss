@@ -15,8 +15,7 @@ l_system :: String               -- 初期文字列
          -> String               -- 文字列の最終形
 l_system axiom _    0 = axiom
 l_system axiom rule n = l_system (concatMap f axiom) rule (n - 1)
-  where f c = if x == Nothing then [c] else fromJust x
-          where x = lookup c rule
+  where let x = lookup c rule in f c = if x == Nothing then [c] else fromJust x
 
 
 --

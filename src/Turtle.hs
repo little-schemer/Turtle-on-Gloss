@@ -72,7 +72,9 @@ runTurtle cmdLst tST = loop cmdLst tST []
       where (tST', pic) = cmd tST
 
 
--- 円を描く
+--
+-- 円
+--
 tCircle :: (Float -> Command) -> Float -> Command
 tCircle cmd r tST = runTurtle cmdLst tST
   where
@@ -91,3 +93,14 @@ circleL r tST = tCircle left r tST
 drawCircle :: Float -> Command
 drawCircle r tST@(_, (x, y), c, _) = (tST, pic)
   where pic = Translate x y $ Color c $ Circle r
+
+
+--
+-- 五角形
+--
+pentagon :: Float -> Command
+pentagon n tST = (tST, pic)
+  where
+    cmdLst1 = [penUp, forward (n / 2 / cos (54 * pi / 180)), penDown, left 126]
+    cmdLst2 = concat $ replicate 5 [forward n, left 72]
+    pic = snd $ runTurtle (cmdLst1 ++ cmdLst2) tST
