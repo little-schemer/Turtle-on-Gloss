@@ -9,5 +9,5 @@ main = do
   display window white pic
     where
       window = InWindow "Turtle" (800, 600) (10, 10)
-      cmdLst = concat $ replicate 1 [circleL 100, left 40]
-      pic    = snd $ runTurtle cmdLst (0, (0, 0), red, True)
+      st = TurtleST {angle = 0, point = (0, 0), penColor = red, pen = True}
+      (st', pic) = drawPolygon 20 100 st

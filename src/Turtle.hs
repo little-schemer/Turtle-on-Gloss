@@ -1,106 +1,100 @@
 module Turtle where
 
-
 import Graphics.Gloss
 
+data TurtleST = TurtleST { angle    :: Float -- 亀の向き
+                         , point    :: Point -- 亀の位置
+                         , penColor :: Color -- ペンの色
+                         , pen      :: Bool  -- up or down
+                         } deriving Show
 
--- 亀の状態 : (向き, 位置, 色, Pen (up / down))
-type TurtleST = (Float, Point, Color, Bool)
-
--- コマンド
 type Command = TurtleST -> (TurtleST, Picture)
 
 
 --
--- Turtle Commands
+-- Turtle Graphics
 --
+
+iTurtle :: TurtleST
+iTurtle = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
+
+newPoint :: Float -> TurtleST -> Point
+newPoint n st = (x + n * cos h', y + n * sin h')
+  where (h', (x, y)) = (angle st * pi / 180, point st)
+
+draw :: TurtleST -> Picture -> Picture
+draw st pic = if pen st then (Color (penColor st) $ pic) else Blank
 
 -- n だけ前進する
 forward :: Float -> Command
-forward n (h, (x, y), c, pen) = ((h, p, c, pen), pic)
-  where
-    h'  = h * pi / 180
-    p   = (x + n * cos h', y + n * sin h')
-    pic = if pen then (Color c $ Line [(x, y), p]) else Blank
+forward n st = (st {point = p}, draw st $ Line [point st, p])
+  where p = newPoint n st
 
 -- n だけ後退する
 backward :: Float -> Command
-backward n tST = forward (- n) tST
+backward n st = forward (- n) st
 
 -- th 度だけ左旋回する
 left :: Float -> Command
-left th (h, p, c, pen) = ((h + th, p, c, pen), Blank)
+left th st = (st {angle = h'}, Blank)
+  where h' = angle st + th
 
 -- th 度だけ右旋回する
 right :: Float -> Command
-right th (h, p, c, pen) = ((h - th, p, c, pen), Blank)
+right th st = (st {angle = h'}, Blank)
+  where h' = angle st - th
 
 -- p へ移動する
 goto :: Point -> Command
-goto p (h, p', c, pen) = ((h, p, c, pen), pic)
-  where pic = if pen then (Color c $ Line [p', p]) else Blank
+goto p st = (st {point = p}, draw st $ Line [point st, p])
 
 -- 移動時に線を描く
 penDown :: Command
-penDown (h, p, c, _) = ((h, p, c, True), Blank)
+penDown st = (st {pen = True}, Blank)
 
 -- 移動時に線を描かない
 penUp :: Command
-penUp (h, p, c, _) = ((h, p, c, False), Blank)
-
--- 線の色を設定する
-setColor :: Color -> Command
-setColor c (h, p, _, pen) = ((h, p, c, pen), Blank)
-
--- 亀の位置を設定する
-setPoint :: Point -> Command
-setPoint p (h, _, c, pen) = ((h, p, c, pen), Blank)
+penUp st = (st {pen = False}, Blank)
 
 -- 亀の向きを設定する
 setAngle :: Float -> Command
-setAngle th (_, p, c, pen) = ((th, p, c, pen), Blank)
+setAngle th st = (st {angle = th}, Blank)
+
+-- 亀の位置を設定する
+setPoint :: Point -> Command
+setPoint p st = (st {point = p}, Blank)
+
+-- 色を設定する
+setColor :: Color -> Command
+setColor c st = (st {penColor = c}, Blank)
 
 
 --
 -- runTurtle
 --
 runTurtle :: [Command] -> Command
-runTurtle cmdLst tST = loop cmdLst tST []
+runTurtle cmdLst st = loop cmdLst st []
   where
-    loop [] tST picLst = (tST, Pictures picLst)
-    loop (cmd : cmdLst) tST picLst = loop cmdLst tST' (pic : picLst)
-      where (tST', pic) = cmd tST
+    loop [] st picLst = (st, Pictures picLst)
+    loop (cmd : cmdLst) st picLst = loop cmdLst st' (pic : picLst)
+      where (st', pic) = cmd st
 
 
 --
--- 円
+-- 図形
 --
-tCircle :: (Float -> Command) -> Float -> Command
-tCircle cmd r tST = runTurtle cmdLst tST
-  where
-    n = 2 * r * sin (5 * pi / 180)
-    cmdLst = concat $ replicate 36 [cmd 5, forward n, cmd 5]
-
--- 半径 r の右回りの円を描く
-circleR :: Float -> Command
-circleR r tST = tCircle right r tST
-
--- 半径 r の左回りの円を描く
-circleL :: Float -> Command
-circleL r tST = tCircle left r tST
 
 -- 亀の位置を中心に半径 r の円を描く
 drawCircle :: Float -> Command
-drawCircle r tST@(_, (x, y), c, _) = (tST, pic)
-  where pic = Translate x y $ Color c $ Circle r
-
-
---
--- 五角形
---
-pentagon :: Float -> Command
-pentagon n tST = (tST, pic)
+drawCircle r st = (st, pic)
   where
-    cmdLst1 = [penUp, forward (n / 2 / cos (54 * pi / 180)), penDown, left 126]
-    cmdLst2 = concat $ replicate 5 [forward n, left 72]
-    pic = snd $ runTurtle (cmdLst1 ++ cmdLst2) tST
+    (x, y) = point st
+    pic = Translate x y $ Color (penColor st) $ Circle r
+
+-- 正多角形
+drawPolygon :: Int -> Float -> Command
+drawPolygon n m st = (st, Pictures [pic1, pic2])
+  where
+    th = 360 / (fromIntegral n)
+    (st', pic1) = runTurtle (concat $ replicate (n - 1) [forward m, left th]) st
+    (_  , pic2) = goto (point st') st
