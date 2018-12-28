@@ -2,10 +2,10 @@ module Turtle where
 
 import Graphics.Gloss
 
-data TurtleST = TurtleST { angle    :: Float -- 亀の向き
-                         , point    :: Point -- 亀の位置
-                         , penColor :: Color -- ペンの色
-                         , pen      :: Bool  -- up or down
+data TurtleST = TurtleST { angle    :: Float   -- 亀の向き
+                         , point    :: Point   -- 亀の位置
+                         , penColor :: Color   -- ペンの色
+                         , pen      :: Bool    -- up or down
                          } deriving Show
 
 type Command = TurtleST -> (TurtleST, Picture)
@@ -72,6 +72,8 @@ setColor c st = (st {penColor = c}, Blank)
 --
 -- runTurtle
 --
+--   - List に入っている Command を連続的に実行する
+--
 runTurtle :: [Command] -> Command
 runTurtle cmdLst st = loop cmdLst st []
   where
@@ -92,9 +94,17 @@ drawCircle r st = (st, pic)
     pic = Translate x y $ Color (penColor st) $ Circle r
 
 -- 正多角形
-drawPolygon :: Int -> Float -> Command
-drawPolygon n m st = (st, Pictures [pic1, pic2])
+drawPolygon :: Int -> Float -> (Float -> Command) -> Command
+drawPolygon n m  cmd st = (st, pic)
   where
     th = 360 / (fromIntegral n)
-    (st', pic1) = runTurtle (concat $ replicate (n - 1) [forward m, left th]) st
-    (_  , pic2) = goto (point st') st
+    cs = (concat $ replicate (n - 1) [forward m, cmd th]) ++ [goto (point st)]
+    (_, pic) = runTurtle cs st
+
+-- 一辺の長さが m の正 n 角形を左回りに描く
+drawPolygonL :: Int -> Float -> Command
+drawPolygonL n m st = drawPolygon n m left st
+
+-- 一辺の長さが m の正 n 角形を右回りに描く
+drawPolygonR :: Int -> Float -> Command
+drawPolygonR n m st = drawPolygon n m right st

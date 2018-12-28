@@ -22,7 +22,7 @@ l_system axiom rule n = l_system (concatMap f axiom) rule (n - 1)
 --
 -- drawLine
 --
---  + 文字の意味
+--  * 文字の意味
 --   'F' : 線を描きながら、亀を n だけ進める。
 --   'f' : 線を描かずに、亀を n だけ進める。
 --   '+' : 亀を反時計回りに th 度回転させる。
