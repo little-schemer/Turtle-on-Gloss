@@ -1,3 +1,7 @@
+--
+-- | L-system によるフラクタルな図形
+--
+
 module Main where
 
 import Graphics.Gloss

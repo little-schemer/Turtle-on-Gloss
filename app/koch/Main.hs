@@ -1,3 +1,7 @@
+--
+-- | 再帰によるコッホ曲線
+--
+
 module Main where
 
 import Graphics.Gloss

@@ -38,7 +38,7 @@ executables:
     - Turtle-on-Gloss
 
   Fractal:
-    main:                fractal.hs
+    main:                fractal/Main.hs
     source-dirs:         app
     ghc-options:
     - -threaded
@@ -48,7 +48,7 @@ executables:
     - Turtle-on-Gloss
 
   Spiral:
-    main:                spiral.hs
+    main:                spiral/Main.hs
     source-dirs:         app
     ghc-options:
     - -threaded
@@ -58,7 +58,7 @@ executables:
     - Turtle-on-Gloss
 
   Koch:
-    main:                koch.hs
+    main:                koch/Main.hs
     source-dirs:         app
     ghc-options:
     - -threaded
@@ -68,7 +68,7 @@ executables:
     - Turtle-on-Gloss
 
   Dragon:
-    main:                dragon.hs
+    main:                dragonCurve/Main.hs
     source-dirs:         app
     ghc-options:
     - -threaded
