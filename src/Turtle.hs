@@ -29,8 +29,8 @@ type Command = TurtleST -> (TurtleST, Picture)
 --
 
 -- | 亀の初期値の雛形
-iTurtle :: TurtleST
-iTurtle = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
+initST :: TurtleST
+initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 
 
 -- ** Turtle Graphics の基本コマンド
