@@ -19,7 +19,7 @@ main = display window white pic
 grid :: Picture
 grid = Pictures [ Line [(-380, 0), (380, 0)], Line [(0, -280), (0, 280)] ]
 
--- コッホ曲線
+-- | コッホ曲線
 kochCurve :: Int -> Picture
 kochCurve n = drawLine st (size / 3 ^ n) 60 string
   where
@@ -29,7 +29,7 @@ kochCurve n = drawLine st (size / 3 ^ n) 60 string
     rules  = [('F', "F+F--F+F")]                        -- 変換規則
     string = l_system axiom rules n                     -- n : 繰り返し回数
 
--- ヒルベルト曲線
+-- | ヒルベルト曲線
 hilbertCurve :: Int -> Picture
 hilbertCurve n = drawLine st (size / (2 ^ n)) 90 string
   where
@@ -37,7 +37,7 @@ hilbertCurve n = drawLine st (size / (2 ^ n)) 90 string
     st     = initST { point = (- size / 2, - size / 2), penColor = cyan }
     string = l_system "L" [('L', "+RF-LFL-FR+"), ('R', "-LF+RFR+FL-")] n
 
--- シェルピンスキーのギャスケット
+-- | シェルピンスキーのギャスケット
 sierpinskiTriangle :: Int -> Picture
 sierpinskiTriangle n = drawLine st (size / 2 ^ (n - 1)) 120 string
   where
@@ -45,7 +45,7 @@ sierpinskiTriangle n = drawLine st (size / 2 ^ (n - 1)) 120 string
     st     = initST { point = (- size / 2, - size * sqrt 3 / 4), penColor = black }
     string = l_system "F" [('F', "F+F+F+ff"), ('f', "ff")] n
 
--- スタックを使用した木
+-- | スタックを使用した木
 tree :: Int -> Picture
 tree n = drawLine st (size / 2.17 ^ n) 20 string
   where
