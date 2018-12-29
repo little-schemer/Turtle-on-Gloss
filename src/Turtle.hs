@@ -19,6 +19,8 @@ data TurtleST = TurtleST { angle    :: Float   -- ^ 亀の向き
                          , pen      :: Bool    -- ^ up or down
                          } deriving Show
 
+
+-- | Turtle Graphics のコマンドの型
 type Command = TurtleST -> (TurtleST, Picture)
 
 
@@ -33,12 +35,12 @@ iTurtle = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 
 -- ** Turtle Graphics の基本コマンド
 
--- | n だけ前進する
+-- | n だけ前進する。pen == Ture なら線を描く。
 forward :: Float -> Command
 forward n st = (st {point = p}, isDraw st $ Line [point st, p])
   where p = newPoint n st
 
--- | n だけ後退する
+-- | n だけ後退する (pen == Ture なら線を描く)
 backward :: Float -> Command
 backward n st = forward (- n) st
 

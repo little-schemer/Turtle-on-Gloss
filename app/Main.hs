@@ -3,7 +3,6 @@ module Main where
 import Graphics.Gloss
 import Turtle
 
-
 main :: IO ()
 main = do
   display window black pic
