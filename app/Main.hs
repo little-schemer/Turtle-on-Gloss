@@ -4,9 +4,8 @@ import Graphics.Gloss
 import Turtle
 
 main :: IO ()
-main = display window black pic
+main = display window white pic
     where
-      window = InWindow "Turtle" (800, 600) (10, 10)
-      st = TurtleST {angle = 0, point = (0, 0), penColor = white, pen = True}
-      cs = (left 9) : (concat $ replicate 12 [drawPolygonL 20 30, left 30])
-      (_, pic) = runTurtle cs st
+      window = InWindow "Triangle" (800, 600) (10, 10)
+      cmdLst = [forward 100, left 120, forward 100, left 120, forward 100]
+      (_, pic) = runTurtle cmdLst initST
