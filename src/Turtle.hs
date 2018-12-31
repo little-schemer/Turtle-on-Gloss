@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------
 -- |
--- Module      : Turtle
--- Description : Turtle Graphics on Gloss
--- Copyright   : (c) little Haskeller, 2018
--- License     : BSD3
+--   Module      : Turtle
+--   Description : Turtle Graphics on Gloss
+--   Copyright   : (c) little Haskeller, 2018
+--   License     : BSD3
 --
--- Gloss を使った Turtle Graphics
+--   Gloss を使った Turtle Graphics
 --
 --------------------------------------------------------------------------------
 
@@ -13,10 +13,10 @@ module Turtle where
 
 import Graphics.Gloss
 
-data TurtleST = TurtleST { angle    :: Float   -- ^ 亀の向き
-                         , point    :: Point   -- ^ 亀の位置
-                         , penColor :: Color   -- ^ ペンの色
-                         , pen      :: Bool    -- ^ up or down
+data TurtleST = TurtleST { angle    :: !Float -- ^ 亀の向き
+                         , point    :: !Point -- ^ 亀の位置
+                         , penColor :: !Color -- ^ ペンの色
+                         , pen      :: !Bool  -- ^ up or down
                          } deriving Show
 
 
@@ -24,16 +24,22 @@ data TurtleST = TurtleST { angle    :: Float   -- ^ 亀の向き
 type Command = TurtleST -> (TurtleST, Picture)
 
 
---
+
+------------------------------------------------------------
 -- * Turtle Graphics
+------------------------------------------------------------
+
+--
+-- ** 亀の初期値の雛形
 --
 
--- | 亀の初期値の雛形
-initST :: TurtleST
+-- | 初期値 : angle = 0, point = (0, 0), penColor = black, pen = True
 initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 
 
+--
 -- ** Turtle Graphics の基本コマンド
+--
 
 -- | n だけ前進する。pen == Ture なら線を描く。
 forward :: Float -> Command
@@ -75,11 +81,13 @@ setPoint :: Point -> Command
 setPoint p st = (st {point = p}, Blank)
 
 -- | 色を設定する
-setColor :: Color -> Command
+;setColor :: Color -> Command
 setColor c st = (st {penColor = c}, Blank)
 
 
+--
 -- ** 補助関数
+--
 
 -- | 亀が n だけ前進した位置
 newPoint :: Float -> TurtleST -> Point
@@ -91,18 +99,24 @@ isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st then (Color (penColor st) $ pic) else Blank
 
 
+--
 -- ** runTurtle コマンド
+--
 
--- |  List に入っている Command を連続的に実行する
+-- |  コマンドのリストをまとめて１つのコマンドにする
 runTurtle :: [Command] -> Command
 runTurtle cmdLst st = loop cmdLst st []
   where
     loop [] st picLst = (st, Pictures picLst)
-    loop (cmd : cmdLst) st picLst = loop cmdLst st' (pic : picLst)
-      where (st', pic) = cmd st
+    loop (cmd : cmdLst) st picLst = loop cmdLst st' picLst'
+      where
+        (st', pic) = cmd st
+        picLst' = if pic == Blank then picLst else (pic : picLst)
 
 
+--
 -- ** 図形を描くコマンド
+--
 
 -- | 亀の位置を中心に半径 r の円を描く
 drawCircle :: Float -> Command

@@ -6,10 +6,13 @@ import Turtle
 main :: IO ()
 main = display window white pic
   where
-    window = InWindow "Spiral" (800, 600) (10, 10)
-    pic  = Pictures $ snd $ runTurtle iST $ (star 100) ++ [forward 100]
-    iST  = (0, (0, 0), black, True)
+    window  = InWindow "Spiral" (800, 600) (10, 10)
+    cmd len = [star len, penUp, left 30, forward len, penDown]
+    cmdLst  = cmd 200 ++ cmd 100 ++ cmd 50 ++ cmd 25
+    pic     = snd $ runTurtle cmdLst initST {point = (-100, -100)}
 
 
--- star :: Float -> TurtleST -> (TurtleST, Picture)
-star n = concat $ replicate 5 [forward n, right 144]
+-- | 星型
+star :: Float -> Command
+star len st = (st, snd $ runTurtle cmdLst st)
+  where cmdLst = concat $ replicate 5 [forward len, right 144]

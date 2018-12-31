@@ -1,24 +1,22 @@
---
--- | 再帰によるコッホ曲線
---
-
 module Main where
 
 import Graphics.Gloss
 import Turtle
 
--- | コッホ曲線
-koch :: Float -> Int -> [Command]
-koch len 0 = [forward len]
-koch len n = koch' ++ lt ++ koch' ++ rt ++ koch' ++ lt ++ koch'
-  where
-    koch' = koch (len / 3) (n - 1)
-    lt    = [left 60]
-    rt    = [right 120]
-
 
 main :: IO ()
 main = display window white pic
     where
-      window = InWindow "Koch Curve" (800, 600) (10, 10)
-      (_, pic) = runTurtle (koch 400 4) initST { point = (-200, 0)}
+      window   = InWindow "Koch Curve" (800, 600) (10, 10)
+      (kc, rt) = (kochCurve 400 4, right 120)
+      st       = initST {point = (-200, 200 / sqrt 3)}
+      (_, pic) = runTurtle [kc, rt, kc, rt, kc] st
+
+
+-- | 再帰関数によるコッホ曲線
+kochCurve :: Float -> Int -> Command
+kochCurve len n st = runTurtle (koch len n) st
+  where
+    koch len 0 = [forward len]
+    koch len n = koch' ++ lt ++ koch' ++ rt ++ koch' ++ lt ++ koch'
+      where (koch', lt, rt) = (koch (len / 3) (n - 1), [left 60], [right 120])
