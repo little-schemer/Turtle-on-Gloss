@@ -80,7 +80,7 @@ executables:
 
   Star:
     main:                Main.hs
-    source-dirs:         app/star
+    source-dirs:         sample/star
     ghc-options:
     - -threaded
     - -rtsopts

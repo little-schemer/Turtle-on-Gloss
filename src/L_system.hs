@@ -1,11 +1,11 @@
 --------------------------------------------------------------------------------
 -- |
--- Module      : L_system
--- Description : L-system
--- Copyright   : (c) little Haskeller, 2018
--- License     : BSD3
+--   Module      : L_system
+--   Description : L-system
+--   Copyright   : (c) little Haskeller, 2018
+--   License     : BSD3
 --
--- L-system
+--   L-system
 --------------------------------------------------------------------------------
 
 module L_system where
