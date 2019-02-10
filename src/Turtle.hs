@@ -105,13 +105,8 @@ isDraw st pic = if pen st then (Color (penColor st) $ pic) else Blank
 
 -- |  コマンドのリストをまとめて１つのコマンドにする
 runTurtle :: [Command] -> Command
-runTurtle cmdLst st = loop cmdLst st []
-  where
-    loop [] st picLst = (st, Pictures picLst)
-    loop (cmd : cmdLst) st picLst = loop cmdLst st' picLst'
-      where
-        (st', pic) = cmd st
-        picLst' = if pic == Blank then picLst else (pic : picLst)
+runTurtle cmdLst st = foldl f (st, Blank) cmdLst
+  where f (st, pic) cmd = let (st', pic') = cmd st in (st', pic <> pic')
 
 
 --
