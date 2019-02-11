@@ -16,20 +16,12 @@ main = display window black (Pictures [pic1, pic2, pic3, pic4])
 
 -- | 再帰関数によるドラゴン曲線
 dragonCurve :: Float -> Int -> Command
-dragonCurve len n st = runTurtle (dragonR len n) st
+dragonCurve len n st = runTurtle (dR len n) st
   where
-    dragonR len 0 = [forward len]
-    dragonR len n = lt ++ dR ++ rt ++ dL ++ lt
-      where
-        lt = [left 45]
-        rt = [right 90]
-        dR = dragonR (len / sqrt 2) (n - 1)
-        dL = dragonL (len / sqrt 2) (n - 1)
+    dR len 0 = [fd len]
+    dR len n = [lt 45] ++ dR len' n' ++ [rt 90] ++ dL len' n' ++ [lt 45]
+      where (len', n') = (len / sqrt 2, n - 1)
 
-    dragonL len 0 = [forward len]
-    dragonL len n = rt ++ dR ++ lt ++ dL ++ rt
-      where
-        lt = [left 90]
-        rt = [right 45]
-        dR = dragonR (len / sqrt 2) (n - 1)
-        dL = dragonL (len / sqrt 2) (n - 1)
+    dL len 0 = [fd len]
+    dL len n = [rt 45] ++ dR len' n' ++ [lt 90] ++ dL len' n' ++ [rt 45]
+      where (len', n') = (len / sqrt 2, n - 1)

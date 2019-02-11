@@ -84,6 +84,14 @@ setPoint p st = (st {point = p}, Blank)
 setColor :: Color -> Command
 setColor c st = (st {penColor = c}, Blank)
 
+-- | Alias
+fd = forward
+bk = backward
+lt = left
+rt = right
+pu = penUp
+pd = penDown
+
 
 --
 -- ** 補助関数
