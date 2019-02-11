@@ -41,7 +41,7 @@ initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 -- ** Turtle Graphics の基本コマンド
 --
 
--- | n だけ前進する。pen == Ture なら線を描く。
+-- | n だけ前進する (pen == Ture なら線を描く)
 forward :: Float -> Command
 forward n st = (st {point = p}, isDraw st $ Line [point st, p])
   where p = newPoint n st
@@ -60,7 +60,7 @@ right :: Float -> Command
 right th st = (st {angle = h'}, Blank)
   where h' = angle st - th
 
--- | p の位置へ移動する
+-- | p の位置へ移動する (pen == Ture なら線を描く)
 goto :: Point -> Command
 goto p st = (st {point = p}, isDraw st $ Line [point st, p])
 
@@ -81,7 +81,7 @@ setPoint :: Point -> Command
 setPoint p st = (st {point = p}, Blank)
 
 -- | 色を設定する
-;setColor :: Color -> Command
+setColor :: Color -> Command
 setColor c st = (st {penColor = c}, Blank)
 
 
@@ -106,7 +106,8 @@ isDraw st pic = if pen st then (Color (penColor st) $ pic) else Blank
 -- |  コマンドのリストをまとめて１つのコマンドにする
 runTurtle :: [Command] -> Command
 runTurtle cmdLst st = foldl f (st, Blank) cmdLst
-  where f (st, pic) cmd = let (st', pic') = cmd st in (st', pic <> pic')
+  where f (st, pic) cmd = (st', pic <> pic')
+          where (st', pic') = cmd st
 
 
 --
