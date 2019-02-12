@@ -16,7 +16,7 @@ main = display window white pic
       [ Color black $ Line [(-380, 0), (380, 0)] <> Line [(0, -280), (0, 280)]
       , Translate (-200)   150  $ Scale 0.5 0.5 $ kochCurve 3
       , Translate   200    150  $ Scale 0.5 0.5 $ hilbertCurve 5
-      , Translate (-200) (-150) $ Scale 0.5 0.5 $ sierpinskiTriangle 6
+      , Translate (-200) (-150) $ Scale 0.5 0.5 $ sierpinskiTriangle 8
       , Translate   200  (-150) $ Scale 0.5 0.5 $ tree 5 ]
 
 
@@ -40,11 +40,11 @@ hilbertCurve n = drawLine st (size / (2 ^ n)) 90 string
 
 -- | シェルピンスキーのギャスケット
 sierpinskiTriangle :: Int -> Picture
-sierpinskiTriangle n = drawLine st (size / 2 ^ (n - 1)) 120 string
+sierpinskiTriangle n = drawLine st (size / 2 ^ n) 60 string
   where
     size   = 500
     st     = initST {point = (- size / 2, - size * sqrt 3 / 4), penColor = red}
-    string = l_system "F" [('F', "F+F+F+ff"), ('f', "ff")] n
+    string = l_system "RF" [('L', "-RF+LF+RF-"), ('R', "+LF-RF-LF+"), ('F', "")] n
 
 -- | スタックを使用した木
 tree :: Int -> Picture

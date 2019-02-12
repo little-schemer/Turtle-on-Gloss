@@ -77,7 +77,6 @@ executables:
     dependencies:
     - Turtle-on-Gloss
 
-
   Star:
     main:                Main.hs
     source-dirs:         sample/star
@@ -87,6 +86,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - Turtle-on-Gloss
+
 
 tests:
   Turtle-on-Gloss-test:

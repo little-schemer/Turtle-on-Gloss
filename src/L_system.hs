@@ -56,14 +56,14 @@ drawLine :: TurtleST            -- ^ 亀とペンの初期状態
          -> Float               -- ^ 亀が 1 step で回る角度 th
          -> String              -- ^ L-system で作成された文字列
          -> Picture             -- ^ 作成された図形
-drawLine st n th cs = Pictures $ loop st cs []
+drawLine st n th cs = pic
   where
-    loop _ [] _ = []
-    loop st ('F' : cs) stack = pic : loop st' cs stack
-      where (st', pic) = forward n st
-    loop st ('f' : cs) stack = loop (st {point = newPoint n st}) cs stack
-    loop st ('+' : cs) stack = loop (st {angle = angle st + th}) cs stack
-    loop st ('-' : cs) stack = loop (st {angle = angle st - th}) cs stack
-    loop st ('[' : cs) stack        = loop st cs (st : stack)
-    loop _  (']' : cs) (st : stack) = loop st cs stack
-    loop st ( _  : cs) stack        = loop st cs stack
+    (_, pic, _) = foldl f (st, Blank, []) cs
+    f (st, pic, stack) c = case c of
+      'F' -> (st', pic <> pic', stack) where (st', pic') = fd n st
+      'f' -> (st {point = newPoint n st}, pic, stack)
+      '+' -> (st {angle = angle st + th}, pic, stack)
+      '-' -> (st {angle = angle st - th}, pic, stack)
+      '[' -> (st, pic, (st : stack))
+      ']' -> (head stack, pic, tail stack)
+      _   -> (st, pic, stack)
