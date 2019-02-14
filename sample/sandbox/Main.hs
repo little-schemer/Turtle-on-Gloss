@@ -4,24 +4,22 @@ import Graphics.Gloss
 import Turtle
 import L_system
 
+import Debug.Trace
+
 
 main :: IO ()
-main = display window white pic
+main = display window white $ pic1 <> pic2 <> pic3
     where
       window   = InWindow "Sandbox" (800, 600) (10, 10)
-      pic = sandbox 6
+      pic1 = Color red $ Line [(-400, 0), (400, 0)]
+      pic2 = Color red $ Line [(0, -400), (0, 400)]
+      pic3 = snd $ runTurtle [left 30, fd 100, drawArcL 100 90] initST
+      --pic2 = Arc 90 0 100       -- start end 半径
 
 
-sandbox :: Int -> Picture
-sandbox n = drawLine st (size / 2 ^ n) 60 string
-  where
-    size = 250
-    st   = initST {point = (size, - size * sqrt 3 / 2), angle = 180}
-    axiom = "FXF--FF--FF"
-    rules = [('F', "FF"), ('X', "--FXF++FXF++FXF--")]
-    string = l_system axiom rules n
+drawArc :: (Float -> Command) -> Float -> Float -> Command
+drawArc cmd r th st = (st, Translate ox oy $ Rotate (90 - angle st) $ Arc 0 th r)
+  where (ox, oy) = newPoint r $ fst (cmd 90 st)
 
-test n = l_system axiom rules n
-  where
-    axiom = "FXF--FF--FF"
-    rules = [('F', "FF"), ('X', "--FXF++FXF++FXF--")]
+drawArcL = drawArc left
+drawArcR = drawArc right

@@ -13,10 +13,10 @@ module Turtle where
 
 import Graphics.Gloss
 
-data TurtleST = TurtleST { angle    :: !Float -- ^ 亀の向き
-                         , point    :: !Point -- ^ 亀の位置
-                         , penColor :: !Color -- ^ ペンの色
-                         , pen      :: !Bool  -- ^ up or down
+data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
+                         , point    :: Point -- ^ 亀の位置
+                         , penColor :: Color -- ^ ペンの色
+                         , pen      :: Bool  -- ^ up or down
                          } deriving Show
 
 
@@ -60,7 +60,7 @@ right :: Float -> Command
 right th st = (st {angle = h'}, Blank)
   where h' = angle st - th
 
--- | p の位置へ移動する (pen == Ture なら線を描く)
+-- | p の位置へ移動する (亀の向きは不変。pen == Ture なら線を描く)
 goto :: Point -> Command
 goto p st = (st {point = p}, isDraw st $ Line [point st, p])
 
@@ -123,17 +123,21 @@ runTurtle cmdLst st = foldl f (st, Blank) cmdLst
 --
 
 -- | 正多角形を描く
-drawPolygon :: Int -> Float -> (Float -> Command) -> Command
-drawPolygon n m  cmd st = (st, pic)
+drawPolygon :: (Float -> Command) -> Int -> Float -> Command
+drawPolygon cmd n m st = (st, pic)
   where
     th = 360 / (fromIntegral n)
     cs = (concat $ replicate (n - 1) [forward m, cmd th]) ++ [goto (point st)]
     (_, pic) = runTurtle cs st
 
 -- | 一辺の長さが m の正 n 角形を左回りに描く
-drawPolygonL :: Int -> Float -> Command
-drawPolygonL n m st = drawPolygon n m left st
+drawPolygonL :: Int             -- ^ 角数
+             -> Float           -- ^ 一辺の長さ
+             -> Command
+drawPolygonL = drawPolygon left
 
 -- | 一辺の長さが m の正 n 角形を右回りに描く
-drawPolygonR :: Int -> Float -> Command
-drawPolygonR n m st = drawPolygon n m right st
+drawPolygonR :: Int             -- ^ 角数
+             -> Float           -- ^ 一辺の長さ
+             -> Command
+drawPolygonR = drawPolygon right
