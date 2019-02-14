@@ -122,13 +122,6 @@ runTurtle cmdLst st = foldl f (st, Blank) cmdLst
 -- ** 図形を描くコマンド
 --
 
--- | 亀の位置を中心に半径 r の円を描く
-drawCircle :: Float -> Command
-drawCircle r st = (st, pic)
-  where
-    (x, y) = point st
-    pic = Translate x y $ Color (penColor st) $ Circle r
-
 -- | 正多角形を描く
 drawPolygon :: Int -> Float -> (Float -> Command) -> Command
 drawPolygon n m  cmd st = (st, pic)

@@ -46,6 +46,15 @@ sierpinskiTriangle n = drawLine st (size / 2 ^ n) 60 string
     st     = initST {point = (- size / 2, - size * sqrt 3 / 4), penColor = red}
     string = l_system "RF" [('L', "-RF+LF+RF-"), ('R', "+LF-RF-LF+"), ('F', "")] n
 
+sierpinskiTriangle2 :: Int -> Picture
+sierpinskiTriangle2 n = drawLine st (size / 2 ^ n) 60 string
+  where
+    size = 250
+    st   = initST {point = (size, - size * sqrt 3 / 2), angle = 180}
+    axiom = "FXF--FF--FF"
+    rules = [('F', "FF"), ('X', "--FXF++FXF++FXF--")]
+    string = l_system axiom rules n
+
 -- | スタックを使用した木
 tree :: Int -> Picture
 tree n = drawLine st (size / 2.17 ^ n) 20 string
