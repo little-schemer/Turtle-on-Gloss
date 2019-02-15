@@ -44,7 +44,7 @@ initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 -- | n だけ前進する (pen == Ture なら線を描く)
 forward :: Float -> Command
 forward n st = (st {point = p}, isDraw st $ Line [point st, p])
-  where p = newPoint n st
+  where p = newPoint n (angle st) (point st)
 
 -- | n だけ後退する (pen == Ture なら線を描く)
 backward :: Float -> Command
@@ -98,9 +98,9 @@ pd = penDown
 --
 
 -- | 亀が n だけ前進した位置
-newPoint :: Float -> TurtleST -> Point
-newPoint n st = (x + n * cos h', y + n * sin h')
-  where (h', (x, y)) = (angle st * pi / 180, point st)
+newPoint :: Float -> Float -> Point -> Point
+newPoint n th (x, y)  = (x + n * cos h', y + n * sin h')
+  where h' = th * pi / 180
 
 -- | pen の状態によって図形か Blank を返す
 isDraw :: TurtleST -> Picture -> Picture

@@ -61,7 +61,7 @@ drawLine st n th cs = pic
     (_, pic, _) = foldl f (st, Blank, []) cs
     f (st, pic, stack) c = case c of
       'F' -> (st', pic <> pic', stack) where (st', pic') = fd n st
-      'f' -> (st {point = newPoint n st}, pic, stack)
+      'f' -> (st {point = newPoint n (angle st) (point st)}, pic, stack)
       '+' -> (st {angle = angle st + th}, pic, stack)
       '-' -> (st {angle = angle st - th}, pic, stack)
       '[' -> (st, pic, (st : stack))
