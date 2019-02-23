@@ -13,14 +13,13 @@ module Turtle where
 
 import Graphics.Gloss
 
+
 data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , point    :: Point -- ^ 亀の位置
                          , penColor :: Color -- ^ ペンの色
                          , pen      :: Bool  -- ^ up or down
                          } deriving Show
 
-
--- | Turtle Graphics のコマンドの型
 type Command = TurtleST -> (Picture, TurtleST)
 
 

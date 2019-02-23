@@ -50,7 +50,6 @@ l_system axiom rule n = l_system (concatMap f axiom) rule (n - 1)
 -- >   '[' : 亀の状態をスタックにプッシュする。
 -- >   ']' : 亀の状態をスタックからポップする。
 -- >   その他 : 何もしない。
-
 drawLine :: TurtleST            -- ^ 亀とペンの初期状態
          -> Float               -- ^ 亀が 1 step で進む距離 n
          -> Float               -- ^ 亀が 1 step で回る角度 th
