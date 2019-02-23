@@ -6,8 +6,8 @@ import Turtle
 main :: IO ()
 main = display window white pic
   where
-    window = InWindow "Spiral" (800, 600) (10, 10)
-    (_, pic) = spiral 250 initST {penColor = blue}
+    window   = InWindow "Spiral" (800, 600) (10, 10)
+    (pic, _) = spiral 250 initST {penColor = blue}
 
 
 -- | らせん

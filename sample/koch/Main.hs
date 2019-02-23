@@ -9,7 +9,7 @@ main = display window white pic
     where
       window   = InWindow "Koch Curve" (800, 600) (10, 10)
       st       = initST {point = (-200, 200 / sqrt 3)}
-      (_, pic) = runTurtle (take 5 $ cycle [kochCurve 400 4, rt 120]) st
+      (pic, _) = runTurtle (take 5 $ cycle [kochCurve 400 4, rt 120]) st
 
 
 -- | 再帰関数によるコッホ曲線

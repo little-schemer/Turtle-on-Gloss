@@ -50,7 +50,7 @@ l_system axiom rule n = l_system (concatMap f axiom) rule (n - 1)
 -- >   '[' : 亀の状態をスタックにプッシュする。
 -- >   ']' : 亀の状態をスタックからポップする。
 -- >   その他 : 何もしない。
---
+
 drawLine :: TurtleST            -- ^ 亀とペンの初期状態
          -> Float               -- ^ 亀が 1 step で進む距離 n
          -> Float               -- ^ 亀が 1 step で回る角度 th
@@ -60,7 +60,7 @@ drawLine st n th cs = pic
   where
     (_, pic, _) = foldl f (st, Blank, []) cs
     f (st, pic, stack) c = case c of
-      'F' -> (st', pic <> pic', stack) where (st', pic') = fd n st
+      'F' -> (st', pic <> pic', stack) where (pic', st') = fd n st
       'f' -> (st {point = newPoint n (angle st) (point st)}, pic, stack)
       '+' -> (st {angle = angle st + th}, pic, stack)
       '-' -> (st {angle = angle st - th}, pic, stack)
