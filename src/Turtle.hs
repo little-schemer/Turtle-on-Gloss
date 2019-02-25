@@ -133,6 +133,10 @@ runTurtle cmdLst st = foldl f (Blank, st) cmdLst
 -- ** 図形を描くコマンド
 --
 
+--
+-- *** 正多角形
+--
+
 -- | 正多角形を描く
 drawPolygon :: (Float -> Command) -> Int -> Float -> Command
 drawPolygon cmd n m st = (fst $ runTurtle (cs ++ [goto (point st)]) st, st)
@@ -151,6 +155,11 @@ drawPolygonR :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
              -> Command
 drawPolygonR = drawPolygon right
+
+
+--
+-- *** 円弧
+--
 
 -- | 中心角 th 半径 r の円弧を左回りに描く
 drawArcL :: Float               -- ^ 中心角
