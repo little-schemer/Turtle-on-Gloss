@@ -6,7 +6,7 @@ import Turtle
 main :: IO ()
 main = display window white pic
   where
-    window  = InWindow "Spiral" (800, 600) (10, 10)
+    window  = InWindow "Star" (800, 600) (10, 10)
     cmd len = [star len, lt 45, pu, fd (len * 2), pd]
     cmdLst  = concatMap cmd [120, 60, 30, 15, 7.5]
     pic     = fst $ runTurtle cmdLst initST {point = (-100, -100)}

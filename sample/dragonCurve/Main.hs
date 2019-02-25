@@ -7,7 +7,7 @@ import Turtle
 main :: IO ()
 main = display window black (Pictures [pic1, pic2, pic3, pic4])
     where
-      window = InWindow "Turtle" (800, 600) (10, 10)
+      window = InWindow "Dragon Curve" (800, 600) (10, 10)
       pic1 = fst $ dragonCurve 200 10 initST {penColor = red                }
       pic2 = fst $ dragonCurve 200 10 initST {penColor = green,  angle =  90}
       pic3 = fst $ dragonCurve 200 10 initST {penColor = blue,   angle = 180}
