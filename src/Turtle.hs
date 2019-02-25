@@ -23,22 +23,17 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
 type Command = TurtleST -> (Picture, TurtleST)
 
 
-
-------------------------------------------------------------
--- * Turtle Graphics
-------------------------------------------------------------
-
---
--- ** 亀の初期値の雛形
---
+--------------------------------------------------
+-- * 亀の初期値の雛形
+--------------------------------------------------
 
 -- | 初期値 : angle = 0, point = (0, 0), penColor = black, pen = True
 initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 
 
---
--- ** Turtle Graphics の基本コマンド
---
+--------------------------------------------------
+-- * Turtle Graphics の基本コマンド
+--------------------------------------------------
 
 -- | n だけ前進する (pen == Ture なら線を描く)
 forward :: Float -> Command
@@ -82,9 +77,9 @@ setColor :: Color -> Command
 setColor c st = (Blank, st {penColor = c})
 
 
---
--- ** Alias
---
+--------------------------------------------------
+-- * Alias
+--------------------------------------------------
 
 -- | forward
 fd = forward
@@ -105,9 +100,9 @@ pu = penUp
 pd = penDown
 
 
---
--- ** 補助関数
---
+--------------------------------------------------
+-- * 補助関数
+--------------------------------------------------
 
 -- | 亀が n だけ前進した位置
 newPoint :: Float -> Float -> Point -> Point
@@ -119,9 +114,9 @@ isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st then (Color (penColor st) $ pic) else Blank
 
 
---
--- ** runTurtle コマンド
---
+--------------------------------------------------
+-- * runTurtle コマンド
+--------------------------------------------------
 
 -- |  コマンドのリストをまとめて１つのコマンドにする
 runTurtle :: [Command] -> Command
@@ -129,13 +124,11 @@ runTurtle cmdLst st = foldl f (Blank, st) cmdLst
   where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
 
 
---
--- ** 図形を描くコマンド
---
+--------------------------------------------------
+-- * 図形を描くコマンド
+--------------------------------------------------
 
---
--- *** 正多角形
---
+-- ** 正多角形
 
 -- | 正多角形を描く
 drawPolygon :: (Float -> Command) -> Int -> Float -> Command
@@ -157,9 +150,7 @@ drawPolygonR :: Int             -- ^ 角数
 drawPolygonR = drawPolygon right
 
 
---
--- *** 円弧
---
+-- ** 円弧
 
 -- | 中心角 th 半径 r の円弧を左回りに描く
 drawArcL :: Float               -- ^ 中心角
