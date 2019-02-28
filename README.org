@@ -1,19 +1,49 @@
 * Turtle Graphics on Gloss
 
-  Gloss を使った Turtle Graphics です。
+  [[http://hackage.haskell.org/package/gloss][Gloss]] を使った [[https://en.wikipedia.org/wiki/Turtle_graphics][Turtle Graphics]] です。Gloss については [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] の記事が参考になる
+と思います。
 
-  次のコードは画面に正三角形を描きます。
 
-  #+BEGIN_SRC haskell
-    module Main where
+** 含まれるファイル
+   #+BEGIN_EXAMPLE
+   app/Main.hs                -- 正三角形を描く
 
-    import Graphics.Gloss
-    import Turtle
+   sample
+   ├─ dragonCurve/Main.hs   -- ドラゴン曲線を描く
+   ├─ fractal/Main.hs       --  L-System を使ってフラクタルな図形を描く
+   ├─ koch/Main.hs          --  Koch 曲線を描く
+   ├─ spiral/Main.hs        --  らせんを描く
+   └─ star/Main.hs          --  星を描く
 
-    main :: IO ()
-    main = display window white pic
-        where
-          window = InWindow "Triangle" (800, 600) (10, 10)
-          cmdLst = [forward 100, left 120, forward 100, left 120, forward 100]
-          (_, pic) = runTurtle cmdLst initST
-  #+END_SRC
+   src
+   ├─ L_system.hs           --  L-System
+   └─ Turtle.hs             --  Turtle Graphics 本体
+   #+END_EXAMPLE
+
+
+** 使い方
+   + ~stack build~ を実行することで ~Fractal, Spiral, Koch, Dragon, Star~ といっ
+     たファイルが作られます。
+   + ~stack exec Fractal~ や ~stack exec Spiral~ を実行すると図形が描画されます。
+   + 現在のバージョンでは gloss の ~display~ 関数を使っているので、最終結果のみ
+     を表示します。
+
+** Turtle Graphics のコマンド
+   亀の状態を ~TurtleST~ で表します。
+
+   #+BEGIN_SRC haskell
+     data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
+                              , point    :: Point -- ^ 亀の位置
+                              , penColor :: Color -- ^ ペンの色
+                              , pen      :: Bool  -- ^ up or down
+                              } deriving Show
+   #+END_SRC
+
+   各コマンドの型は次のようになっています。
+
+   #+BEGIN_SRC haskell
+     type Command = TurtleST -> (Picture, TurtleST)
+   #+END_SRC
+
+   各コマンドは ~TurtleST~ を取り、図形 (Picture) とコマンド実行後の ~TurtleST~
+   を返します。
