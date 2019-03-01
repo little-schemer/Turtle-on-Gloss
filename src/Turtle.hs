@@ -35,12 +35,12 @@ initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 -- * Turtle Graphics の基本コマンド
 --------------------------------------------------
 
--- | n だけ前進する (pen == Ture なら線を描く)
+-- | n だけ前進する (pen == True なら線を描く)
 forward :: Float -> Command
 forward n st = (isDraw st $ Line [point st, p], st {point = p})
   where p = newPoint n (angle st) (point st)
 
--- | n だけ後退する (pen == Ture なら線を描く)
+-- | n だけ後退する (pen == True なら線を描く)
 backward :: Float -> Command
 backward n = forward (- n)
 
@@ -52,7 +52,7 @@ left th st = (Blank, st {angle = h'}) where h' = angle st + th
 right :: Float -> Command
 right th = left (- th)
 
--- | p の位置へ移動する (亀の向きは不変。pen == Ture なら線を描く)
+-- | p の位置へ移動する (亀の向きは不変。pen == True なら線を描く)
 goto :: Point -> Command
 goto p st = (isDraw st $ Line [point st, p], st {point = p})
 

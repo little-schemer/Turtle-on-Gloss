@@ -6,7 +6,7 @@
 
 ** 含まれるファイル
    #+BEGIN_EXAMPLE
-   app/Main.hs                -- 正三角形を描く
+   app/Main.hs              -- 正三角形を描く
 
    sample
    ├─ dragonCurve/Main.hs   -- ドラゴン曲線を描く
@@ -22,11 +22,12 @@
 
 
 ** 使い方
-   + ~stack build~ を実行することで ~Fractal, Spiral, Koch, Dragon, Star~ といっ
-     たファイルが作られます。
+   + ~stack build~ を実行することで sample ディレクトリ以下にあるサンプルがコン
+     パイルされ、 ~Fractal, Spiral, Koch, Dragon, Star~ といったファイルが作られます。
    + ~stack exec Fractal~ や ~stack exec Spiral~ を実行すると図形が描画されます。
    + 現在のバージョンでは gloss の ~display~ 関数を使っているので、最終結果のみ
      を表示します。
+
 
 ** Turtle Graphics のコマンド
    亀の状態を ~TurtleST~ で表します。
@@ -47,3 +48,48 @@
 
    各コマンドは ~TurtleST~ を取り、図形 (Picture) とコマンド実行後の ~TurtleST~
    を返します。
+
+*** forward n, fd n
+    亀が n だけ前進する。 ペンが下りていれば線を描く。
+
+*** backward n, bk n
+    亀が n だけ後退する。 ペンが下りていれば線が描く。
+
+*** left th, lt th
+    亀が th 度だけ左旋回する。
+
+*** right th, rt th
+    亀が th 度だけ右旋回する。
+
+*** goto p
+    亀が p の位置へ移動する。亀の向きは変らない。ペンが下りていれば線を描く。
+
+*** penDown, pd
+    亀のペンを下げる。亀が移動すると線が描かれる。
+
+*** penUp, pu
+    亀のペンを上げる。亀が移動しても線は描かれない。
+
+*** setAngle th
+    亀の向きを th 度に設定する。
+
+*** setPoint p
+    亀の位置を p に設定する。
+
+*** setColor c
+    亀のペンの色を c に設定する。
+
+*** runTurtle [Command]
+    リストの中のコマンドを順に実行した図形を描くコマンドを返す。
+
+*** drawPolygonL n m
+    一辺の長さが m の正 n 角形を左回りに描く
+
+*** drawPolygonR n m
+    一辺の長さが m の正 n 角形を右回りに描く
+
+*** drawArcL th r
+    中心角 th , 半径 r の円弧を左回りに描く。
+
+*** drawArcR th r
+    中心角 th , 半径 r の円弧を右回りに描く。
