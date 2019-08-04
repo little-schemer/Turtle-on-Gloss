@@ -142,7 +142,6 @@ drawPolygonL :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
              -> Command
 drawPolygonL = drawPolygon left
-
 -- | 一辺の長さが m の正 n 角形を右回りに描く
 drawPolygonR :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
@@ -173,3 +172,11 @@ drawArcR th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
     a' = 90 + a - th
     (ox, oy) = newPoint r (a - 90) (point st)
     st' = st {angle = a - th, point = newPoint r (a - th + 90) (ox, oy)}
+
+
+-- ** 円
+
+-- | 亀の位置を中心に、半径 r の円を描く
+drawCircle :: Float -> Command
+drawCircle r st = (isDraw st $ Translate x y $ Circle r, st)
+  where (x, y) = point st
