@@ -1,7 +1,7 @@
 module Main where
 
-import Graphics.Gloss
-import Turtle
+import           Graphics.Gloss
+import           Turtle
 
 
 main :: IO ()
