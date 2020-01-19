@@ -11,7 +11,8 @@
 
 module Turtle where
 
-import Graphics.Gloss
+
+import           Graphics.Gloss
 
 
 data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
@@ -29,6 +30,23 @@ type Command = TurtleST -> (Picture, TurtleST)
 
 -- | 初期値 : angle = 0, point = (0, 0), penColor = black, pen = True
 initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
+
+
+
+---------------------------------------------------
+-- * runTurtle
+---------------------------------------------------
+
+runTurtle :: (String, (Int, Int)) -> [(TurtleST, [Command])] -> IO ()
+runTurtle (str, size) lst = display window white (Pictures $ map f lst)
+  where
+    window = InWindow str size (0, 0)
+    f (st, cmdLst) = fst $ concatCmd cmdLst st
+
+-- | Command の連結
+concatCmd :: [Command] -> Command
+concatCmd cmdLst st = foldl f (Blank, st) cmdLst
+  where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
 
 
 --------------------------------------------------
@@ -115,16 +133,6 @@ isDraw st pic = if pen st then (Color (penColor st) $ pic) else Blank
 
 
 --------------------------------------------------
--- * runTurtle コマンド
---------------------------------------------------
-
--- |  コマンドのリストをまとめて１つのコマンドにする
-runTurtle :: [Command] -> Command
-runTurtle cmdLst st = foldl f (Blank, st) cmdLst
-  where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
-
-
---------------------------------------------------
 -- * 図形を描くコマンド
 --------------------------------------------------
 
@@ -132,7 +140,7 @@ runTurtle cmdLst st = foldl f (Blank, st) cmdLst
 
 -- | 正多角形を描く
 drawPolygon :: (Float -> Command) -> Int -> Float -> Command
-drawPolygon cmd n m st = (fst $ runTurtle (cs ++ [goto (point st)]) st, st)
+drawPolygon cmd n m st = (fst $ concatCmd (cs ++ [goto (point st)]) st, st)
   where
     th = 360 / (fromIntegral n)
     cs = cmd (th / 2) : (concat $ replicate (n - 1) [forward m, cmd th])
