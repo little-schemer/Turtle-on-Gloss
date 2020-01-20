@@ -5,16 +5,16 @@ import           Turtle
 
 
 main :: IO ()
-main = display window white pic
-    where
-      window   = InWindow "Koch Curve" (800, 600) (10, 10)
-      st       = initST {point = (-200, 200 / sqrt 3)}
-      (pic, _) = runTurtle (take 5 $ cycle [kochCurve 400 4, rt 120]) st
+main = runTurtle window [(st, lst)]
+  where
+    window = ("Koch Curve", (800, 600), (10, 10), white)
+    st  = initST { point = (-200, 200 / sqrt 3) }
+    lst = take 5 $ cycle [kochCurve 400 4, rt 120]
 
 
 -- | 再帰関数によるコッホ曲線
 kochCurve :: Float -> Int -> Command
-kochCurve len n st = runTurtle (kh len n) st
+kochCurve len n st = concatCmd (kh len n) st
   where
     kh len 0 = [fd len]
     kh len n = kh' ++ [lt 60] ++ kh' ++ [rt 120] ++ kh' ++ [lt 60] ++ kh'

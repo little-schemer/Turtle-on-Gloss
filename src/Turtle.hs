@@ -21,29 +21,35 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , pen      :: Bool  -- ^ up or down
                          } deriving Show
 
-type Command = TurtleST -> (Picture, TurtleST)
+
+type Command  = TurtleST -> (Picture, TurtleST)
+type WindowST = ( String        -- ^ Window のタイトル
+                , (Int, Int)    -- ^ Window のサイズ
+                , (Int, Int)    -- ^ Window のポジション
+                , Color         -- ^ 背景色
+                )
+
 
 
 --------------------------------------------------
 -- * 亀の初期値の雛形
 --------------------------------------------------
-
--- | 初期値 : angle = 0, point = (0, 0), penColor = black, pen = True
 initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
-
 
 
 ---------------------------------------------------
 -- * runTurtle
 ---------------------------------------------------
-
-runTurtle :: (String, (Int, Int)) -> [(TurtleST, [Command])] -> IO ()
-runTurtle (str, size) lst = display window white (Pictures $ map f lst)
+runTurtle :: WindowST -> [(TurtleST, [Command])] -> IO ()
+runTurtle (str, size, pos, col) lst = display window col (Pictures $ map f lst)
   where
-    window = InWindow str size (0, 0)
+    window = InWindow str size pos
     f (st, cmdLst) = fst $ concatCmd cmdLst st
 
--- | Command の連結
+
+---------------------------------------------------
+-- * Command の連結
+---------------------------------------------------
 concatCmd :: [Command] -> Command
 concatCmd cmdLst st = foldl f (Blank, st) cmdLst
   where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
@@ -150,6 +156,7 @@ drawPolygonL :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
              -> Command
 drawPolygonL = drawPolygon left
+
 -- | 一辺の長さが m の正 n 角形を右回りに描く
 drawPolygonR :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
