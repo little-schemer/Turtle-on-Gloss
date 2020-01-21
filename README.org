@@ -79,7 +79,7 @@
 *** setColor c
     亀のペンの色を c に設定する。
 
-*** runTurtle [Command]
+*** concatCmd [Command]
     リストの中のコマンドを順に実行した図形を描くコマンドを返す。
 
 *** drawPolygonL n m
