@@ -21,14 +21,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , pen      :: Bool  -- ^ up or down
                          } deriving Show
 
-
 type Command  = TurtleST -> (Picture, TurtleST)
-type WindowST = ( String        -- ^ Window のタイトル
-                , (Int, Int)    -- ^ Window のサイズ
-                , (Int, Int)    -- ^ Window のポジション
-                , Color         -- ^ 背景色
-                )
-
 
 
 --------------------------------------------------
@@ -40,11 +33,9 @@ initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 ---------------------------------------------------
 -- * runTurtle
 ---------------------------------------------------
-runTurtle :: WindowST -> [(TurtleST, [Command])] -> IO ()
-runTurtle (str, size, pos, col) lst = display window col (Pictures $ map f lst)
-  where
-    window = InWindow str size pos
-    f (st, cmdLst) = fst $ concatCmd cmdLst st
+runTurtle :: Display -> Color -> [(TurtleST, [Command])] -> IO ()
+runTurtle window col lst = display window col (Pictures $ map f lst)
+  where f (st, cmdLst) = fst $ concatCmd cmdLst st
 
 
 ---------------------------------------------------

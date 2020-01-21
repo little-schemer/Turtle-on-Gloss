@@ -5,9 +5,9 @@ import           Turtle
 
 
 main :: IO ()
-main = runTurtle window [(st, lst)]
+main = runTurtle window white [(st, lst)]
   where
-    window = ("Koch Curve", (800, 600), (10, 10), white)
+    window = InWindow "Koch Curve" (800, 600) (10, 10)
     st  = initST { point = (-200, 200 / sqrt 3) }
     lst = take 5 $ cycle [kochCurve 400 4, rt 120]
 
