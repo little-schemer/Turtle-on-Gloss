@@ -21,7 +21,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , pen      :: Bool  -- ^ up or down
                          } deriving Show
 
-type Command  = TurtleST -> (Picture, TurtleST)
+type Command  = TurtleST -> ([Picture], TurtleST)
 
 
 --------------------------------------------------
@@ -35,15 +35,15 @@ initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 ---------------------------------------------------
 runTurtle :: Display -> Color -> [(TurtleST, [Command])] -> IO ()
 runTurtle window col lst = display window col (Pictures $ map f lst)
-  where f (st, cmdLst) = fst $ concatCmd cmdLst st
+  where f (st, cmdLst) = Pictures $ fst $ concatCmd cmdLst st
 
 
 ---------------------------------------------------
 -- * Command の連結
 ---------------------------------------------------
 concatCmd :: [Command] -> Command
-concatCmd cmdLst st = foldl f (Blank, st) cmdLst
-  where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
+concatCmd cmdLst st = foldl f ([Blank], st) cmdLst
+  where f (pic, st) cmd = let (pic', st') = cmd st in (pic ++ pic', st')
 
 
 --------------------------------------------------
@@ -52,7 +52,7 @@ concatCmd cmdLst st = foldl f (Blank, st) cmdLst
 
 -- | n だけ前進する (pen == True なら線を描く)
 forward :: Float -> Command
-forward n st = (isDraw st $ Line [point st, p], st {point = p})
+forward n st = ([isDraw st $ Line [point st, p]], st {point = p})
   where p = newPoint n (angle st) (point st)
 
 -- | n だけ後退する (pen == True なら線を描く)
@@ -61,7 +61,7 @@ backward n = forward (- n)
 
 -- | th 度だけ左旋回する
 left :: Float -> Command
-left th st = (Blank, st {angle = h'}) where h' = angle st + th
+left th st = ([Blank], st {angle = h'}) where h' = angle st + th
 
 -- | th 度だけ右旋回する
 right :: Float -> Command
@@ -69,27 +69,27 @@ right th = left (- th)
 
 -- | p の位置へ移動する (亀の向きは不変。pen == True なら線を描く)
 goto :: Point -> Command
-goto p st = (isDraw st $ Line [point st, p], st {point = p})
+goto p st = ([isDraw st $ Line [point st, p]], st {point = p})
 
 -- | 移動時に線を描く
 penDown :: Command
-penDown st = (Blank, st {pen = True})
+penDown st = ([Blank], st {pen = True})
 
 -- | 移動時に線を描かない
 penUp :: Command
-penUp st = (Blank, st {pen = False})
+penUp st = ([Blank], st {pen = False})
 
 -- | 亀の向きを設定する
 setAngle :: Float -> Command
-setAngle th st = (Blank, st {angle = th})
+setAngle th st = ([Blank], st {angle = th})
 
 -- | 亀の位置を設定する
 setPoint :: Point -> Command
-setPoint p st = (Blank, st {point = p})
+setPoint p st = ([Blank], st {point = p})
 
 -- | 色を設定する
 setColor :: Color -> Command
-setColor c st = (Blank, st {penColor = c})
+setColor c st = ([Blank], st {penColor = c})
 
 
 --------------------------------------------------
@@ -161,7 +161,7 @@ drawPolygonR = drawPolygon right
 drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
-drawArcL th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+drawArcL th r st = ([Translate ox oy $ isDraw st $ Arc a' (a' + th) r], st')
   where
     a  = angle st
     a' = a - 90
@@ -172,7 +172,7 @@ drawArcL th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
 drawArcR :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
-drawArcR th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+drawArcR th r st = ([Translate ox oy $ isDraw st $ Arc a' (a' + th) r], st')
   where
     a  = angle st
     a' = 90 + a - th
@@ -180,9 +180,9 @@ drawArcR th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
     st' = st {angle = a - th, point = newPoint r (a - th + 90) (ox, oy)}
 
 
--- ** 円
+-- -- ** 円
 
 -- | 亀の位置を中心に、半径 r の円を描く
 drawCircle :: Float -> Command
-drawCircle r st = (isDraw st $ Translate x y $ Circle r, st)
+drawCircle r st = ([isDraw st $ Translate x y $ Circle r], st)
   where (x, y) = point st

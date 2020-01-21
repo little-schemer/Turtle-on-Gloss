@@ -1,18 +1,18 @@
---------------------------------------------------------------------------------
--- |
---   Module      : L_system
---   Description : L-system
---   Copyright   : (c) little Haskeller, 2018
---   License     : BSD3
---
---   L-system
---------------------------------------------------------------------------------
+-- --------------------------------------------------------------------------------
+-- -- |
+-- --   Module      : L_system
+-- --   Description : L-system
+-- --   Copyright   : (c) little Haskeller, 2018
+-- --   License     : BSD3
+-- --
+-- --   L-system
+-- --------------------------------------------------------------------------------
 
 module L_system where
 
-import Data.Maybe (fromJust)
-import Graphics.Gloss
-import Turtle
+import           Data.Maybe     (fromJust)
+import           Graphics.Gloss
+import           Turtle
 
 
 ------------------------------------------------------------
@@ -54,12 +54,12 @@ drawLine :: TurtleST            -- ^ 亀とペンの初期状態
          -> Float               -- ^ 亀が 1 step で進む距離 n
          -> Float               -- ^ 亀が 1 step で回る角度 th
          -> String              -- ^ L-system で作成された文字列
-         -> Picture             -- ^ 作成された図形
+         -> [Picture]           -- ^ 作成された図形
 drawLine st n th cs = pic
   where
-    (_, pic, _) = foldl f (st, Blank, []) cs
+    (_, pic, _) = foldl f (st, [Blank], []) cs
     f (st, pic, stack) c = case c of
-      'F' -> (st', pic <> pic', stack) where (pic', st') = fd n st
+      'F' -> (st', pic ++ pic', stack) where (pic', st') = fd n st
       'f' -> (st {point = newPoint n (angle st) (point st)}, pic, stack)
       '+' -> (st {angle = angle st + th}, pic, stack)
       '-' -> (st {angle = angle st - th}, pic, stack)
