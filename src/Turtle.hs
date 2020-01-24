@@ -26,7 +26,7 @@ type Command  = TurtleST -> (Picture, TurtleST)
 
 type TurtleData = (TurtleST, [Command])
 
-type Model = (Picture, [TurtleData])
+type Model = (Picture, [TurtleST], [TurtleData])
 
 
 --------------------------------------------------
@@ -39,17 +39,21 @@ initST = TurtleST {angle = 0, point = (0, 0), penColor = black, pen = True}
 -- * runTurtle
 ---------------------------------------------------
 runTurtle :: Display -> Color -> [TurtleData] -> IO ()
-runTurtle window col lst = simulate window col 30 (Blank, lst) drawModel simModel
+runTurtle window col lst = simulate window col 30 (Blank, [], lst) drawModel simModel
 
 drawModel :: Model -> Picture
-drawModel (pic, _) = pic
+drawModel (pic, sts, _) = pic <> (Pictures $ map f sts)
+  where
+    triangle = Polygon [(0, -3), (0, 3), (8, 0)]
+    f st = Translate x y $ Rotate (360 - angle st) $ Color (penColor st) $ triangle
+      where (x, y) = point st
 
 simModel :: ViewPort -> Float -> Model -> Model
-simModel _ _ (pic, []) = (pic, [])
-simModel _ _ (pic, lst) = foldl f (pic, []) lst
+simModel _ _ (pic, _, []) = (pic, [], [])
+simModel _ _ (pic, _, lst) = foldl f (pic, [], []) lst
   where
-    f (pic, tLst) (_, []) = (pic, tLst)
-    f (pic, tLst) (st, (c : cs)) = (pic <> pic', (st', cs) : tLst)
+    f (pic, sts, tLst) (_, []) = (pic, sts, tLst)
+    f (pic, sts, tLst) (st, (c : cs)) = (pic <> pic', st': sts, (st', cs) : tLst)
           where (pic', st') = c st
 
 
