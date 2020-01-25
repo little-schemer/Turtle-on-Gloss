@@ -6,22 +6,16 @@
 
 ** 含まれるファイル
    #+BEGIN_EXAMPLE
-   app/Main.hs        -- 実験用
+   app / Main.hs               -- 実験用
 
    sample
-   ├ circle
-   ｜  └ Main.hs     -- 複数の円を同時に描く
-   ├ dragonCurve
-   ｜  └ Main.hs     -- ドラゴン曲線を描く
-   ├ koch
-   ｜  └ Main.hs     --  Koch 曲線を描く
-   ├ spiral
-   ｜  └ Main.hs     --  らせんを描く
-   └ star
-       └ Main.hs     --  星を描く
+   ├ circle / Main.hs         -- 複数の円を同時に描く
+   ├ dragonCurve / Main.hs    -- ドラゴン曲線を描く
+   ├ koch / Main.hs           --  Koch 曲線を描く
+   ├ spiral / Main.hs         --  らせんを描く
+   └ star / Main.hs           --  星を描く
 
-   src / Graphics
-          └ Turtle.hs  --  Turtle Graphics 本体
+   src / Graphics / Turtle.hs  --  Turtle Graphics 本体
    #+END_EXAMPLE
 
 
