@@ -193,6 +193,14 @@ pd = penDown
 
 
 --------------------------------------------------
+-- * 複数のコマンドの繰り返し
+--------------------------------------------------
+
+repCommand :: Int -> [Command] -> [Command]
+repCommand n cLst = concat $ replicate n cLst
+
+
+--------------------------------------------------
 -- * 図形を描くコマンド
 --------------------------------------------------
 
@@ -203,7 +211,7 @@ drawPolygon :: (Float -> Command) -> Int -> Float -> [Command]
 drawPolygon cmd n m = cs ++ [cmd (- th / 2)]
   where
     th = 360 / (fromIntegral n)
-    cs = cmd (th / 2) : (concat $ replicate n [forward m, cmd th])
+    cs = cmd (th / 2) : (repCommand n [forward m, cmd th])
 
 -- | 一辺の長さが m の正 n 角形を左回りに描く
 drawPolygonL :: Int             -- ^ 角数

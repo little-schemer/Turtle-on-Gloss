@@ -19,12 +19,3 @@ kochCurve len n = kh len n
     kh len 0 = qf len
     kh len n = kh' ++ ql 60 ++ kh' ++ qr 120 ++ kh' ++ ql 60 ++ kh'
       where kh' = kh (len / 3) (n - 1)
-
-
-
-
--- kochCurve len n = concat $ kh len n
---   where
---     kh len 0 = [qf len]
---     kh len n = kh' ++ [ql 60] ++ kh' ++ [qr 120] ++ kh' ++ [ql 60] ++ kh'
---       where kh' = kh (len / 3) (n - 1)
