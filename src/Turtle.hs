@@ -36,11 +36,11 @@ type Model = (Picture, [TurtleST], [(TurtleST, Command)])
 -- * 亀の初期値の雛形
 --------------------------------------------------
 
-initST = TurtleST { angle = 0
-                  , point = (0, 0)
+initST = TurtleST { angle    = 0
+                  , point    = (0, 0)
                   , penColor = black
-                  , pen = True
-                  , mark = True }
+                  , pen      = True
+                  , mark     = True }
 
 
 ---------------------------------------------------
@@ -55,8 +55,13 @@ draw :: Model -> Picture
 draw (pic, ss, _) = pic <> (Pictures $ map f ss)
   where
     tMark = Polygon [(0, -3), (0, 3), (8, 0)]
-    f st = Translate x y $ Rotate (360 - angle st) $ Color (penColor st) $ tMark
-      where (x, y) = point st
+    f st = if (mark st)
+           then Translate x y $ Rotate th $ Color c $ tMark
+           else Blank
+      where
+        (x, y) = point st
+        th = 360 - angle st
+        c  = penColor st
 
 sim :: ViewPort -> Float -> Model -> Model
 sim _ _ (pic, _, [])  = (pic, [], [])
@@ -71,23 +76,25 @@ sim _ _ (pic, _, lst) = foldl f (pic, [], []) lst
 -- * 補助関数
 ---------------------------------------------------
 
-newPoint :: Float -> TurtleST -> Point
-newPoint n st = (x + n * cos th', y + n * sin th')
-  where
-    (x, y) = point st
-    th'    = (angle st) * pi / 180
+newPoint :: Float -> Float -> Point -> Point
+newPoint n th (x, y) = (x + n * cos th', y + n * sin th')
+  where th' = th * pi / 180
 
 toPoint :: Point -> PrimitiveCommand
 toPoint p st = (isDraw st $ Line [point st, p], st { point = p })
 
 move :: Float -> PrimitiveCommand
-move n st = toPoint (newPoint n st) st
+move n st = toPoint (newPoint n th p) st
+  where (th, p) = (angle st, point st)
 
 turn :: Float -> PrimitiveCommand
-turn th st = (Blank, st { angle = th' }) where th' = angle st + th
+turn th st = (Blank, st { angle = th' })
+  where th' = angle st + th
 
 isDraw :: TurtleST -> Picture -> Picture
-isDraw st pic = if (pen st) then (Color (penColor st) $ pic) else Blank
+isDraw st pic = if (pen st)
+                then (Color (penColor st) $ pic)
+                else Blank
 
 
 ---------------------------------------------------
@@ -99,6 +106,10 @@ forward :: Float -> Command
 forward n
   | n <= 50   = [move n]
   | otherwise = move 50 : forward (n - 50)
+
+-- | 高速前進
+quickForward :: Float -> Command
+quickForward n = [move n]
 
 -- | n だけ後退する (pen == True なら線を描く)
 backward :: Float -> Command
@@ -117,6 +128,14 @@ right :: Float -> Command
 right th
   | th <= 30  = [turn (-th)]
   | otherwise = turn (-30) : right (th - 30)
+
+-- | 高速左旋回
+quickLeft :: Float -> Command
+quickLeft th = [turn th]
+
+-- | 高速右旋回
+quickRight :: Float -> Command
+quickRight th = [turn (-th)]
 
 -- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
 goto :: Point -> Command
@@ -150,6 +169,9 @@ penUp = [\st -> (Blank, st {pen = False})]
 -- | forward
 fd = forward
 
+-- | quickForward
+qf = quickForward
+
 -- | backward
 bk = backward
 
@@ -158,6 +180,12 @@ lt = left
 
 -- | right
 rt = right
+
+-- | quickLeft
+ql = quickLeft
+
+-- | quickRight
+qr = quickRight
 
 -- | penUp
 pu = penUp
@@ -203,24 +231,28 @@ drawCircle r = [drawCircle' r]
 
 -- ** 円弧
 
--- -- | 中心角 th 半径 r の円弧を左回りに描く
--- drawArcL :: Float               -- ^ 中心角
---          -> Float               -- ^ 半径
---          -> PrimitiveCommand
--- drawArcL th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
---   where
---     a  = angle st
---     a' = a - 90
---     (ox, oy) = newPoint r (a + 90) (point st)
---     st' = st {angle = a + th, point = newPoint r (a + th - 90) (ox, oy)}
+-- | 中心角 th 半径 r の円弧を左回りに描く
+drawArcL :: Float               -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
+drawArcL th r = [drawArcL' th r]
+  where
+    drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+      where
+        a  = angle st
+        a' = a - 90
+        (ox, oy) = newPoint r (a + 90) (point st)
+        st' = st {angle = a + th, point = newPoint r (a + th - 90) (ox, oy)}
 
--- -- | 中心角 th 半径 r の円弧を右回りに描く
--- drawArcR :: Float               -- ^ 中心角
---          -> Float               -- ^ 半径
---          -> PrimitiveCommand
--- drawArcR th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
---   where
---     a  = angle st
---     a' = 90 + a - th
---     (ox, oy) = newPoint r (a - 90) (point st)
---     st' = st {angle = a - th, point = newPoint r (a - th + 90) (ox, oy)}
+-- | 中心角 th 半径 r の円弧を右回りに描く
+drawArcR :: Float               -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
+drawArcR th r = [drawArcR' th r]
+  where
+    drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+      where
+        a  = angle st
+        a' = 90 + a - th
+        (ox, oy) = newPoint r (a - 90) (point st)
+        st' = st {angle = a - th, point = newPoint r (a - th + 90) (ox, oy)}
