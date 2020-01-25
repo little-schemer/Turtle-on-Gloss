@@ -9,7 +9,7 @@
 --
 --------------------------------------------------------------------------------
 
-module Turtle where
+module Graphics.Turtle where
 
 
 import           Graphics.Gloss

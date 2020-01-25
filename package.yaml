@@ -67,7 +67,7 @@ executables:
     dependencies:
     - Turtle-on-Gloss
 
-  Dragon:
+  DragonCurve:
     main:                Main.hs
     source-dirs:         sample/dragonCurve
     ghc-options:

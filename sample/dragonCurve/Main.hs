@@ -1,14 +1,14 @@
 module Main where
 
 import           Graphics.Gloss
-import           Turtle
+import           Graphics.Turtle
 
 
 main :: IO ()
 main = runTurtle window (greyN 0.3) 100 [(s, cmd) | s <- [st1, st2, st3, st4]]
   where
-    window = InWindow "Dragon Curve" (800, 600) (10, 10)
-    cmd = [dragonCurve 200 10]
+    window = InWindow "Dragon Curve" (800, 800) (10, 10)
+    cmd = [dragonCurve 300 12]
     st1 = initST { mark = False, penColor = red }
     st2 = initST { mark = False, penColor = green,  angle =  90 }
     st3 = initST { mark = False, penColor = blue,   angle = 180 }

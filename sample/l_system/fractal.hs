@@ -4,9 +4,9 @@
 
 module Main where
 
-import Graphics.Gloss
-import L_system
-import Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
+import           L_system
 
 main :: IO ()
 main = display window white pic
