@@ -27,8 +27,6 @@ type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 
 type Command = [PrimitiveCommand]
 
-type TurtleData = (TurtleST, [Command])
-
 type Model = (Picture, [TurtleST], [(TurtleST, Command)])
 
 
@@ -47,7 +45,7 @@ initST = TurtleST { angle    = 0
 -- * runTurtle
 ---------------------------------------------------
 
-runTurtle :: Display -> Color -> Int -> [TurtleData] -> IO ()
+runTurtle :: Display -> Color -> Int -> [(TurtleST, [Command])] -> IO ()
 runTurtle disp c step tds = simulate disp c step (Blank, [], map f tds) draw sim
   where f (st, lst) = (st, concat lst)
 

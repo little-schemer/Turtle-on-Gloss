@@ -6,51 +6,105 @@
 
 ** 含まれるファイル
    #+BEGIN_EXAMPLE
-   app/Main.hs              -- 正三角形を描く
+   app/Main.hs        -- 実験用
 
    sample
-   ├─ dragonCurve/Main.hs   -- ドラゴン曲線を描く
-   ├─ fractal/Main.hs       --  L-System を使ってフラクタルな図形を描く
-   ├─ koch/Main.hs          --  Koch 曲線を描く
-   ├─ spiral/Main.hs        --  らせんを描く
-   └─ star/Main.hs          --  星を描く
+   ├ circle
+   ｜  └ Main.hs     -- 複数の円を同時に描く
+   ├ dragonCurve
+   ｜  └ Main.hs     -- ドラゴン曲線を描く
+   ├ koch
+   ｜  └ Main.hs     --  Koch 曲線を描く
+   ├ spiral
+   ｜  └ Main.hs     --  らせんを描く
+   └ star
+       └ Main.hs     --  星を描く
 
-   src
-   ├─ L_system.hs           --  L-System
-   └─ Turtle.hs             --  Turtle Graphics 本体
+   src / Graphics
+          └ Turtle.hs  --  Turtle Graphics 本体
    #+END_EXAMPLE
 
 
-** 使い方
+** Sample の実行法
    + ~stack build~ を実行することで sample ディレクトリ以下にあるサンプルがコン
-     パイルされ、 ~Fractal, Spiral, Koch, Dragon, Star~ といったファイルが作られます。
-   + ~stack exec Fractal~ や ~stack exec Spiral~ を実行すると図形が描画されます。
-   + 現在のバージョンでは gloss の ~display~ 関数を使っているので、最終結果のみ
-     を表示します。
+     パイルされ、 ~Circle, Spiral, Koch, DragonCurve, Star~ といったファイルが
+     作られます。
+   + ~stack exec Circle~ や ~stack exec Spiral~ を実行すると図形が描画されます。
 
 
-** Turtle Graphics のコマンド
-   亀の状態を ~TurtleST~ で表します。
+** Turtle Graphics の使い方
+   使用例を示します。
 
    #+BEGIN_SRC haskell
+     import           Graphics.Gloss
+     import           Graphics.Turtle
+
+
+     main :: IO ()
+     main = runTurtle window white 20 [(st, cmdLst)]
+       where
+         window = InWindow "test" (800, 600) (10, 10)
+         st = initST
+         cmdLst = [forward 200, left 120, forward 200, left 120, forward 200]
+   #+END_SRC
+
+   ~runTurtle~ の型は次のようになってます。
+
+   #+BEGIN_SRC haskell
+     runTurtle :: Display                -- gloss の描画モード
+               -> Color                  -- gloss の背景色
+               -> Int                    -- 1 秒あたりのステップ数
+               -> [(TurtleST, [Command]) -- 亀のデータ
+               -> IO ()
+   #+END_SRC
+
+   ~Display~ および ~Color~ は ~gloss~ の ~simulate~ 関数に渡すものです。
+   詳しくは [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] を参照してください。
+
+   ~TurtleST~ は亀の初期値です。
+
+    #+BEGIN_SRC haskell
      data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                               , point    :: Point -- ^ 亀の位置
                               , penColor :: Color -- ^ ペンの色
                               , pen      :: Bool  -- ^ up or down
+                              , mark     :: Bool  -- ^ 亀のマーク
                               } deriving Show
    #+END_SRC
 
+   ~initST~ で自動的に設定されますが、自分で設定することも可能です。
+
+   #+BEGIN_SRC haskell
+     initST = TurtleST { angle    = 0
+                       , point    = (0, 0)
+                       , penColor = black
+                       , pen      = True
+                       , mark     = True }
+   #+END_SRC
+
+   ~Command~ は亀に実行させる命令です。
+
+
+** Turtle Graphics のコマンド
    各コマンドの型は次のようになっています。
 
    #+BEGIN_SRC haskell
-     type Command = TurtleST -> (Picture, TurtleST)
+     type PrimitiveCommand = TurtleST -> (Picture, TurtleST)
+
+     type Command = [PrimitiveCommand]
    #+END_SRC
 
-   各コマンドは ~TurtleST~ を取り、図形 (Picture) とコマンド実行後の ~TurtleST~
-   を返します。
+   ~PrimitiveCommand~ は ~TurtleST~ を受け取り、図形 (Picture) とコマンド実行後の
+   ~TurtleST~ を返します。
+
+   ~Command~ は ~PrimitiveCommand~ のリストになっており、通常はこちらを使用しま
+   す。
 
 *** forward n, fd n
     亀が n だけ前進する。 ペンが下りていれば線を描く。
+
+*** quickForward n, qf n
+    forward より高速に前進する。
 
 *** backward n, bk n
     亀が n だけ後退する。 ペンが下りていれば線が描く。
@@ -58,8 +112,14 @@
 *** left th, lt th
     亀が th 度だけ左旋回する。
 
+*** quickLeft th, ql th
+    left より高速に左旋回する。
+
 *** right th, rt th
     亀が th 度だけ右旋回する。
+
+*** quickRight th, qr th
+    right より高速に右旋回する。
 
 *** goto p
     亀が p の位置へ移動する。亀の向きは変らない。ペンが下りていれば線を描く。
@@ -79,14 +139,14 @@
 *** setColor c
     亀のペンの色を c に設定する。
 
-*** concatCmd [Command]
-    リストの中のコマンドを順に実行した図形を描くコマンドを返す。
-
 *** drawPolygonL n m
     一辺の長さが m の正 n 角形を左回りに描く
 
 *** drawPolygonR n m
     一辺の長さが m の正 n 角形を右回りに描く
+
+*** drawCircle r
+    亀の位置を中心に、半径 r の円を描く。
 
 *** drawArcL th r
     中心角 th , 半径 r の円弧を左回りに描く。
