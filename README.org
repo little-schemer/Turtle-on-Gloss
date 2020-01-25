@@ -66,7 +66,7 @@
                               } deriving Show
    #+END_SRC
 
-   ~initST~ で自動的に設定されますが、自分で設定することも可能です。
+   ~TurtleST~ は ~initST~ で自動的に設定されますが、自分で設定することも可能です。
 
    #+BEGIN_SRC haskell
      initST = TurtleST { angle    = 0
