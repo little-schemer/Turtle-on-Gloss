@@ -219,8 +219,8 @@ repCommand n cLst = concat $ replicate n cLst
 -- ** 正多角形
 
 -- | 正多角形を描く
-drawPolygon :: (Float -> Command) -> Int -> Float -> [Command]
-drawPolygon cmd n m = cs ++ [cmd (- th / 2)]
+drawPolygon :: (Float -> Command) -> Int -> Float -> Command
+drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
   where
     th = 360 / (fromIntegral n)
     cs = cmd (th / 2) : (repCommand n [forward m, cmd th])
@@ -228,13 +228,13 @@ drawPolygon cmd n m = cs ++ [cmd (- th / 2)]
 -- | 一辺の長さが m の正 n 角形を左回りに描く
 drawPolygonL :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
-             -> [Command]
+             -> Command
 drawPolygonL = drawPolygon left
 
 -- | 一辺の長さが m の正 n 角形を右回りに描く
 drawPolygonR :: Int             -- ^ 角数
              -> Float           -- ^ 一辺の長さ
-             -> [Command]
+             -> Command
 drawPolygonR = drawPolygon right
 
 
@@ -253,9 +253,12 @@ drawCircle r = [drawCircle' r]
 drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
-drawArcL th r = [drawArcL' th r]
-  where
-    drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+drawArcL th r
+  | th <= 30  = [drawArcL' th r]
+  | otherwise = drawArcL' 30 r : drawArcL (th - 30) r
+
+drawArcL' :: Float -> Float -> PrimitiveCommand
+drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
       where
         a  = angle st
         a' = a - 90
@@ -266,11 +269,14 @@ drawArcL th r = [drawArcL' th r]
 drawArcR :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
-drawArcR th r = [drawArcR' th r]
+drawArcR th r
+  | th <= 30  = [drawArcR' th r]
+  | otherwise = drawArcR' 30 r : drawArcR (th - 30) r
+
+drawArcR' :: Float -> Float -> PrimitiveCommand
+drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
   where
-    drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
-      where
-        a  = angle st
-        a' = 90 + a - th
-        (ox, oy) = newPoint r (a - 90) (point st)
-        st' = st {angle = a - th, point = newPoint r (a - th + 90) (ox, oy)}
+    a  = angle st
+    a' = 90 + a - th
+    (ox, oy) = newPoint r (a - 90) (point st)
+    st' = st {angle = a - th, point = newPoint r (a - th + 90) (ox, oy)}
