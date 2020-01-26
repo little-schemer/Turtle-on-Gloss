@@ -21,6 +21,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , penColor :: Color -- ^ ペンの色
                          , pen      :: Bool  -- ^ up or down
                          , mark     :: Bool  -- ^ 亀のマーク
+                         , stack    :: [(Float, Point)]
                          } deriving Show
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
@@ -38,7 +39,9 @@ initST = TurtleST { angle    = 0
                   , point    = (0, 0)
                   , penColor = black
                   , pen      = True
-                  , mark     = True }
+                  , mark     = True
+                  , stack    = []
+                  }
 
 
 ---------------------------------------------------
@@ -158,6 +161,15 @@ penDown = [\st -> (Blank, st {pen = True})]
 -- | 移動時に線を描かない
 penUp :: Command
 penUp = [\st -> (Blank, st {pen = False})]
+
+-- | 亀の状態を Push
+push :: Command
+push = [\st -> (Blank, st {stack = (angle st, point st) : stack st})]
+
+-- | 亀の状態を Pop
+pop :: Command
+pop = [\st -> f st (stack st)]
+  where f st ((h, p) : s) = (Blank, st {angle = h, point = p, stack = s})
 
 
 --------------------------------------------------

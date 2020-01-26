@@ -50,19 +50,36 @@ l_system axiom rule n = l_system (concatMap f axiom) rule (n - 1)
 -- >   '[' : 亀の状態をスタックにプッシュする。
 -- >   ']' : 亀の状態をスタックからポップする。
 -- >   その他 : 何もしない。
-drawLine :: TurtleST            -- ^ 亀とペンの初期状態
-         -> Float               -- ^ 亀が 1 step で進む距離 n
-         -> Float               -- ^ 亀が 1 step で回る角度 th
-         -> String              -- ^ L-system で作成された文字列
-         -> [Picture]           -- ^ 作成された図形
-drawLine st n th cs = pic
+
+-- drawLine :: TurtleST            -- ^ 亀とペンの初期状態
+--          -> Float               -- ^ 亀が 1 step で進む距離 n
+--          -> Float               -- ^ 亀が 1 step で回る角度 th
+--          -> String              -- ^ L-system で作成された文字列
+--          -> [Picture]           -- ^ 作成された図形
+-- drawLine st n th cs = pic
+--   where
+--     (_, pic, _) = foldl f (st, [Blank], []) cs
+--     f (st, pic, stack) c = case c of
+--       'F' -> (st', pic ++ pic', stack) where (pic', st') = fd n st
+--       'f' -> (st {point = newPoint n (angle st) (point st)}, pic, stack)
+--       '+' -> (st {angle = angle st + th}, pic, stack)
+--       '-' -> (st {angle = angle st - th}, pic, stack)
+--       '[' -> (st, pic, (st : stack))
+--       ']' -> (head stack, pic, tail stack)
+--       _   -> (st, pic, stack)
+
+
+convToCmd :: Float              -- ^ 亀が 1 step で進む距離 n
+          -> Float              -- ^ 亀が 1 step で回る角度 th
+          -> String             -- ^ L-system で作成された文字列
+          -> [Command]
+convToCmd n th cs = foldl f [] cs
   where
-    (_, pic, _) = foldl f (st, [Blank], []) cs
-    f (st, pic, stack) c = case c of
-      'F' -> (st', pic ++ pic', stack) where (pic', st') = fd n st
-      'f' -> (st {point = newPoint n (angle st) (point st)}, pic, stack)
-      '+' -> (st {angle = angle st + th}, pic, stack)
-      '-' -> (st {angle = angle st - th}, pic, stack)
-      '[' -> (st, pic, (st : stack))
-      ']' -> (head stack, pic, tail stack)
-      _   -> (st, pic, stack)
+    f cmd c = case c of
+      'F' -> cmd ++ [fd n]
+      'f' -> cmd ++ [pu, fd n, pd]
+      '+' -> cmd ++ [lt th]
+      '-' -> cmd ++ [rt th]
+      '[' -> cmd ++ [push]
+      ']' -> cmd ++ [pop]
+      _   -> cmd
