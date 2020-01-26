@@ -2,7 +2,7 @@
 -- | L-system によるフラクタルな図形
 --
 
-module Main where
+-- module Main where
 
 import           Graphics.Gloss
 import           Graphics.Turtle
