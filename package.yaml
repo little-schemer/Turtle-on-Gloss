@@ -38,7 +38,7 @@ executables:
     - Turtle-on-Gloss
 
   Fractal:
-    main:                Main.hs
+    main:                fractal.hs
     source-dirs:         sample/l_system
     ghc-options:
     - -threaded
