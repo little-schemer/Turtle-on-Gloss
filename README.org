@@ -26,9 +26,6 @@
    + ~stack exec Circle~ や ~stack exec Spiral~ を実行すると図形が描画されます。
 
 
-   [https://github.com/little-schemer/Turtle-on-Gloss/blob/master/sample/circle/circle.png][Circle]
-
-
 ** Turtle Graphics の使い方
    使用例を示します。
 
