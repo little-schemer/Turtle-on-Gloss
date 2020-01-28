@@ -286,3 +286,19 @@ drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
     a' = 90 + a - th
     (ox, oy) = newPoint r (a - 90) (point st)
     st' = st {angle = a - th, point = newPoint r a' (ox, oy)}
+
+
+--------------------------------------------------
+-- * その他
+--------------------------------------------------
+
+-- | グリッドを表示
+grid :: Command
+grid = [\st -> (line1 <> line2 <> line3, st)]
+  where
+    red'  = makeColorI 200 80 80 200
+    blue' = makeColorI 150 150 200 150
+    line1 = Color red'  $ Line [(-500, 0), (500, 0)]
+    line2 = Color red'  $ Line [(0, -500), (0, 500)]
+    line3 = Color blue' $ Pictures $ concatMap f [-500, -490 .. 500]
+      where f n = [Line [(-500, n), (500, n)], Line [(n, -500), (n, 500)]]
