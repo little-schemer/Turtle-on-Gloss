@@ -265,8 +265,8 @@ drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
 drawArcL th r
-  | th <= 30  = [drawArcL' th r]
-  | otherwise = drawArcL' 30 r : drawArcL (th - 30) r
+  | th <= 10  = [drawArcL' th r]
+  | otherwise = drawArcL' 10 r : drawArcL (th - 10) r
 
 drawArcL' :: Float -> Float -> PrimitiveCommand
 drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
@@ -281,8 +281,8 @@ drawArcR :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
 drawArcR th r
-  | th <= 30  = [drawArcR' th r]
-  | otherwise = drawArcR' 30 r : drawArcR (th - 30) r
+  | th <= 10  = [drawArcR' th r]
+  | otherwise = drawArcR' 10 r : drawArcR (th - 10) r
 
 drawArcR' :: Float -> Float -> PrimitiveCommand
 drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')

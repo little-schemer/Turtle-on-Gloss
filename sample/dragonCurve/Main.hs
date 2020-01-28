@@ -1,5 +1,3 @@
-module Main where
-
 import           Graphics.Gloss
 import           Graphics.Turtle
 
@@ -20,9 +18,9 @@ dragonCurve :: Float -> Int -> Command
 dragonCurve len n = dR len n
   where
     dR len 0 = qf len
-    dR len n = ql 45 ++ dR len' n' ++ qr 90 ++ dL len' n' ++ ql 45
+    dR len n = concat [ql 45, dR len' n', qr 90, dL len' n', ql 45]
       where (len', n') = (len / sqrt 2, n - 1)
 
     dL len 0 = qf len
-    dL len n = qr 45 ++ dR len' n' ++ ql 90 ++ dL len' n' ++ qr 45
+    dL len n = concat [qr 45, dR len' n', ql 90, dL len' n', qr 45]
       where (len', n') = (len / sqrt 2, n - 1)

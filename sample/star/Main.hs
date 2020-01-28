@@ -1,5 +1,3 @@
-module Main where
-
 import           Graphics.Gloss
 import           Graphics.Turtle
 
