@@ -5,8 +5,10 @@ import           Graphics.Turtle
 
 
 main :: IO ()
-main = runTurtle window white 100 [(initST {mark = False}, fanFlower)]
-  where window = InWindow "test2" (800, 600) (10, 10)
+main = runTurtle window white 100 [(st, fanFlower)]
+  where
+    window = InWindow "test2" (800, 600) (10, 10)
+    st = initST {mark = False, point = (125, 34)}
 
 
 fanFlower :: [Command]
