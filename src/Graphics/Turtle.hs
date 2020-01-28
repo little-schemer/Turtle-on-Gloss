@@ -76,20 +76,25 @@ simModel _ _ (pic, ts) = foldl f (pic, []) ts
 -- * 補助関数
 ---------------------------------------------------
 
+-- | 移動先のポイント
 newPoint :: Float -> Float -> Point -> Point
 newPoint n th (x, y) = (x + n * cos th', y + n * sin th')
   where th' = th * pi / 180
 
+-- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
 toPoint :: Point -> PrimitiveCommand
 toPoint p st = (isDraw st $ Line [point st, p], st {point = p})
 
+-- | n だけ前進する (pen == True なら線を描く)
 move :: Float -> PrimitiveCommand
 move n st = toPoint (newPoint n th p) st
   where (th, p) = (angle st, point st)
 
+-- | th 度旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
 turn :: Float -> PrimitiveCommand
 turn th st = (Blank, st {angle = angle st + th})
 
+-- | pen == True なら図形を描く
 isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st
                 then Color (penColor st) $ pic
