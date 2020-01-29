@@ -32,9 +32,10 @@ type Model = (Picture, [(TurtleST, Command)])
 
 
 --------------------------------------------------
--- * 亀の初期値の雛形
+-- * 初期値の雛形
 --------------------------------------------------
 
+initST :: TurtleST
 initST = TurtleST { angle    = 0
                   , point    = (0, 0)
                   , penColor = black
@@ -42,6 +43,9 @@ initST = TurtleST { angle    = 0
                   , mark     = True
                   , stack    = []
                   }
+
+initDisp :: Display
+initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
 
 
 ---------------------------------------------------
@@ -181,6 +185,10 @@ pop = [\st -> (Blank, f (stack st))]
                                          , mark     = m
                                          , stack    = sk
                                          }
+
+-- | 何もしない
+nop :: Command
+nop = [\st -> (Blank, st)]
 
 
 --------------------------------------------------
