@@ -26,9 +26,9 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 
-type Command = [PrimitiveCommand]
+type Command           = [PrimitiveCommand]
 
-type Model = (Picture, [(TurtleST, Command)])
+type Model             = (Picture, [(TurtleST, Command)])
 
 
 --------------------------------------------------
