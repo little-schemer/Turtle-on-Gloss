@@ -2,7 +2,7 @@
 -- |
 --   Module      : Turtle
 --   Description : Turtle Graphics on Gloss
---   Copyright   : (c) little Haskeller, 2018
+--   Copyright   : (c) little Haskeller, 2018, 2019, 2020
 --   License     : BSD3
 --
 --   Gloss を使った Turtle Graphics
@@ -13,7 +13,10 @@ module Graphics.Turtle where
 
 
 import           Graphics.Gloss
+import qualified Graphics.Gloss.Data.Point.Arithmetic as PA
+import           Graphics.Gloss.Data.Vector
 import           Graphics.Gloss.Data.ViewPort
+import           Graphics.Gloss.Geometry.Angle
 
 
 data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
@@ -82,8 +85,7 @@ simModel _ _ (pic, ts) = foldl f (pic, []) ts
 
 -- | 移動先のポイント
 newPoint :: Float -> Float -> Point -> Point
-newPoint n th (x, y) = (x + n * cos th', y + n * sin th')
-  where th' = th * pi / 180
+newPoint n th p = p PA.+ n PA.* (unitVectorAtAngle $ degToRad th)
 
 -- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
 toPoint :: Point -> PrimitiveCommand
@@ -96,7 +98,14 @@ move n st = toPoint (newPoint n th p) st
 
 -- | th 度旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
 turn :: Float -> PrimitiveCommand
-turn th st = (Blank, st {angle = angle st + th})
+turn th st = (Blank, st {angle = normalize $ th + angle st})
+
+-- | 角度を 0 <= th < 360 に正規化する
+normalize :: Float -> Float
+normalize th
+  | th >= 360 = normalize (th - 360)
+  | th <    0 = normalize (th + 360)
+  | otherwise = th
 
 -- | pen == True なら図形を描く
 isDraw :: TurtleST -> Picture -> Picture
@@ -151,7 +160,7 @@ goto p = [toPoint p]
 
 -- | 亀の向きを設定する
 setAngle :: Float -> Command
-setAngle th = [\st -> (Blank, st {angle = th})]
+setAngle th = [\st -> (Blank, st {angle = normalize th})]
 
 -- | 亀の位置を設定する
 setPoint :: Point -> Command
