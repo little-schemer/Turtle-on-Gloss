@@ -80,9 +80,8 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
 
 -- | 最終結果だけを表示
 dispPicture :: Display -> Color -> [(TurtleST, [Command])] -> IO ()
-dispPicture disp c tds = display disp c pic
+dispPicture disp c tds = display disp c $ Pictures $ map f tds
   where
-    pic = Pictures $ map f tds
     f (st, cmds) = fst $ foldl g (Blank, st) (concat cmds)
     g (pic, st) pCmd = let (pic', st') = pCmd st in (pic <> pic', st')
 
