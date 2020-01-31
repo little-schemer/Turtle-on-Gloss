@@ -52,31 +52,39 @@ initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
 
 
 ---------------------------------------------------
--- * runTurtle
+-- * 画像表示
 ---------------------------------------------------
 
+-- | 亀を歩かせる
 runTurtle :: Display -> Color -> Int -> [(TurtleST, [Command])] -> IO ()
 runTurtle disp c step tds = simulate disp c step model drawModel simModel
-  where model = (Blank, [(st, concat lst) | (st, lst) <- tds])
-
-drawModel :: Model -> Picture
-drawModel (pic, ts) = pic <> (Pictures $ map (f . fst) ts)
   where
-    turtleMark = Polygon [(0, -3), (0, 3), (8, 0)]
-    f st = if (mark st)
-           then Translate x y $ Rotate th $ Color c $ turtleMark
-           else Blank
+    model = (Blank, [(st, concat lst) | (st, lst) <- tds])
+
+    drawModel (pic, ts) = pic <> (Pictures $ map (f . fst) ts)
       where
-        (x, y)  = point st
-        (th, c) = (360 - angle st, penColor st)
+        turtleMark = Polygon [(0, -3), (0, 3), (8, 0)]
+        f st = if (mark st)
+               then Translate x y $ Rotate th $ Color c $ turtleMark
+               else Blank
+          where
+            (x, y)  = point st
+            (th, c) = (360 - angle st, penColor st)
 
-simModel :: ViewPort -> Float -> Model -> Model
-simModel _ _ (pic, [])  = (pic, [])
-simModel _ _ (pic, ts) = foldl f (pic, []) ts
+    simModel _ _ (pic, [])  = (pic, [])
+    simModel _ _ (pic, ts) = foldl f (pic, []) ts
+      where
+        f model (_, [])            = model
+        f (pic, ts) (st, cmd : cs) = (pic <> p, (st', cs) : ts)
+          where (p, st') = cmd st
+
+-- | 最終結果だけを表示
+dispPicture :: Display -> Color -> [(TurtleST, [Command])] -> IO ()
+dispPicture disp c tds = display disp c pic
   where
-    f model (_, [])            = model
-    f (pic, ts) (st, cmd : cs) = (pic <> p, (st', cs) : ts)
-      where (p, st') = cmd st
+    pic = Pictures $ map f tds
+    f (st, cmds) = fst $ foldl g (Blank, st) (concat cmds)
+    g (pic, st) pCmd = let (pic', st') = pCmd st in (pic <> pic', st')
 
 
 ---------------------------------------------------
