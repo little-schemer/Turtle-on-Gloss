@@ -28,9 +28,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          } deriving Show
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
-
 type Command           = [PrimitiveCommand]
-
 type Model             = (Picture, [(TurtleST, Command)])
 
 
@@ -59,7 +57,7 @@ initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
 runTurtle :: Display -> Color -> Int -> [(TurtleST, [Command])] -> IO ()
 runTurtle disp c step tds = simulate disp c step model drawModel simModel
   where
-    model = (Blank, [(st, concat lst) | (st, lst) <- tds])
+    model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
 
     drawModel (pic, ts) = pic <> (Pictures $ map (f . fst) ts)
       where
