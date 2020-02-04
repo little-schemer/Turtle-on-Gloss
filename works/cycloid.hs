@@ -1,5 +1,4 @@
 import           Graphics.Gloss
-import           Graphics.Gloss.Geometry.Angle
 import           Graphics.Turtle
 
 
@@ -24,8 +23,8 @@ tData = (st, map (\th -> goto (func th)) rotationAngles)
 --  + rm : 動円の半径
 --  + th : 回転角
 --
---  x = (rc + rm) * cos th - rm * cos * ((rc + rm) / rm * th)
---  y = (rc + rm) * sin th - rm * sin * ((rc + rm) / rm * th)
+--  x = (rc + rm) * cos th - rm * cos ((rc + rm) / rm * th)
+--  y = (rc + rm) * sin th - rm * sin ((rc + rm) / rm * th)
 --
 epicycloid :: Float -> Float -> Float -> Point
 epicycloid rc rm th = (f cos, f sin)

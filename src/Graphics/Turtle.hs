@@ -29,7 +29,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 type Command           = [PrimitiveCommand]
-type Model             = (Picture, [(TurtleST, Command)])
+type Model             = (Picture, [(TurtleST, [PrimitiveCommand])])
 
 
 --------------------------------------------------
@@ -73,7 +73,7 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
     simModel _ _ (pic, ts) = foldl f (pic, []) ts
       where
         f model (_, [])            = model
-        f (pic, ts) (st, cmd : cs) = (pic <> p, (st', cs) : ts)
+        f (pic, ts) (st, cmd : cs) = (p <> pic, (st', cs) : ts)
           where (p, st') = cmd st
 
 -- | 最終結果だけを表示
