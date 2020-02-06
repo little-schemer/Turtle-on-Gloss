@@ -6,21 +6,23 @@
 
 ** 含まれるファイル
    #+BEGIN_EXAMPLE
-   app / Main.hs               -- 実験用
+     app / Main.hs               -- 実験用
 
-   sample
-   ├ circle / Main.hs         -- 複数の円を同時に描く
-   ├ dragonCurve / Main.hs    -- ドラゴン曲線を描く
-   ├ koch / Main.hs           -- Koch 曲線を描く
-   ├ spiral / Main.hs         -- らせんを描く
-   └ star / Main.hs           -- 星を描く
+     sample
+     ├ circle.hs         -- 複数の円を同時に描く
+     ├ dragonCurve.hs    -- ドラゴン曲線を描く
+     ├ koch.hs           -- Koch 曲線を描く
+     ├ spiral.hs         -- らせんを描く
+     └ star.hs           -- 星を描く
 
-   src / Graphics / Turtle.hs  -- Turtle Graphics 本体
+     src / Graphics
+           ├ Turtle.hs    -- Turtle Graphics 本体
+           └ L_system.hs  -- L-System
    #+END_EXAMPLE
 
 
 ** Sample の実行法
-   + ~stack build~ を実行することで sample ディレクトリ以下にあるサンプルがコン
+   + ~stack build~ を実行することで sample ディレクトリ以下にあるファイルがコン
      パイルされ、 ~Circle, Spiral, Koch, DragonCurve, Star~ といったファイルが
      作られます。
    + ~stack exec Circle~ や ~stack exec Spiral~ を実行すると図形が描画されます。
@@ -33,12 +35,11 @@
      import           Graphics.Gloss
      import           Graphics.Turtle
 
-
      main :: IO ()
      main = runTurtle window white 20 [(st, cmdLst)]
        where
-         window = InWindow "test" (800, 600) (10, 10)
-         st = initST
+         window = initDisp
+         st     = initST
          cmdLst = [forward 200, left 120, forward 200, left 120, forward 200]
    #+END_SRC
 
@@ -55,6 +56,13 @@
    ~Display~ および ~Color~ は ~gloss~ の ~simulate~ 関数に渡すものです。
    詳しくは [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] を参照してください。
 
+   ~Display~ は ~initDisp~ で既定値に設定することが可能です。
+
+   #+BEGIN_SRC haskell
+     initDisp :: Display
+     initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
+   #+END_SRC
+
    ~TurtleST~ は亀の初期値です。
 
     #+BEGIN_SRC haskell
@@ -66,7 +74,7 @@
                               } deriving Show
    #+END_SRC
 
-   ~TurtleST~ は ~initST~ で自動的に設定されますが、自分で設定することも可能です。
+   ~TurtleST~ は ~initST~ で既定値を設定できますが、自分で設定することも可能です。
 
    #+BEGIN_SRC haskell
      initST = TurtleST { angle    = 0
@@ -94,56 +102,38 @@
    ~Command~ は ~PrimitiveCommand~ のリストになっており、通常はこちらを使用しま
    す。
 
-*** forward n, fd n
-    亀が n だけ前進する。 ペンが下りていれば線を描く。
+   + forward n, fd n :: 亀が n だけ前進する。 ペンが下りていれば線を描く。
 
-*** quickForward n, qf n
-    forward より高速に前進する。
+   + quickForward n, qf n :: forward より高速に前進する。
 
-*** backward n, bk n
-    亀が n だけ後退する。 ペンが下りていれば線が描く。
+   + backward n, bk n :: 亀が n だけ後退する。 ペンが下りていれば線が描く。
 
-*** left th, lt th
-    亀が th 度だけ左旋回する。
+   + left th, lt th :: 亀が th 度だけ左旋回する。
 
-*** quickLeft th, ql th
-    left より高速に左旋回する。
+   + quickLeft th, ql th :: left より高速に左旋回する。
 
-*** right th, rt th
-    亀が th 度だけ右旋回する。
+   + right th, rt th :: 亀が th 度だけ右旋回する。
 
-*** quickRight th, qr th
-    right より高速に右旋回する。
+   + quickRight th, qr th :: right より高速に右旋回する。
 
-*** goto p
-    亀が p の位置へ移動する。亀の向きは変らない。ペンが下りていれば線を描く。
+   + goto p :: 亀が p の位置へ移動する。亀の向きは変らない。ペンが下りていれば線を描く。
 
-*** penDown, pd
-    亀のペンを下げる。亀が移動すると線が描かれる。
+   + penDown, pd :: 亀のペンを下げる。亀が移動すると線が描かれる。
 
-*** penUp, pu
-    亀のペンを上げる。亀が移動しても線は描かれない。
+   + penUp, pu :: 亀のペンを上げる。亀が移動しても線は描かれない。
 
-*** setAngle th
-    亀の向きを th 度に設定する。
+   + setAngle th :: 亀の向きを th 度に設定する。
 
-*** setPoint p
-    亀の位置を p に設定する。
+   + setPoint p :: 亀の位置を p に設定する。
 
-*** setColor c
-    亀のペンの色を c に設定する。
+   + setColor c :: 亀のペンの色を c に設定する。
 
-*** drawPolygonL n m
-    一辺の長さが m の正 n 角形を左回りに描く
+   + drawPolygonL n m :: 一辺の長さが m の正 n 角形を左回りに描く
 
-*** drawPolygonR n m
-    一辺の長さが m の正 n 角形を右回りに描く
+   + drawPolygonR n m :: 一辺の長さが m の正 n 角形を右回りに描く
 
-*** drawCircle r
-    亀の位置を中心に、半径 r の円を描く。
+   + drawCircle r :: 亀の位置を中心に、半径 r の円を描く。
 
-*** drawArcL th r
-    中心角 th , 半径 r の円弧を左回りに描く。
+   + drawArcL th r :: 中心角 th , 半径 r の円弧を左回りに描く。
 
-*** drawArcR th r
-    中心角 th , 半径 r の円弧を右回りに描く。
+   + drawArcR th r :: 中心角 th , 半径 r の円弧を右回りに描く。
