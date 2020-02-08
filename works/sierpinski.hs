@@ -27,5 +27,3 @@ sierpinski n len = if odd n
                          , ql 60
                          , sierA (n - 1) (len / 2)
                          ]
-
-
