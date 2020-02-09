@@ -32,10 +32,21 @@ type Command           = [PrimitiveCommand]
 type Model             = (Picture, [(TurtleST, Command)])
 
 
+
 --------------------------------------------------
 -- * 初期値の雛形
 --------------------------------------------------
 
+--
+-- | TurtleST の初期値を設定する
+--
+-- > 《初期値》l
+-- >   + angle    = 0
+-- >   + point    = (0, 0)
+-- >   + penColor = black
+-- >   + pen      = True
+-- >   + mark     = True
+--
 initST :: TurtleST
 initST = TurtleST { angle    = 0
                   , point    = (0, 0)
@@ -45,8 +56,17 @@ initST = TurtleST { angle    = 0
                   , stack    = []
                   }
 
+--
+-- | Display の初期値を設定する
+--
+-- > 《初期値》
+-- >   + Window のタイトル   : "Turtle Graphics"
+-- >   + Window のサイズ     : (800, 600)
+-- >   + Window のポジション : (10, 10)
+--
 initDisp :: Display
 initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
+
 
 
 ---------------------------------------------------
@@ -54,7 +74,7 @@ initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
 ---------------------------------------------------
 
 --
--- | runTurtle : 亀を歩かせる
+-- | 亀に図形を描かせる
 --
 runTurtle :: Display                 -- ^ 描画モード
           -> Color                   -- ^ 背景色
@@ -83,7 +103,7 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
           where (p, st') = cmd st
 
 --
--- | dispPicture : 最終結果だけを表示
+-- | 最終結果だけを表示する
 --
 dispPicture :: Display                 -- ^ 描画モード
             -> Color                   -- ^ 背景色
@@ -95,11 +115,12 @@ dispPicture disp c tds = display disp c $ Pictures $ map f tds
     g (pic, st) pCmd = let (pic', st') = pCmd st in (pic <> pic', st')
 
 
+
 ---------------------------------------------------
 -- * 補助関数
 ---------------------------------------------------
 
--- | 移動先のポイント
+-- | 移動先のポイントを求める
 newPoint :: Float -> Float -> Point -> Point
 newPoint n th p = p PA.+ n PA.* (unitVectorAtAngle $ degToRad th)
 
@@ -125,9 +146,8 @@ normalize th
 
 -- | pen == True なら図形を描く
 isDraw :: TurtleST -> Picture -> Picture
-isDraw st pic = if pen st
-                then Color (penColor st) $ pic
-                else Blank
+isDraw st pic = if pen st then Color (penColor st) $ pic else Blank
+
 
 
 ---------------------------------------------------
@@ -140,7 +160,7 @@ forward n
   | n <= 50   = [move n]
   | otherwise = move 50 : forward (n - 50)
 
--- | 高速前進
+-- | 高速に前進する
 quickForward :: Float -> Command
 quickForward n = [move n]
 
@@ -162,11 +182,11 @@ right th
   | th <= 30  = [turn (-th)]
   | otherwise = turn (-30) : right (th - 30)
 
--- | 高速左旋回
+-- | 高速に左旋回する
 quickLeft :: Float -> Command
 quickLeft th = [turn th]
 
--- | 高速右旋回
+-- | 高速に右旋回する
 quickRight :: Float -> Command
 quickRight th = [turn (-th)]
 
@@ -194,12 +214,12 @@ penDown = [\st -> (Blank, st {pen = True})]
 penUp :: Command
 penUp = [\st -> (Blank, st {pen = False})]
 
--- | 亀の状態を Push
+-- | 亀の状態を Push する
 push :: Command
 push = [\st -> (Blank, st {stack = f st : stack st})]
   where f st = (angle st, point st, penColor st, pen st, mark st)
 
--- | 亀の状態を Pop
+-- | 亀の状態を Pop する
 pop :: Command
 pop = [\st -> (Blank, f (stack st))]
   where
@@ -214,6 +234,7 @@ pop = [\st -> (Blank, f (stack st))]
 -- | 何もしない
 nop :: Command
 nop = [\st -> (Blank, st)]
+
 
 
 --------------------------------------------------
@@ -248,13 +269,6 @@ pu = penUp
 pd = penDown
 
 
---------------------------------------------------
--- * 複数のコマンドの繰り返し
---------------------------------------------------
-
-repCommand :: Int -> [Command] -> [Command]
-repCommand n cLst = concat $ replicate n cLst
-
 
 --------------------------------------------------
 -- * 図形を描くコマンド
@@ -287,7 +301,8 @@ drawPolygon :: (Float -> Command) -> Int -> Float -> Command
 drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
   where
     th = 360 / (fromIntegral n)
-    cs = cmd (th / 2) : (repCommand n [forward m, cmd th])
+    cs = [cmd (th / 2), (repCommand n [forward m, cmd th])]
+
 
 
 ----------------------------------------
@@ -304,6 +319,7 @@ drawCircle r = [drawCircle' r]
           where (x, y) = point st
 
 
+
 ----------------------------------------
 -- ** 円弧
 ----------------------------------------
@@ -317,9 +333,8 @@ drawArcL :: Float               -- ^ 中心角
 drawArcL th r
   | th <= 10  = [drawArcL' th r]
   | otherwise = drawArcL' 10 r : drawArcL (th - 10) r
-
-drawArcL' :: Float -> Float -> PrimitiveCommand
-drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+  where
+    drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
       where
         a  = angle st
         a' = a - 90
@@ -335,14 +350,14 @@ drawArcR :: Float               -- ^ 中心角
 drawArcR th r
   | th <= 10  = [drawArcR' th r]
   | otherwise = drawArcR' 10 r : drawArcR (th - 10) r
-
-drawArcR' :: Float -> Float -> PrimitiveCommand
-drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
   where
-    a  = angle st
-    a' = 90 + a - th
-    (ox, oy) = newPoint r (a - 90) (point st)
-    st' = st {angle = a - th, point = newPoint r a' (ox, oy)}
+    drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
+      where
+        a  = angle st
+        a' = 90 + a - th
+        (ox, oy) = newPoint r (a - 90) (point st)
+        st' = st {angle = a - th, point = newPoint r a' (ox, oy)}
+
 
 
 --------------------------------------------------
@@ -350,7 +365,7 @@ drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
 --------------------------------------------------
 
 --
--- | グリッドを表示
+-- | グリッドを表示する
 --
 grid :: Command
 grid = [\st -> (line1 <> line2 <> line3, st)]
@@ -361,3 +376,11 @@ grid = [\st -> (line1 <> line2 <> line3, st)]
     line2 = Color red'  $ Line [(0, -500), (0, 500)]
     line3 = Color blue' $ Pictures $ concatMap f [-500, -490 .. 500]
       where f n = [Line [(-500, n), (500, n)], Line [(n, -500), (n, 500)]]
+
+--
+-- | 複数のコマンドの繰り返しを１つのコマンドにする
+--
+repCommand :: Int               -- ^ 繰り返す回数
+           -> [Command]         -- ^ 繰り返すコマンド
+           -> Command
+repCommand n cLst = concat $ concat $ replicate n cLst

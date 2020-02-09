@@ -6,10 +6,10 @@ size  = 300
 level =   4
 
 main :: IO ()
-main = runTurtle initDisp white 500 [(st, lst)]
+main = runTurtle initDisp white 500 [(st, [lst])]
   where st = initST {point = (-size / 2, size / 2), mark = False}
 
-lst :: [Command]
+lst :: Command
 lst = repCommand 4 [crossStich level size, qr 90]
 
 
