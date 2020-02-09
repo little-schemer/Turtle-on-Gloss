@@ -1,13 +1,14 @@
 ------------------------------------------------------------
--- 再帰によるドラゴン曲線
+-- L-system による Dragon 曲線
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
+import Graphics.L_system
 
 
 level =  10 :: Int
-size  = 300 :: Float
+size  = 400 :: Float
 
 
 main :: IO ()
@@ -21,14 +22,9 @@ main = runTurtle window (greyN 0.3) 100 [(s, cmd) | s <- [st1, st2, st3, st4]]
     cmd = [dragonCurve level size]
 
 
--- | ドラゴン曲線
+-- | Dragon 曲線
 dragonCurve :: Int -> Float -> Command
-dragonCurve n len = dR n len
+dragonCurve n size = l_system axiom rule n (size / (sqrt 2)^n) 90
   where
-    dR 0 len = qf len
-    dR n len = concat [ql 45, dR n' len', qr 90, dL n' len', ql 45]
-      where (n', len') = (n - 1, len / sqrt 2)
-
-    dL 0 len = qf len
-    dL n len = concat [qr 45, dR n' len', ql 90, dL n' len', qr 45]
-      where (n', len') = (n - 1, len / sqrt 2)
+    axiom = "FX"
+    rule  = [('X', "X+YF+"), ('Y', "-FX-Y")]

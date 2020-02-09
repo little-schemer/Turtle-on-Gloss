@@ -20,7 +20,7 @@ main = runTurtle window white 100 [(st1, cmd), (st2, cmd), (st3, cmd)]
     cmd = [kochCurve level size]
 
 
--- | 再帰関数によるコッホ曲線
+-- | Koch 曲線
 kochCurve :: Int -> Float -> Command
 kochCurve 0 len = qf len
 kochCurve n len = concat [kh, ql 60, kh, qr 120, kh, ql 60, kh]
