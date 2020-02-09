@@ -47,8 +47,8 @@ executables:
     dependencies:
     - Turtle-on-Gloss
 
-  Koch:
-    main:                koch.hs
+  KochCurve:
+    main:                kochCurve.hs
     source-dirs:         sample
     ghc-options:
     - -threaded

@@ -11,7 +11,7 @@
      sample
      ├ circle.hs         -- 複数の円を同時に描く
      ├ dragonCurve.hs    -- ドラゴン曲線を描く
-     ├ koch.hs           -- Koch 曲線を描く
+     ├ kochCurve.hs      -- Koch 曲線を描く
      ├ spiral.hs         -- らせんを描く
      └ star.hs           -- 星を描く
 
@@ -23,7 +23,7 @@
 
 ** Sample の実行法
    + ~stack build~ を実行することで sample ディレクトリ以下にあるファイルがコン
-     パイルされ、 ~Circle, Spiral, Koch, DragonCurve, Star~ といったファイルが
+     パイルされ、 ~Circle, Spiral, KochCurve, DragonCurve, Star~ といったファイルが
      作られます。
    + ~stack exec Circle~ や ~stack exec Spiral~ を実行すると図形が描画されます。
 
