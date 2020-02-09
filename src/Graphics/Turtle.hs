@@ -29,7 +29,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 type Command           = [PrimitiveCommand]
-type Model             = (Picture, [(TurtleST, [PrimitiveCommand])])
+type Model             = (Picture, [(TurtleST, Command)])
 
 
 --------------------------------------------------
@@ -53,8 +53,14 @@ initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
 -- * 画像表示
 ---------------------------------------------------
 
--- | 亀を歩かせる
-runTurtle :: Display -> Color -> Int -> [(TurtleST, [Command])] -> IO ()
+--
+-- | runTurtle : 亀を歩かせる
+--
+runTurtle :: Display                 -- ^ 描画モード
+          -> Color                   -- ^ 背景色
+          -> Int                     -- ^ 1 秒あたりのステップ数
+          -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
+          -> IO ()
 runTurtle disp c step tds = simulate disp c step model drawModel simModel
   where
     model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
@@ -76,8 +82,13 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
         f (pic, ts) (st, cmd : cs) = (p <> pic, (st', cs) : ts)
           where (p, st') = cmd st
 
--- | 最終結果だけを表示
-dispPicture :: Display -> Color -> [(TurtleST, [Command])] -> IO ()
+--
+-- | dispPicture : 最終結果だけを表示
+--
+dispPicture :: Display                 -- ^ 描画モード
+            -> Color                   -- ^ 背景色
+            -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
+            -> IO ()
 dispPicture disp c tds = display disp c $ Pictures $ map f tds
   where
     f (st, cmds) = fst $ foldl g (Blank, st) (concat cmds)
@@ -249,40 +260,57 @@ repCommand n cLst = concat $ replicate n cLst
 -- * 図形を描くコマンド
 --------------------------------------------------
 
+----------------------------------------
 -- ** 正多角形
+----------------------------------------
 
+--
+-- | 一辺の長さが m の正 n 角形を左回りに描く
+--
+drawPolygonL :: Int             -- ^ 角数
+             -> Float           -- ^ 一辺の長さ
+             -> Command
+drawPolygonL = drawPolygon left
+
+--
+-- | 一辺の長さが m の正 n 角形を右回りに描く
+--
+drawPolygonR :: Int             -- ^ 角数
+             -> Float           -- ^ 一辺の長さ
+             -> Command
+drawPolygonR = drawPolygon right
+
+--
 -- | 正多角形を描く
+--
 drawPolygon :: (Float -> Command) -> Int -> Float -> Command
 drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
   where
     th = 360 / (fromIntegral n)
     cs = cmd (th / 2) : (repCommand n [forward m, cmd th])
 
--- | 一辺の長さが m の正 n 角形を左回りに描く
-drawPolygonL :: Int             -- ^ 角数
-             -> Float           -- ^ 一辺の長さ
-             -> Command
-drawPolygonL = drawPolygon left
 
--- | 一辺の長さが m の正 n 角形を右回りに描く
-drawPolygonR :: Int             -- ^ 角数
-             -> Float           -- ^ 一辺の長さ
-             -> Command
-drawPolygonR = drawPolygon right
-
-
+----------------------------------------
 -- ** 円
+----------------------------------------
 
+--
 -- | 亀の位置を中心に、半径 r の円を描く
-drawCircle :: Float -> Command
+--
+drawCircle :: Float             -- ^ 半径
+           -> Command
 drawCircle r = [drawCircle' r]
   where drawCircle' r st = (isDraw st $ Translate x y $ Circle r, st)
           where (x, y) = point st
 
 
+----------------------------------------
 -- ** 円弧
+----------------------------------------
 
+--
 -- | 中心角 th 半径 r の円弧を左回りに描く
+--
 drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
@@ -298,7 +326,9 @@ drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
         (ox, oy) = newPoint r (a + 90) (point st)
         st' = st {angle = a + th, point = newPoint r (a' + th) (ox, oy)}
 
+--
 -- | 中心角 th 半径 r の円弧を右回りに描く
+--
 drawArcR :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
@@ -319,7 +349,9 @@ drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
 -- * その他
 --------------------------------------------------
 
+--
 -- | グリッドを表示
+--
 grid :: Command
 grid = [\st -> (line1 <> line2 <> line3, st)]
   where

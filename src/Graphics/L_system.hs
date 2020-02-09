@@ -1,14 +1,16 @@
--- --------------------------------------------------------------------------------
--- -- |
--- --   Module      : L_system
--- --   Description : L-system
--- --   Copyright   : (c) little Haskeller, 2018
--- --   License     : BSD3
--- --
--- --   L-system
--- --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- |
+--   Module      : L_system
+--   Description : L-system
+--   Copyright   : (c) little Haskeller, 2018
+--   License     : BSD3
+--
+--   L-system
+--
+--------------------------------------------------------------------------------
 
 module Graphics.L_system where
+
 
 import           Data.Char
 import           Data.Maybe      (fromJust)
@@ -28,7 +30,7 @@ l_system :: String              -- ^ 初期文字列
          -> Int                 -- ^ 繰り返し回数
          -> Float               -- ^ 亀が 1 step で進む距離 n
          -> Float               -- ^ 亀が 1 step で旋回する角度 th
-         -> [Command]
+         -> Command
 l_system axiom rule c n th = comvToCmd n th cs
   where cs = makeString axiom rule c
 
@@ -61,8 +63,8 @@ makeString axiom rule n = makeString (concatMap f axiom) rule (n - 1)
 comvToCmd :: Float              -- ^ 亀が 1 step で進む距離 n
           -> Float              -- ^ 亀が 1 step で旋回する角度 th
           -> String             -- ^ makeString で作成された文字列
-          -> [Command]
-comvToCmd n th cs = map f cs
+          -> Command
+comvToCmd n th cs = concatMap f cs
   where
     f '+' = ql th
     f '-' = qr th
