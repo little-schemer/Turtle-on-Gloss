@@ -35,7 +35,6 @@ import           Graphics.Turtle
 -- >   ]      : 亀の状態をスタックからポップする。
 -- >   その他 : なにもしない。
 --
-
 l_system :: String              -- ^ 初期文字列
          -> [(Char, String)]    -- ^ 変換規則
          -> Int                 -- ^ 繰り返し回数
