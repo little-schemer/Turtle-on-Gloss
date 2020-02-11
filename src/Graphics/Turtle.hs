@@ -109,10 +109,9 @@ dispPicture :: Display                 -- ^ 描画モード
             -> Color                   -- ^ 背景色
             -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
             -> IO ()
-dispPicture disp c tds = display disp c $ Pictures $ map f tds
-  where
-    f (st, cmds) = fst $ foldl g (Blank, st) (concat cmds)
-    g (pic, st) pCmd = let (pic', st') = pCmd st in (pic <> pic', st')
+dispPicture disp c tds = display disp c $ Pictures $ map makePicture tds
+  where makePicture (st, cmds) = fst $ foldl f (Blank, st) (concat cmds)
+          where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
 
 
 
