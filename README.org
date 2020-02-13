@@ -10,10 +10,14 @@
 
      sample
      ├ circle.hs         -- 複数の円を同時に描く
-     ├ dragonCurve.hs    -- ドラゴン曲線を描く
+     ├ dragonCurve.hs    -- dragon 曲線を描く
      ├ kochCurve.hs      -- Koch 曲線を描く
-     ├ spiral.hs         -- らせんを描く
      └ star.hs           -- 星を描く
+
+     sample / L-system
+     ├ dragonCurveL.hs   -- L-system で dragon 曲線を描く
+     └ kochCurveL.hs     -- L-system で Koch 曲線を描く
+
 
      src / Graphics
            ├ Turtle.hs    -- Turtle Graphics 本体
@@ -23,9 +27,10 @@
 
 ** Sample の実行法
    + ~stack build~ を実行することで sample ディレクトリ以下にあるファイルがコン
-     パイルされ、 ~Circle, Spiral, KochCurve, DragonCurve, Star~ といったファイルが
-     作られます。
-   + ~stack exec Circle~ や ~stack exec Spiral~ を実行すると図形が描画されます。
+     パイルされ、 ~Circle, DragonCurve, KochCurve, Star, DragonCurveL,
+     KochCurveL~ といったファイルが作られます。
+   + ~stack exec Circle~ や ~stack exec DragonCurveL~ を実行すると図形が描画され
+     ます。
 
 
 ** Turtle Graphics の使い方
