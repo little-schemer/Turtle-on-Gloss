@@ -45,8 +45,9 @@ l_system axiom rule c n th = comvToCmd n th cs
   where
     cs = makeString axiom rule c
 
-    makeString axiom _    0 = axiom
-    makeString axiom rule n = makeString (concatMap f axiom) rule (n - 1)
+    makeString axiom rule n
+      | n < 1     = axiom
+      | otherwise = makeString (concatMap f axiom) rule (n - 1)
       where f c = if x == Nothing then [c] else fromJust x
               where x = lookup c rule
 
