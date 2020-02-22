@@ -99,7 +99,7 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
     simModel _ _ (pic, ts) = foldl f (pic, []) ts
       where
         f model (_, [])            = model
-        f (pic, ts) (st, cmd : cs) = (p <> pic, (st', cs) : ts)
+        f (pic, ts) (st, cmd : cs) = (pic <> p, (st', cs) : ts)
           where (p, st') = cmd st
 
 --
@@ -367,14 +367,15 @@ drawArcR th r
 -- | グリッドを表示する
 --
 grid :: Command
-grid = [\st -> (line1 <> line2 <> line3, st)]
+grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
   where
-    red'  = makeColorI 200 80 80 200
-    blue' = makeColorI 150 150 200 150
-    line1 = Color red'  $ Line [(-500, 0), (500, 0)]
-    line2 = Color red'  $ Line [(0, -500), (0, 500)]
-    line3 = Color blue' $ Pictures $ concatMap f [-500, -490 .. 500]
-      where f n = [Line [(-500, n), (500, n)], Line [(n, -500), (n, 500)]]
+    grid' lst = Pictures $ concat [[horizontal n, vertical n] | n <- lst]
+      where
+        horizontal n = Line [(-500, n), (500, n)]
+        vertical n   = Line [(n, -500), (n, 500)]
+    redLine   = Color (makeColorI 250 100 100 160) $ grid' [0]
+    blueLine1 = Color (makeColorI 100 100 250  80) $ grid' [-500, -400 .. 500]
+    blueLine2 = Color (makeColorI 100 100 250  50) $ grid' [-500, -490 .. 500]
 
 --
 -- | 複数のコマンドの繰り返しを１つのコマンドにする
@@ -383,3 +384,9 @@ repCommand :: Int               -- ^ 繰り返す回数
            -> [Command]         -- ^ 繰り返すコマンド
            -> Command
 repCommand n cLst = concat $ concat $ replicate n cLst
+
+--
+-- | 与えられた Picture を表示する
+--
+makeCommand :: Picture -> Command
+makeCommand pic = [\st -> (pic, st)]
