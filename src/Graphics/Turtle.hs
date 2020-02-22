@@ -382,9 +382,9 @@ grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
       where
         horizontal n = Line [(-500, n), (500, n)]
         vertical n   = Line [(n, -500), (n, 500)]
-    redLine   = Color (makeColorI 250 100 100 160) $ grid' [0]
-    blueLine1 = Color (makeColorI 100 100 250  80) $ grid' [-500, -400 .. 500]
-    blueLine2 = Color (makeColorI 100 100 250  50) $ grid' [-500, -490 .. 500]
+    redLine   = Color (makeColor 1.0 0.5 0.5 0.6) $ grid' [0]
+    blueLine1 = Color (makeColor 0.5 0.5 1.0 0.3) $ grid' [-500, -400 .. 500]
+    blueLine2 = Color (makeColor 0.5 0.5 1.0 0.2) $ grid' [-500, -490 .. 500]
 
 --
 -- | pen の色を更新する

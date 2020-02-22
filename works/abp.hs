@@ -9,7 +9,7 @@ import Graphics.L_system
 
 
 main :: IO ()
-main = runTurtle initDisp white 500 [tData06 0]
+main = runTurtle initDisp white 500 [tData08 1]
 
 
 -- P.002
@@ -78,27 +78,35 @@ tData05 n = (st, [cmds])
 -- Figure 1.9: A sequence of Koch curves obtained by successive modification of
 -- the production successor
 
--- a
+-- a (n = 4)
 tData06 :: Int -> (TurtleST, [Command])
-tData06 n = (st, [grid, cmds])
+tData06 n = (st, [lt (fromIntegral n * 18.4), cmds])
   where
-    st   = initST {point = (0, 0), mark = False}
-    cmds = l_system initiator generator n (300 / 3^n) 90
+    st   = initST {point = (-150, 150), mark = False}
+    cmds = l_system initiator generator n (300 / (sqrt 10)^n) 90
       where
         initiator = "F-F-F-F"
         generator = [('F', "FF-F-F-F-F-F+F")]
 
--- b
-cmd07 = l_system initiator generator 4 20 90
+-- b (n = 4)
+tData07 :: Int -> (TurtleST, [Command])
+tData07 n = (st, [cmds])
   where
-    initiator = "F-F-F-F"
-    generator = [('F', "FF-F-F-F-FF")]
+    st   = initST {point = (-200, 200), mark = False}
+    cmds = l_system initiator generator n (400 / 3^n) 90
+      where
+        initiator = "F-F-F-F"
+        generator = [('F', "FF-F-F-F-FF")]
 
--- c
-cmd08 = l_system initiator generator 4 20 90
+-- c (n = 4)
+tData08 :: Int -> (TurtleST, [Command])
+tData08 n = (st, [grid, cmds])
   where
-    initiator = "F-F-F-F"
-    generator = [('F', "FF-F+F-F-FF")]
+    st   = initST {mark = False}
+    cmds = l_system initiator generator n (100) 90
+      where
+        initiator = "F" -- "F-F-F-F"
+        generator = [('F', "FF-F+F-F-FF")]
 
 -- d
 cmd09 = l_system initiator generator 4 20 90
