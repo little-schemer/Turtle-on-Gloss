@@ -58,7 +58,7 @@ executables:
     - Turtle-on-Gloss
 
   KochCurve:
-    main:                kochcurve.hs
+    main:                kochCurve.hs
     source-dirs:         sample
     ghc-options:
     - -threaded

@@ -314,8 +314,17 @@ drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
 drawCircle :: Float             -- ^ 半径
            -> Command
 drawCircle r = [drawCircle' r]
-  where drawCircle' r st = (isDraw st $ Translate x y $ Circle r, st)
-          where (x, y) = point st
+  where drawCircle' r st = (Color c $ Translate x y $ Circle r, st)
+          where ((x, y), c) = (point st, penColor st)
+
+--
+-- | 亀の位置を中心に、半径 r の solid な円を描く
+--
+drawCircleSolid :: Float        -- ^ 半径
+           -> Command
+drawCircleSolid r = [drawCircleSolid' r]
+  where drawCircleSolid' r st = (Color c $ Translate x y $ circleSolid r, st)
+          where ((x, y), c) = (point st, penColor st)
 
 
 
@@ -378,15 +387,24 @@ grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
     blueLine2 = Color (makeColorI 100 100 250  50) $ grid' [-500, -490 .. 500]
 
 --
+-- | pen の色を更新する
+--
+updateColor :: Float            -- ^ 赤成分の増分
+            -> Float            -- ^ 緑成分の増分
+            -> Float            -- ^ 青成分の増分
+            -> Float            -- ^ アルファ成分の増分
+            -> Command
+updateColor dr dg db da = [updateColor']
+  where
+    updateColor' st = (Blank, st {penColor = newColor})
+      where
+        (r, g, b, a) = rgbaOfColor $ penColor st
+        newColor = makeColor (r + dr) (g + dg) (b + db) (a + da)
+
+--
 -- | 複数のコマンドの繰り返しを１つのコマンドにする
 --
 repCommand :: Int               -- ^ 繰り返す回数
            -> [Command]         -- ^ 繰り返すコマンド
            -> Command
 repCommand n cLst = concat $ concat $ replicate n cLst
-
---
--- | 与えられた Picture を表示する
---
-makeCommand :: Picture -> Command
-makeCommand pic = [\st -> (pic, st)]
