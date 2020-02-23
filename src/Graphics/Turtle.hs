@@ -389,17 +389,17 @@ grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
 --
 -- | pen の色を更新する
 --
-updateColor :: Float            -- ^ 赤成分の増分
-            -> Float            -- ^ 緑成分の増分
-            -> Float            -- ^ 青成分の増分
-            -> Float            -- ^ アルファ成分の増分
+updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
+            -> (Float -> Float) -- ^ 緑成分を変化させる関数
+            -> (Float -> Float) -- ^ 青成分を変化させる関数
+            -> (Float -> Float) -- ^ アルファ成分を変化させる関数
             -> Command
-updateColor dr dg db da = [updateColor']
+updateColor fr fg fb fa = [updateColor']
   where
     updateColor' st = (Blank, st {penColor = newColor})
       where
         (r, g, b, a) = rgbaOfColor $ penColor st
-        newColor = makeColor (r + dr) (g + dg) (b + db) (a + da)
+        newColor = makeColor (fr r) (fg g) (fb b) (fa a)
 
 --
 -- | 複数のコマンドの繰り返しを１つのコマンドにする
