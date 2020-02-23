@@ -37,8 +37,8 @@ executables:
     dependencies:
     - Turtle-on-Gloss
 
-  Circle:
-    main:                circle.hs
+  CircleDance:
+    main:                circleDance.hs
     source-dirs:         sample
     ghc-options:
     - -threaded
