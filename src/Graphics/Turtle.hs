@@ -99,8 +99,8 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
     simModel _ _ (pic, ts) = foldl f (pic, []) ts
       where
         f model (_, [])            = model
-        f (pic, ts) (st, cmd : cs) = (pic <> p, (st', cs) : ts)
-          where (p, st') = cmd st
+        f (pic, ts) (st, cmd : cs) = (pic <> pic', (st', cs) : ts)
+          where (pic', st') = cmd st
 
 --
 -- | 最終結果だけを表示する
