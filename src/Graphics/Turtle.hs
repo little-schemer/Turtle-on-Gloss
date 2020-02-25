@@ -187,6 +187,7 @@ quickLeft th = [turn th]
 
 -- | 高速に右旋回する
 quickRight :: Float -> Command
+
 quickRight th = [turn (-th)]
 
 -- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
@@ -395,8 +396,8 @@ updateAngle f = [\st -> (Blank, st {angle = f (angle st)})]
 --
 -- | 位置を更新する
 --
-updatePosition :: (Point -> Point) -> Command
-updatePosition f = [\st -> toPoint (f $ point st) st]
+updatePoint :: (Point -> Point) -> Command
+updatePoint f = [\st -> toPoint (f $ point st) st]
 
 --
 -- | pen の色を更新する
@@ -409,6 +410,18 @@ updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
 updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
   where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
           where (r, g, b, a) = rgbaOfColor $ penColor st
+
+--
+-- | 関数のグラフを描く
+--
+graph :: (Float -> Float)       -- ^ 関数
+      -> [Float]                -- ^ 値域
+      -> Color                  -- ^ グラフの色
+      -> Command
+graph func range c = concat $ cmd1 ++ cmd2
+  where
+    cmd1 = let x = head range in [pu, goto (x, func x), pd]
+    cmd2 = setColor c : [goto (x, func x) | x <- range]
 
 --
 -- | 複数のコマンドの繰り返しを１つのコマンドにする

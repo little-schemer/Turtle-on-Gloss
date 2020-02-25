@@ -11,7 +11,7 @@ func :: Float -> Point
 func = hypotrochoid 220 82 63
 
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 1000]
+rotationAngles = [0, 0.1 .. 300]
 
 main :: IO ()
 main = runTurtle initDisp white 100 [tData]

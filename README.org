@@ -12,6 +12,7 @@
      ├ circleDance.hs    -- 複数の円を同時に描く
      ├ dragonCurve.hs    -- dragon 曲線を描く
      ├ kochCurve.hs      -- Koch 曲線を描く
+     ├ graph.hs          -- 関数のグラフを描く
      └ star.hs           -- 星を描く
 
      sample / L-system
@@ -26,7 +27,7 @@
 
 ** Sample の実行法
    + ~stack build~ を実行することで sample ディレクトリ以下にあるファイルがコン
-     パイルされ、 ~CircleDance, DragonCurve, KochCurve, Star, DragonCurveL,
+     パイルされ、 ~CircleDance, DragonCurve, KochCurve, Graph, Star, DragonCurveL,
      KochCurveL~ といったファイルが作られます。
    + ~stack exec CircleDance~ や ~stack exec DragonCurveL~ を実行すると図形が
      描画されます。
@@ -128,4 +129,7 @@
    | drawArcL th r           | --     | 中心角 th , 半径 r の円弧を左回りに描く。           |
    | drawArcR th r           | --     | 中心角 th , 半径 r の円弧を右回りに描く。           |
    | grid                    | --     | グリッドを表示する。( X 軸と Y 軸は赤、その他は青 ) |
-   | updataColor fr fg fb fa | --     | ペンの色の成分を関数に従って更新する。                                                            |
+   | updateAngle func        | --     | 亀の向きを関数に従って更新する。                    |
+   | updatePoint func        | --     | 亀の位置を関数に従って更新する。                    |
+   | updateColor fr fg fb fa | --     | ペンの色の成分を関数に従って更新する。              |
+   | graph func range color  | --     | 関数のグラフを書く。                                |
