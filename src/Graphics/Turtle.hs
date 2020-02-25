@@ -187,7 +187,6 @@ quickLeft th = [turn th]
 
 -- | 高速に右旋回する
 quickRight :: Float -> Command
-
 quickRight th = [turn (-th)]
 
 -- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
