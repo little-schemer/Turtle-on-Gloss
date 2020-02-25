@@ -406,12 +406,9 @@ updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
             -> (Float -> Float) -- ^ 青成分を変化させる関数
             -> (Float -> Float) -- ^ アルファ成分を変化させる関数
             -> Command
-updateColor fr fg fb fa = [updateColor']
-  where
-    updateColor' st = (Blank, st {penColor = newColor})
-      where
-        (r, g, b, a) = rgbaOfColor $ penColor st
-        newColor = makeColor (fr r) (fg g) (fb b) (fa a)
+updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
+  where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
+          where (r, g, b, a) = rgbaOfColor $ penColor st
 
 --
 -- | 複数のコマンドの繰り返しを１つのコマンドにする
