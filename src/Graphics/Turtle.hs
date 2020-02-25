@@ -387,6 +387,18 @@ grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
     blueLine2 = Color (makeColor 0.5 0.5 1.0 0.2) $ grid' [-500, -490 .. 500]
 
 --
+-- | 亀の向きを更新する
+--
+updateAngle :: (Float -> Float) -> Command
+updateAngle f = [\st -> (Blank, st {angle = f (angle st)})]
+
+--
+-- | 位置を更新する
+--
+updatePosition :: (Point -> Point) -> Command
+updatePosition f = [\st -> toPoint (f $ point st) st]
+
+--
 -- | pen の色を更新する
 --
 updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
