@@ -1,5 +1,14 @@
+------------------------------------------------------------
+-- |
+--   Module    :
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
+------------------------------------------------------------
+
 import           Graphics.Gloss
 import           Graphics.Turtle
+
 
 main :: IO ()
 main = runTurtle initDisp white 20 [(st, lst)]

@@ -1,28 +1,33 @@
 ------------------------------------------------------------
--- サイクロイド
+-- |
+--   Module    : Cycloid
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
 ------------------------------------------------------------
-
 
 import           Graphics.Gloss
 import           Graphics.Turtle
 
 
+-- | 外サイクロイドまたは内サイクロイド
 func :: Float -> Point
 func = epicycloid 100 85
 
+-- | 回転角のリスト
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 1000]
+rotationAngles = [0, 0.1 .. 300]
+
 
 main :: IO ()
-main = runTurtle initDisp white 100 [tData]
-
-tData :: (TurtleST, [Command])
-tData = (st, map (\th -> goto (func th)) rotationAngles)
-  where st = initST {point = func 0, mark = False}
+main = runTurtle initDisp white 100 [(st, cmds)]
+  where
+    st   = initST {point = func 0, mark = False}
+    cmds = [goto $ func th | th <- rotationAngles]
 
 
 --
--- 外サイクロイド epicycloid
+-- | 外サイクロイド epicycloid
 --
 --  + rc : 定円の半径
 --  + rm : 動円の半径
@@ -37,7 +42,7 @@ epicycloid rc rm th = (f cos, f sin)
           where r' = rc + rm
 
 --
--- 内サイクロイド hypocycloid
+-- | 内サイクロイド hypocycloid
 --
 --  + rc : 定円の半径
 --  + rm : 動円の半径

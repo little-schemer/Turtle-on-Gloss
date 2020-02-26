@@ -1,19 +1,21 @@
-module Main where
-
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 main :: IO ()
-main = runTurtle window white 5 [ (initST {angle =  0, penColor = red}, hex) ]
-  where window = InWindow "test" (800, 600) (10, 10)
+main = runTurtle initDisp black 100 [(st, [flower 100])]
+  where st = initST {point = (0, -250), angle = 90}
 
-hex :: [Command]
-hex = take 20 $ cycle [ setColor blue
-                      , forward 100
-                      , drawCircleSolid 100
-                      , left 60
-                      , setColor red
-                      , forward 100
-                      , drawCircleSolid 100
-                      , left 60
-                      ]
+
+flower :: Float -> Command
+flower n = concat [ setColor green
+                  , fd n, push, lt 60, leaf n, pop
+                  , fd n, push, rt 60, leaf n, pop
+                  , fd n, pu, fd n, pd, flower' n
+                  ]
+  where
+    flower' n = concat [setColor rose, cmd (n / 2), setColor yellow, cmd (n / 6)]
+      where cmd n = repCommand 12 [lt 30, drawArcL 360 n]
+
+    leaf n = concat [ setColor green, fd (n * 1.5), rt 135
+                    , drawArcR 90 n , rt 90, drawArcR 90 n
+                    ]

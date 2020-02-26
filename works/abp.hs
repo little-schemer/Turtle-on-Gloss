@@ -1,5 +1,11 @@
 --------------------------------------------------------------------------------
--- The Algorithmic Beauty of Plants
+-- |
+--   Module    : Abp
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
+-- 『 The Algorithmic Beauty of Plants 』の Figure
+--
 --------------------------------------------------------------------------------
 
 

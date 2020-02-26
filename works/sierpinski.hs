@@ -1,5 +1,14 @@
 ------------------------------------------------------------
--- 再帰による Sierpinski の三角形
+-- |
+--   Module    : Sierpinski
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
+------------------------------------------------------------
+
+
+------------------------------------------------------------
+
 ------------------------------------------------------------
 
 import           Graphics.Gloss
@@ -10,12 +19,7 @@ level =   8 :: Int
 size  = 500 :: Float
 
 
-main :: IO ()
-main = runTurtle initDisp white 500 [(st, [sierpinski level size])]
-  where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}
-
-
--- Sierpinski の三角形
+-- | 再帰による Sierpinski の三角形
 sierpinski :: Int -> Float -> Command
 sierpinski n len = if odd n
                    then concat [ql 60, sierA n len]
@@ -36,3 +40,8 @@ sierpinski n len = if odd n
                          , ql 60
                          , sierA (n - 1) (len / 2)
                          ]
+
+
+main :: IO ()
+main = runTurtle initDisp white 500 [(st, [sierpinski level size])]
+  where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}

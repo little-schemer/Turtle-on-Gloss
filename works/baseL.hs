@@ -1,3 +1,11 @@
+------------------------------------------------------------
+-- |
+--   Module    :
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
+------------------------------------------------------------
+
 import Graphics.Gloss
 import Graphics.Turtle
 import Graphics.L_system

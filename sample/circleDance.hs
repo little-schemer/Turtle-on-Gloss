@@ -1,33 +1,35 @@
 ------------------------------------------------------------
--- 色を変化させながら、複数の円を同時に描く
+-- |
+--   Module    : CircleDance
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
 ------------------------------------------------------------
 
 import Graphics.Gloss
 import Graphics.Turtle
 
 
-main :: IO ()
-main = runTurtle windows black 50 tLst
-  where windows = InWindow "Circle Dance" (800, 600) (10, 10)
-
-cols :: [Command]
-cols = [setColor c | c <- cycle [col1, col2, col3, col4, col5, col6]]
-  where
-    col1 = makeColor 0.02 0.02 0.10 1
-    col2 = makeColor 0.02 0.10 0.10 1
-    col3 = makeColor 0.02 0.10 0.02 1
-    col4 = makeColor 0.10 0.10 0.02 1
-    col5 = makeColor 0.10 0.02 0.02 1
-    col6 = makeColor 0.10 0.02 0.10 1
-
-angles :: [Command]
-angles = [setAngle th | th <- [30, 90 .. 360]]
-
+-- | 色を変化させながら、複数の円を同時に描く
 circleDance :: Command
 circleDance = repCommand 6 [circle', lt 10]
   where
     circle' = repCommand 36 [drawArcL 10 100, updateColor f f f id]
     f x = x * 1.015
 
-tLst :: [(TurtleST, [Command])]
-tLst = [(initST, [a, b] ++ [circleDance]) | (a, b) <- zip cols angles]
+colorAndAngle :: [(Color, Float)]
+colorAndAngle = zip [c1, c2, c3, c4, c5, c6] [30, 90 .. 360]
+  where
+    c1 = makeColor 0.02 0.02 0.10 1
+    c2 = makeColor 0.02 0.10 0.10 1
+    c3 = makeColor 0.02 0.10 0.02 1
+    c4 = makeColor 0.10 0.10 0.02 1
+    c5 = makeColor 0.10 0.02 0.02 1
+    c6 = makeColor 0.10 0.02 0.10 1
+
+
+main :: IO ()
+main = runTurtle windows black 50 (zip (repeat initST) cmds)
+  where
+    windows = InWindow "Circle Dance" (800, 600) (10, 10)
+    cmds = [[setColor a, setAngle b, circleDance] | (a, b) <- colorAndAngle]

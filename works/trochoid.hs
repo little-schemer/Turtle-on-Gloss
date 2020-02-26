@@ -1,28 +1,33 @@
 ------------------------------------------------------------
--- トロコイド
+-- |
+--   Module    : Trochoid
+--   Copyright : (c) little Haskeller, 2020
+--   License   : BSD3
+--
 ------------------------------------------------------------
-
 
 import           Graphics.Gloss
 import           Graphics.Turtle
 
 
+-- | 外トロコイドまたは内トロコイド
 func :: Float -> Point
-func = hypotrochoid 220 82 63
+func = hypotrochoid 220 85 60
 
+-- | 回転角のリスト
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 300]
+rotationAngles = [0, 0.1 .. 1000]
+
 
 main :: IO ()
-main = runTurtle initDisp white 100 [tData]
-
-tData :: (TurtleST, [Command])
-tData = (st, map (\th -> goto (func th)) rotationAngles)
-  where st = initST {point = func 0, mark = False}
+main = runTurtle initDisp white 100 [(st, cmds)]
+  where
+    st   = initST {point = func 0, mark = False}
+    cmds = [goto $ func th | th <- rotationAngles]
 
 
 --
--- 外トロコイド epitrochoid
+-- | 外トロコイド epitrochoid
 --
 --  + rc : 定円の半径
 --  + rm : 動円の半径
@@ -39,7 +44,7 @@ epitrochoid rc rm rd th = (x, y)
     y = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
 
 --
--- 内トロコイド hypotrochoid
+-- | 内トロコイド hypotrochoid
 --
 --  + rc : 定円の半径
 --  + rm : 動円の半径
