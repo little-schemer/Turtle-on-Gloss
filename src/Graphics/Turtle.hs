@@ -373,7 +373,7 @@ drawArcR th r
 ------------------------------------------------------------
 
 --
--- | グリッドを表示する
+-- | 方眼を表示する
 --
 grid :: Command
 grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
