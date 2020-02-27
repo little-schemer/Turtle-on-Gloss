@@ -1,20 +1,12 @@
 ------------------------------------------------------------
--- |
---   Module    : Sierpinski
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
-------------------------------------------------------------
-
-
-------------------------------------------------------------
-
+-- | Sierpinski の三角形 (再帰版)
 ------------------------------------------------------------
 
 import           Graphics.Gloss
 import           Graphics.Turtle
 
 
+-- | パラメータ
 level =   8 :: Int
 size  = 500 :: Float
 
@@ -42,6 +34,7 @@ sierpinski n len = if odd n
                          ]
 
 
+-- | Main
 main :: IO ()
 main = runTurtle initDisp white 500 [(st, [sierpinski level size])]
   where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}

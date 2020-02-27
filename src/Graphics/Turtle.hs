@@ -19,6 +19,7 @@ import           Graphics.Gloss.Data.ViewPort
 import           Graphics.Gloss.Geometry.Angle
 
 
+-- | 亀の状態
 data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , point    :: Point -- ^ 亀の位置
                          , penColor :: Color -- ^ ペンの色
@@ -26,6 +27,7 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , mark     :: Bool  -- ^ 亀のマーク
                          , stack    :: [(Float, Point, Color, Bool, Bool)]
                          } deriving Show
+
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 type Command           = [PrimitiveCommand]
@@ -40,7 +42,7 @@ type Model             = (Picture, [(TurtleST, Command)])
 --
 -- | TurtleST の初期値を設定する
 --
--- > 《初期値》l
+-- > 《初期値》
 -- >   + angle    = 0
 -- >   + point    = (0, 0)
 -- >   + penColor = black

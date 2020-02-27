@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : KochCurveL
---   Copyright : (c) little Haskeller
---   License   : BSD3
---
+-- | Koch 曲線 (L-system 版)
 ------------------------------------------------------------
 
 import Graphics.Gloss
@@ -11,6 +7,7 @@ import Graphics.Turtle
 import Graphics.L_system
 
 
+-- | パラメータ
 level =   4 :: Int
 size  = 400 :: Float
 
@@ -20,6 +17,7 @@ kochCurve :: Int -> Float -> Command
 kochCurve n size = l_system "F--F--F" [('F', "F+F--F+F")] n (size / 3^n) 60
 
 
+-- | Main
 main :: IO ()
 main = runTurtle initDisp white 100 [(st1, cmd), (st2, cmd), (st3, cmd)]
   where

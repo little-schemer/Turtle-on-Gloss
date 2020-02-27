@@ -1,30 +1,27 @@
 ------------------------------------------------------------
--- |
---   Module    : Graph
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | 関数のグラフを描く
 ------------------------------------------------------------
 
 import Graphics.Gloss
 import Graphics.Turtle
 
 
+-- | 値域
 range :: [Float]
 range = [-400.0, -399.5 .. 400.0]
 
-
--- | 二次関数
+-- | 二次関数の例
 graph1 :: Command
 graph1 = graph f range rose
   where f x = 1 / 50 * x ^ 2 - 2 * x - 100
 
--- | 一次関数
+-- | 一次関数の例
 graph2 :: Command
 graph2 = graph f range azure
   where f x = (-1) / 3 * x - 50
 
 
+-- Main
 main :: IO ()
 main = runTurtle disp white 500 [tData0, tData1, tData2]
   where

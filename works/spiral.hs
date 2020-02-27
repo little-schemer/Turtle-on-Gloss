@@ -1,15 +1,12 @@
 ------------------------------------------------------------
--- |
---   Module    : Spiral
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | 色を変えながら螺旋を描く
 ------------------------------------------------------------
 
 import Graphics.Gloss
 import Graphics.Turtle
 
 
+-- | 螺旋を描く
 spiral :: Int -> [Command]
 spiral n = concat $ take n [[fd len, updateColor f1 f1 id f2, qr 92] | len <- nLst]
   where
@@ -18,6 +15,7 @@ spiral n = concat $ take n [[fd len, updateColor f1 f1 id f2, qr 92] | len <- nL
     nLst = iterate (* 1.02) 2.0
 
 
+-- | Main
 main :: IO ()
 main = runTurtle window black 200 [(st, spiral 300)]
   where

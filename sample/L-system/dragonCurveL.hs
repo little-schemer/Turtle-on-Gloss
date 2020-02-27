@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : DragonCurveL
---   Copyright : (c) little Haskeller
---   License   : BSD3
---
+-- | Dragon 曲線 (L-system 版)
 ------------------------------------------------------------
 
 import Graphics.Gloss
@@ -11,6 +7,7 @@ import Graphics.Turtle
 import Graphics.L_system
 
 
+-- | パラメータ
 level =  10 :: Int
 size  = 400 :: Float
 
@@ -23,6 +20,7 @@ dragonCurve n size = l_system axiom rule n (size / (sqrt 2)^n) 90
     rule  = [('X', "X+YF+"), ('Y', "-FX-Y")]
 
 
+-- | Main
 main :: IO ()
 main = runTurtle window (greyN 0.3) 100 [(s, cmd) | s <- [st1, st2, st3, st4]]
   where

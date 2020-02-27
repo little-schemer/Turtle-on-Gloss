@@ -1,15 +1,12 @@
 ------------------------------------------------------------
--- |
---   Module    : DragonCurve.hs
---   Copyright : (c) little Haskeller
---   License   : BSD3
---
+-- | Dragon 曲線 (再帰版)
 ------------------------------------------------------------
 
 import Graphics.Gloss
 import Graphics.Turtle
 
 
+-- | パラメータ
 level =  10 :: Int
 size  = 300 :: Float
 
@@ -27,6 +24,7 @@ dragonCurve n len = dR n len
       where (n', len') = (n - 1, len / sqrt 2)
 
 
+-- | Main
 main :: IO ()
 main = runTurtle window (greyN 0.3) 100 [(s, cmd) | s <- [st1, st2, st3, st4]]
   where

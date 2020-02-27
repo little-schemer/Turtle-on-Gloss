@@ -1,15 +1,12 @@
 ------------------------------------------------------------
--- |
---   Module    : KochCurve
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | Koch 曲線 (再帰版)
 ------------------------------------------------------------
 
 import Graphics.Gloss
 import Graphics.Turtle
 
 
+-- | パラメータ
 level =   4 :: Int
 size  = 400 :: Float
 
@@ -21,6 +18,7 @@ kochCurve n len = concat [kh, ql 60, kh, qr 120, kh, ql 60, kh]
   where kh = kochCurve (n - 1) (len / 3)
 
 
+-- | Main
 main :: IO ()
 main = runTurtle window white 100 [(s, cmd) | s <- [st1, st2, st3]]
   where

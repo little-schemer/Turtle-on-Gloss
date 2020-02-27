@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : Star
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | 星型を描く
 ------------------------------------------------------------
 
 import           Graphics.Gloss
@@ -15,6 +11,7 @@ star :: Float -> Command
 star n = repCommand 5 [fd n, lt 72, fd n, rt 144]
 
 
+-- Main
 main :: IO ()
 main = runTurtle window white 30 [(initST { point = (-100, -100) }, cmdLst)]
   where

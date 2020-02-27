@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : CircleDance
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | Circle Dance
 ------------------------------------------------------------
 
 import Graphics.Gloss
@@ -17,6 +13,8 @@ circleDance = repCommand 6 [circle', lt 10]
     circle' = repCommand 36 [drawArcL 10 100, updateColor f f f id]
     f x = x * 1.015
 
+
+-- | 色と初期角度の設定
 colorAndAngle :: [(Color, Float)]
 colorAndAngle = zip [c1, c2, c3, c4, c5, c6] [30, 90 .. 360]
   where
@@ -28,6 +26,7 @@ colorAndAngle = zip [c1, c2, c3, c4, c5, c6] [30, 90 .. 360]
     c6 = makeColor 0.10 0.02 0.10 1
 
 
+-- | Main
 main :: IO ()
 main = runTurtle windows black 50 (zip (repeat initST) cmds)
   where

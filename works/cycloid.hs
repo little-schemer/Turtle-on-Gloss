@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : Cycloid
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | サイクロイド曲線を描く
 ------------------------------------------------------------
 
 import           Graphics.Gloss
@@ -17,13 +13,6 @@ func = epicycloid 100 85
 -- | 回転角のリスト
 rotationAngles :: [Float]
 rotationAngles = [0, 0.1 .. 300]
-
-
-main :: IO ()
-main = runTurtle initDisp white 100 [(st, cmds)]
-  where
-    st   = initST {point = func 0, mark = False}
-    cmds = [goto $ func th | th <- rotationAngles]
 
 
 --
@@ -41,6 +30,7 @@ epicycloid rc rm th = (f cos, f sin)
   where f func = r' * func th - rm * func (r' / rm * th)
           where r' = rc + rm
 
+
 --
 -- | 内サイクロイド hypocycloid
 --
@@ -55,3 +45,11 @@ hypocycloid :: Float -> Float -> Float -> Point
 hypocycloid rc rm th = (f cos, f sin)
   where f func = dr * func th + rm * func (dr / rm * th)
           where dr = rc - rm
+
+
+-- Main
+main :: IO ()
+main = runTurtle initDisp white 100 [(st, cmds)]
+  where
+    st   = initST {point = func 0, mark = False}
+    cmds = [goto $ func th | th <- rotationAngles]

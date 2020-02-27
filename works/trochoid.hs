@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : Trochoid
---   Copyright : (c) little Haskeller, 2020
---   License   : BSD3
---
+-- | トロコイド曲線を描く
 ------------------------------------------------------------
 
 import           Graphics.Gloss
@@ -17,13 +13,6 @@ func = hypotrochoid 220 85 60
 -- | 回転角のリスト
 rotationAngles :: [Float]
 rotationAngles = [0, 0.1 .. 1000]
-
-
-main :: IO ()
-main = runTurtle initDisp white 100 [(st, cmds)]
-  where
-    st   = initST {point = func 0, mark = False}
-    cmds = [goto $ func th | th <- rotationAngles]
 
 
 --
@@ -43,6 +32,7 @@ epitrochoid rc rm rd th = (x, y)
     x = (rc + rm) * cos th - rd * cos ((rc + rm) / rm * th)
     y = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
 
+
 --
 -- | 内トロコイド hypotrochoid
 --
@@ -59,3 +49,11 @@ hypotrochoid rc rm rd th = (x, y)
   where
     x = (rc - rm) * cos th + rd * cos ((rc - rm) / rm * th)
     y = (rc - rm) * sin th - rd * sin ((rc - rm) / rm * th)
+
+
+-- | Main
+main :: IO ()
+main = runTurtle initDisp white 100 [(st, cmds)]
+  where
+    st   = initST {point = func 0, mark = False}
+    cmds = [goto $ func th | th <- rotationAngles]

@@ -45,12 +45,14 @@ l_system axiom rule c n th = comvToCmd n th cs
   where
     cs = makeString axiom rule c
 
+    -- | L-system のルールに従って文字列を作る
     makeString axiom rule n
       | n < 1     = axiom
       | otherwise = makeString (concatMap f axiom) rule (n - 1)
       where f c = if x == Nothing then [c] else fromJust x
               where x = lookup c rule
 
+    -- | 文字列を Turtle Graphics の Command に変換する
     comvToCmd n th cs = concatMap f cs
       where
         f '+' = ql th

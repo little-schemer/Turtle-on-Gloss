@@ -1,9 +1,5 @@
 ------------------------------------------------------------
--- |
---   Module    : FanFlower
---   Copyright : (c) little Haskeller
---   License   : BSD3
---
+-- | Fan Flowar
 ------------------------------------------------------------
 
 import           Graphics.Gloss
@@ -17,6 +13,7 @@ fanFlower = repCommand 12 [fan, qf 250]
   where fan = repCommand 75 [qf 100, bk 100, rt 2]
 
 
+-- | Main
 main :: IO ()
 main = runTurtle window white 100 [(st, [fanFlower])]
   where
