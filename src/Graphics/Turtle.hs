@@ -87,16 +87,20 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
   where
     model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
 
+    -- モデルを描画する
     drawModel (pic, ts) = pic <> (Pictures $ map (f . fst) ts)
       where
-        turtleMark = Polygon [(0, -3), (0, 3), (8, 0)]
         f st = if (mark st)
                then Translate x y $ Rotate th $ Color c $ turtleMark
                else Blank
           where
-            (x, y)  = point st
-            (th, c) = (360 - angle st, penColor st)
+            (th, c, (x, y)) = (360 - angle st, penColor st, point st)
+            turtleMark = (Color white mark1) <> (Color c mark2)
+              where
+                mark1 = Polygon [(0, -5), (0, 5), (12, 0)]
+                mark2 = Polygon [(1, -4), (1, 4), (10, 0)]
 
+    -- モデルを変化させる
     simModel _ _ (pic, [])  = (pic, [])
     simModel _ _ (pic, ts) = foldl f (pic, []) ts
       where
