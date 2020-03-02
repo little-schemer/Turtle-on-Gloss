@@ -9,7 +9,9 @@ import Graphics.L_system
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 500 [tData08 1]
+main = runTurtle initDisp white 500 tData
+
+tData = [tData08 4]
 
 
 -- P.002
@@ -97,10 +99,10 @@ tData07 n = (st, [cmds])
 tData08 :: Int -> (TurtleST, [Command])
 tData08 n = (st, [grid, cmds])
   where
-    st   = initST {mark = False}
-    cmds = l_system initiator generator n (100) 90
+    st   = initST {point = (-200, 200), mark = False}
+    cmds = l_system initiator generator n (400 / 3^n) 90
       where
-        initiator = "F" -- "F-F-F-F"
+        initiator = "F-F-F-F"
         generator = [('F', "FF-F+F-F-FF")]
 
 -- d
