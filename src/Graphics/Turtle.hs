@@ -375,6 +375,34 @@ drawArcR th r
 
 
 ------------------------------------------------------------
+-- * グラフを描く
+------------------------------------------------------------
+
+--
+-- | 関数のグラフを描く
+--
+drawGraph :: (Float -> Float)   -- ^ 関数 fx
+          -> Color              -- ^ グラフの色
+          -> [Float]            -- ^ 値域
+          -> Command
+drawGraph fx c range = drawGraph' id fx c range
+
+--
+-- | 媒介変数を用いた関数のグラフを描く
+--
+drawGraph' :: (Float -> Float)  -- ^ 関数 fx
+           -> (Float -> Float)  -- ^ 関数 fy
+           -> Color             -- ^ グラフの色
+           -> [Float]           -- ^ 値域
+           -> Command
+drawGraph' fx fy c range = concat $ cmd1 ++ cmd2
+  where
+    cmd1 = let t = head range in [pu, goto (fx t, fy t), pd]
+    cmd2 = setColor c : [goto (fx t, fy t) | t <- range]
+
+
+
+------------------------------------------------------------
 -- * その他
 ------------------------------------------------------------
 
@@ -417,21 +445,15 @@ updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
           where (r, g, b, a) = rgbaOfColor $ penColor st
 
 --
--- | 関数のグラフを描く
---
-graph :: (Float -> Float)       -- ^ 関数
-      -> [Float]                -- ^ 値域
-      -> Color                  -- ^ グラフの色
-      -> Command
-graph func range c = concat $ cmd1 ++ cmd2
-  where
-    cmd1 = let x = head range in [pu, goto (x, func x), pd]
-    cmd2 = setColor c : [goto (x, func x) | x <- range]
-
---
 -- | 複数のコマンドの繰り返しを１つのコマンドにする
 --
 repCommand :: Int               -- ^ 繰り返す回数
            -> [Command]         -- ^ 繰り返すコマンド
            -> Command
 repCommand n cLst = concat $ concat $ replicate n cLst
+
+--
+-- | 極座標 -> 直交座標
+--
+polarToRectangular :: (Float, Float) -> (Float, Float)
+polarToRectangular (r, th) = (r * cos th, r * sin th)

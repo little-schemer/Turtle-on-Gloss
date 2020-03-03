@@ -7,8 +7,8 @@ import           Graphics.Turtle
 
 
 -- | 外サイクロイドまたは内サイクロイド
-func :: Float -> Point
-func = epicycloid 100 85
+cmd :: Command
+cmd = epicycloid 100 85 cyan rotationAngles
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
@@ -25,11 +25,15 @@ rotationAngles = [0, 0.1 .. 300]
 --  x = (rc + rm) * cos th - rm * cos ((rc + rm) / rm * th)
 --  y = (rc + rm) * sin th - rm * sin ((rc + rm) / rm * th)
 --
-epicycloid :: Float -> Float -> Float -> Point
-epicycloid rc rm th = (f cos, f sin)
-  where f func = r' * func th - rm * func (r' / rm * th)
-          where r' = rc + rm
-
+epicycloid :: Float             -- ^ 定円の半径
+           -> Float             -- ^ 動円の半径
+           -> Color             -- ^ 線の色
+           -> [Float]           -- ^ 回転角のリスト
+           -> Command
+epicycloid rc rm c range = drawGraph' fx fy c range
+  where
+    fx th = (rc + rm) * cos th - rm * cos ((rc + rm) / rm * th)
+    fy th = (rc + rm) * sin th - rm * sin ((rc + rm) / rm * th)
 
 --
 -- | 内サイクロイド hypocycloid
@@ -41,15 +45,18 @@ epicycloid rc rm th = (f cos, f sin)
 --  x = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
 --  y = (rc - rm) * sin th + rm * sin ((rc - rm) / rm * th)
 --
-hypocycloid :: Float -> Float -> Float -> Point
-hypocycloid rc rm th = (f cos, f sin)
-  where f func = dr * func th + rm * func (dr / rm * th)
-          where dr = rc - rm
+hypocycloid :: Float            -- ^ 定円の半径
+            -> Float            -- ^ 動円の半径
+            -> Color            -- ^ 線の色
+            -> [Float]          -- ^ 回転角のリスト
+            -> Command
+hypocycloid rc rm c range = drawGraph' fx fy c range
+  where
+    fx th = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
+    fy th = (rc - rm) * sin th + rm * sin ((rc - rm) / rm * th)
 
 
 -- Main
 main :: IO ()
-main = runTurtle initDisp white 100 [(st, cmds)]
-  where
-    st   = initST {point = func 0, mark = False}
-    cmds = [goto $ func th | th <- rotationAngles]
+main = runTurtle initDisp white 100 [(st, [cmd])]
+  where st = initST {mark = False}

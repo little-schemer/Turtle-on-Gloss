@@ -7,12 +7,12 @@ import           Graphics.Turtle
 
 
 -- | 外トロコイドまたは内トロコイド
-func :: Float -> Point
-func = hypotrochoid 220 85 60
+cmd :: Command
+cmd = hypotrochoid 220 85 60 rose rotationAngles
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 1000]
+rotationAngles = [0, 0.1 .. 300]
 
 
 --
@@ -26,12 +26,16 @@ rotationAngles = [0, 0.1 .. 1000]
 --  x = (rc + rm) * cos th - rd * cos ((rc + rm) / rm * th)
 --  y = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
 --
-epitrochoid :: Float -> Float -> Float -> Float -> Point
-epitrochoid rc rm rd th = (x, y)
+epitrochoid :: Float            -- ^ 定円の半径
+            -> Float            -- ^ 動円の半径
+            -> Float            -- ^ 描画点の半径
+            -> Color            -- ^ 線の色
+            -> [Float]          -- ^ 回転角のリスト
+            -> Command
+epitrochoid rc rm rd c range = drawGraph' fx fy c range
   where
-    x = (rc + rm) * cos th - rd * cos ((rc + rm) / rm * th)
-    y = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
-
+    fx th = (rc + rm) * cos th - rd * cos ((rc + rm) / rm * th)
+    fy th = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
 
 --
 -- | 内トロコイド hypotrochoid
@@ -44,16 +48,19 @@ epitrochoid rc rm rd th = (x, y)
 --  x = (rc - rm) * cos th + rd * cos ((rc - rm) / rm * th)
 --  y = (rc - rm) * sin th - rd * sin ((rc - rm) / rm * th)
 --
-hypotrochoid :: Float -> Float -> Float -> Float -> Point
-hypotrochoid rc rm rd th = (x, y)
+hypotrochoid :: Float           -- ^ 定円の半径
+             -> Float           -- ^ 動円の半径
+             -> Float           -- ^ 描画点の半径
+             -> Color           -- ^ 線の色
+             -> [Float]         -- ^ 回転角のリスト
+             -> Command
+hypotrochoid rc rm rd c range = drawGraph' fx fy c range
   where
-    x = (rc - rm) * cos th + rd * cos ((rc - rm) / rm * th)
-    y = (rc - rm) * sin th - rd * sin ((rc - rm) / rm * th)
+    fx th = (rc - rm) * cos th + rd * cos ((rc - rm) / rm * th)
+    fy th = (rc - rm) * sin th - rd * sin ((rc - rm) / rm * th)
 
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 100 [(st, cmds)]
-  where
-    st   = initST {point = func 0, mark = False}
-    cmds = [goto $ func th | th <- rotationAngles]
+main = runTurtle initDisp white 100 [(st, [cmd])]
+  where st = initST {mark = False}
