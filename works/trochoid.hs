@@ -2,8 +2,8 @@
 -- | トロコイド曲線を描く
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 
 -- | 外トロコイドまたは内トロコイド
@@ -12,7 +12,7 @@ cmd = hypotrochoid 220 85 60 rose rotationAngles
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 300]
+rotationAngles = [0, 0.1 .. 40 * pi]
 
 
 --
@@ -32,7 +32,7 @@ epitrochoid :: Float            -- ^ 定円の半径
             -> Color            -- ^ 線の色
             -> [Float]          -- ^ 回転角のリスト
             -> Command
-epitrochoid rc rm rd c range = drawGraph' fx fy c range
+epitrochoid rc rm rd c domain = drawGraph' fx fy c domain
   where
     fx th = (rc + rm) * cos th - rd * cos ((rc + rm) / rm * th)
     fy th = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
@@ -54,7 +54,7 @@ hypotrochoid :: Float           -- ^ 定円の半径
              -> Color           -- ^ 線の色
              -> [Float]         -- ^ 回転角のリスト
              -> Command
-hypotrochoid rc rm rd c range = drawGraph' fx fy c range
+hypotrochoid rc rm rd c domain = drawGraph' fx fy c domain
   where
     fx th = (rc - rm) * cos th + rd * cos ((rc - rm) / rm * th)
     fy th = (rc - rm) * sin th - rd * sin ((rc - rm) / rm * th)

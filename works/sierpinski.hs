@@ -2,8 +2,8 @@
 -- | Sierpinski の三角形 (再帰版)
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 
 -- | パラメータ

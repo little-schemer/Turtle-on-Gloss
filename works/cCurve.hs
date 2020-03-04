@@ -2,8 +2,8 @@
 -- | C 曲線 (再帰版)
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 
 -- | パラメータ

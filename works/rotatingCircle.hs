@@ -2,8 +2,8 @@
 -- | Rotating Circle
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 
 -- | RotatingCircle

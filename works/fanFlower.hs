@@ -2,8 +2,8 @@
 -- | Fan Flowar
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 
 -- | FanFlower

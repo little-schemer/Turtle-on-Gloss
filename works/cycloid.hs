@@ -2,8 +2,8 @@
 -- | サイクロイド曲線を描く
 ------------------------------------------------------------
 
-import           Graphics.Gloss
-import           Graphics.Turtle
+import Graphics.Gloss
+import Graphics.Turtle
 
 
 -- | 外サイクロイドまたは内サイクロイド
@@ -12,7 +12,7 @@ cmd = epicycloid 100 85 cyan rotationAngles
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 300]
+rotationAngles = [0, 0.1 .. 40 * pi]
 
 
 --
@@ -30,7 +30,7 @@ epicycloid :: Float             -- ^ 定円の半径
            -> Color             -- ^ 線の色
            -> [Float]           -- ^ 回転角のリスト
            -> Command
-epicycloid rc rm c range = drawGraph' fx fy c range
+epicycloid rc rm c domain = drawGraph' fx fy c domain
   where
     fx th = (rc + rm) * cos th - rm * cos ((rc + rm) / rm * th)
     fy th = (rc + rm) * sin th - rm * sin ((rc + rm) / rm * th)
@@ -50,7 +50,7 @@ hypocycloid :: Float            -- ^ 定円の半径
             -> Color            -- ^ 線の色
             -> [Float]          -- ^ 回転角のリスト
             -> Command
-hypocycloid rc rm c range = drawGraph' fx fy c range
+hypocycloid rc rm c domain = drawGraph' fx fy c domain
   where
     fx th = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
     fy th = (rc - rm) * sin th + rm * sin ((rc - rm) / rm * th)
