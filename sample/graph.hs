@@ -6,18 +6,18 @@ import Graphics.Gloss
 import Graphics.Turtle
 
 
--- | 値域
-range :: [Float]
-range = [-400.0, -399.5 .. 400.0]
+-- | 定義域
+domain :: [Float]
+domain = [-400.0, -399.5 .. 400.0]
 
 -- | 二次関数の例
 graph1 :: Command
-graph1 = drawGraph f rose range
+graph1 = drawGraph f rose domain
   where f x = 1 / 50 * x ^ 2 - 2 * x - 100
 
 -- | 一次関数の例
 graph2 :: Command
-graph2 = drawGraph f azure range
+graph2 = drawGraph f azure domain
   where f x = (-1) / 3 * x - 50
 
 

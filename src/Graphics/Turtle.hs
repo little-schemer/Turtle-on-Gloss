@@ -379,26 +379,26 @@ drawArcR th r
 ------------------------------------------------------------
 
 --
--- | 関数のグラフを描く
+-- | 陽関数のグラフを描く
 --
-drawGraph :: (Float -> Float)   -- ^ 関数 fx
+drawGraph :: (Float -> Float)   -- ^ 関数 y = f(x)
           -> Color              -- ^ グラフの色
-          -> [Float]            -- ^ 値域
+          -> [Float]            -- ^ 定義域
           -> Command
-drawGraph fx c range = drawGraph' id fx c range
+drawGraph fx c domain = drawGraph' id fx c domain
 
 --
--- | 媒介変数を用いた関数のグラフを描く
+-- | 陰関数のグラフを描く
 --
-drawGraph' :: (Float -> Float)  -- ^ 関数 fx
-           -> (Float -> Float)  -- ^ 関数 fy
+drawGraph' :: (Float -> Float)  -- ^ 関数 x = f(t)
+           -> (Float -> Float)  -- ^ 関数 y = g(t)
            -> Color             -- ^ グラフの色
-           -> [Float]           -- ^ 値域
+           -> [Float]           -- ^ 定義域
            -> Command
-drawGraph' fx fy c range = concat $ cmd1 ++ cmd2
+drawGraph' fx fy c domain = concat $ cmd1 ++ cmd2
   where
-    cmd1 = let t = head range in [pu, goto (fx t, fy t), pd]
-    cmd2 = setColor c : [goto (fx t, fy t) | t <- range]
+    cmd1 = let t = head domain in [pu, goto (fx t, fy t), pd]
+    cmd2 = setColor c : [goto (fx t, fy t) | t <- domain]
 
 
 
