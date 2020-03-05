@@ -107,29 +107,30 @@
    ~Command~ は ~PrimitiveCommand~ のリストになっており、通常はこちらを使用しま
    す。
 
-   | コマンド                | 省略形 | 動作                                                |
-   |-------------------------+--------+-----------------------------------------------------|
-   | forward n               | fd n   | 亀が n だけ前進する。                               |
-   | quickForward n          | qf n   | forward より高速に前進する。                        |
-   | backward n              | bk n   | 亀が n だけ後退する。                               |
-   | left th                 | lt th  | 亀が th 度だけ左旋回する。                          |
-   | quickLeft th            | ql th  | left より高速に左旋回する。                         |
-   | right th                | rt th  | 亀が th 度だけ右旋回する。                          |
-   | quickRight th           | qr th  | right より高速に右旋回する。                        |
-   | goto p                  | --     | 亀が p の位置へ移動する。亀の向きは変らない。       |
-   | penDown                 | pd     | 亀のペンを下げる。亀が移動すると線が描かれる。      |
-   | penUp                   | pu     | 亀のペンを上げる。亀が移動しても線は描かれない。    |
-   | setAngle th             | --     | 亀の向きを th 度に設定する。                        |
-   | setPoint p              | --     | 亀の位置を p に設定する。                           |
-   | setColor c              | --     | 亀のペンの色を c に設定する。                       |
-   | drawPolygonL n m        | --     | 一辺の長さが m の正 n 角形を左回りに描く。          |
-   | drawPolygonR n m        | --     | 一辺の長さが m の正 n 角形を右回りに描く。          |
-   | drawCircle r            | --     | 亀の位置を中心に、半径 r の円を描く。               |
-   | drawCircleSolid r       | --     | 亀の位置を中心に、半径 r の Solid な円を描く。      |
-   | drawArcL th r           | --     | 中心角 th , 半径 r の円弧を左回りに描く。           |
-   | drawArcR th r           | --     | 中心角 th , 半径 r の円弧を右回りに描く。           |
-   | grid                    | --     | グリッドを表示する。( X 軸と Y 軸は赤、その他は青 ) |
-   | updateAngle func        | --     | 亀の向きを関数に従って更新する。                    |
-   | updatePoint func        | --     | 亀の位置を関数に従って更新する。                    |
-   | updateColor fr fg fb fa | --     | ペンの色の成分を関数に従って更新する。              |
-   | graph func range color  | --     | 関数のグラフを書く。                                |
+   | コマンド                  | 省略形 | 動作                                             |
+   |---------------------------+--------+--------------------------------------------------|
+   | forward n                 | fd n   | 亀が n だけ前進する。                            |
+   | quickForward n            | qf n   | forward より高速に前進する。                     |
+   | backward n                | bk n   | 亀が n だけ後退する。                            |
+   | left th                   | lt th  | 亀が th 度だけ左旋回する。                       |
+   | quickLeft th              | ql th  | left より高速に左旋回する。                      |
+   | right th                  | rt th  | 亀が th 度だけ右旋回する。                       |
+   | quickRight th             | qr th  | right より高速に右旋回する。                     |
+   | goto p                    | --     | 亀が p の位置へ移動する。亀の向きは変らない。    |
+   | penDown                   | pd     | 亀のペンを下げる。亀が移動すると線が描かれる。   |
+   | penUp                     | pu     | 亀のペンを上げる。亀が移動しても線は描かれない。 |
+   | setAngle th               | --     | 亀の向きを th 度に設定する。                     |
+   | setPoint p                | --     | 亀の位置を p に設定する。                        |
+   | setColor c                | --     | 亀のペンの色を c に設定する。                    |
+   | drawPolygonL n m          | --     | 一辺の長さが m の正 n 角形を左回りに描く。       |
+   | drawPolygonR n m          | --     | 一辺の長さが m の正 n 角形を右回りに描く。       |
+   | drawCircle r              | --     | 亀の位置を中心に、半径 r の円を描く。            |
+   | drawCircleSolid r         | --     | 亀の位置を中心に、半径 r の Solid な円を描く。   |
+   | drawArcL th r             | --     | 中心角 th , 半径 r の円弧を左回りに描く。        |
+   | drawArcR th r             | --     | 中心角 th , 半径 r の円弧を右回りに描く。        |
+   | drawGraph fx c domain     | --     | 陽関数のグラフを描く。                             |
+   | drawGraph' fx fy c domain | --     | 陰関数のグラフを描く。                                                 |
+   | grid                      | --     | 方眼を表示する。( X 軸と Y 軸は赤、その他は青 )  |
+   | updateAngle func          | --     | 亀の向きを関数に従って更新する。                 |
+   | updatePoint func          | --     | 亀の位置を関数に従って更新する。                 |
+   | updateColor fr fg fb fa   | --     | ペンの色の成分を関数に従って更新する。           |
