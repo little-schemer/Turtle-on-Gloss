@@ -58,4 +58,4 @@ hypocycloid :: Float            -- ^ 定円の半径
 hypocycloid rc rm c domain = drawGraph' fx fy c domain
   where
     fx th = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
-    fy th = (rc - rm) * sin th + rm * sin ((rc - rm) / rm * th)
+    fy th = (rc - rm) * sin th - rm * sin ((rc - rm) / rm * th)
