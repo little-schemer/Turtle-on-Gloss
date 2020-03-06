@@ -195,9 +195,11 @@ quickLeft th = [turn th]
 quickRight :: Float -> Command
 quickRight th = [turn (-th)]
 
--- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
+-- | p の位置へ移動する（pen == True なら線を描く）
 goto :: Point -> Command
-goto p = [toPoint p]
+goto (x, y) = [goto']
+  where goto' st = toPoint (x, y) st {angle = radToDeg $ argV (x - x', y - y')}
+          where (x', y') = point st
 
 -- | 亀の向きを設定する
 setAngle :: Float -> Command
