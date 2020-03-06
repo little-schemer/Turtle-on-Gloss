@@ -242,6 +242,9 @@ pop = [\st -> (Blank, f (stack st))]
 nop :: Command
 nop = [\st -> (Blank, st)]
 
+nopN :: Int -> Command
+nopN n = concat $ replicate n nop
+
 
 
 ------------------------------------------------------------
