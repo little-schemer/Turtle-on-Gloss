@@ -26,7 +26,7 @@ main :: IO ()
 main = runTurtle disp white 500 [tData0, tData1, tData2]
   where
     disp   = InWindow "Graph" (800, 600) (10, 10)
-    st     = initST {mark = False}
+    st     = initST
     tData0 = (st, [grid])
     tData1 = (st, [graph1])
     tData2 = (st, [graph2])

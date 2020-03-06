@@ -11,6 +11,12 @@ level =   8 :: Int
 size  = 500 :: Float
 
 
+-- | Main
+main :: IO ()
+main = runTurtle initDisp white 500 [(st, [sierpinski level size])]
+  where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}
+
+
 -- | 再帰による Sierpinski の三角形
 sierpinski :: Int -> Float -> Command
 sierpinski n len = if odd n
@@ -32,9 +38,3 @@ sierpinski n len = if odd n
                          , ql 60
                          , sierA (n - 1) (len / 2)
                          ]
-
-
--- | Main
-main :: IO ()
-main = runTurtle initDisp white 500 [(st, [sierpinski level size])]
-  where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}

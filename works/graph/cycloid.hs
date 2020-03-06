@@ -15,6 +15,11 @@ rotationAngles :: [Float]
 rotationAngles = [0, 0.1 .. 40 * pi]
 
 
+-- Main
+main :: IO ()
+main = runTurtle initDisp black 50 [(initST, [cmd])]
+
+
 --
 -- | 外サイクロイド epicycloid
 --
@@ -54,9 +59,3 @@ hypocycloid rc rm c domain = drawGraph' fx fy c domain
   where
     fx th = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
     fy th = (rc - rm) * sin th + rm * sin ((rc - rm) / rm * th)
-
-
--- Main
-main :: IO ()
-main = runTurtle initDisp white 100 [(st, [cmd])]
-  where st = initST {mark = False}
