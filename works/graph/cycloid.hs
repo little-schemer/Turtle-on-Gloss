@@ -48,7 +48,7 @@ epicycloid rc rm c domain = drawGraph' fx fy c domain
 --  + th : 回転角
 --
 --  x = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
---  y = (rc - rm) * sin th + rm * sin ((rc - rm) / rm * th)
+--  y = (rc - rm) * sin th - rm * sin ((rc - rm) / rm * th)
 --
 hypocycloid :: Float            -- ^ 定円の半径
             -> Float            -- ^ 動円の半径
