@@ -9,12 +9,11 @@ import Graphics.Turtle
 -- | Main
 main :: IO ()
 main = runTurtle initDisp white 20 [(initST, lst)]
-  where lst = [grid, ellipse 200 100 rose]
+  where
+    lst = [grid, drawGraph' (ellipse 200 150) rose domain]
+    domain = [0, 0.1 .. 2 * pi]
 
 
 -- | 楕円のグラフ
-ellipse :: Float -> Float -> Color -> Command
-ellipse a b c = drawGraph' fx fy c [0, 0.1 .. 2 * pi]
-  where
-    fx th = a * cos th
-    fy th = b * sin th
+ellipse :: Float -> Float -> (Float -> Float, Float -> Float)
+ellipse a b = (\th -> a * cos th, \th -> b * sin th)

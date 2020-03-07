@@ -23,7 +23,7 @@ graph2 = drawGraph f azure domain
 
 -- Main
 main :: IO ()
-main = runTurtle disp white 500 [tData0, tData1, tData2]
+main = runTurtle disp white 100 [tData0, tData1, tData2]
   where
     disp   = InWindow "Graph" (800, 600) (10, 10)
     st     = initST

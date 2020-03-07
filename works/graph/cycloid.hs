@@ -7,8 +7,8 @@ import Graphics.Turtle
 
 
 -- | 外サイクロイドまたは内サイクロイド
-cmd :: Command
-cmd = epicycloid 100 85 cyan rotationAngles
+func :: (Float -> Float, Float -> Float)
+func = epicycloid 100 85
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
@@ -18,6 +18,7 @@ rotationAngles = [0, 0.1 .. 40 * pi]
 -- Main
 main :: IO ()
 main = runTurtle initDisp black 50 [(initST, [cmd])]
+  where cmd = drawGraph' func cyan rotationAngles
 
 
 --
@@ -32,10 +33,8 @@ main = runTurtle initDisp black 50 [(initST, [cmd])]
 --
 epicycloid :: Float             -- ^ 定円の半径
            -> Float             -- ^ 動円の半径
-           -> Color             -- ^ 線の色
-           -> [Float]           -- ^ 回転角のリスト
-           -> Command
-epicycloid rc rm c domain = drawGraph' fx fy c domain
+           -> (Float -> Float, Float -> Float)
+epicycloid rc rm = (fx, fy)
   where
     fx th = (rc + rm) * cos th - rm * cos ((rc + rm) / rm * th)
     fy th = (rc + rm) * sin th - rm * sin ((rc + rm) / rm * th)
@@ -52,10 +51,8 @@ epicycloid rc rm c domain = drawGraph' fx fy c domain
 --
 hypocycloid :: Float            -- ^ 定円の半径
             -> Float            -- ^ 動円の半径
-            -> Color            -- ^ 線の色
-            -> [Float]          -- ^ 回転角のリスト
-            -> Command
-hypocycloid rc rm c domain = drawGraph' fx fy c domain
+            -> (Float -> Float, Float -> Float)
+hypocycloid rc rm = (fx, fy)
   where
     fx th = (rc - rm) * cos th + rm * cos ((rc - rm) / rm * th)
     fy th = (rc - rm) * sin th - rm * sin ((rc - rm) / rm * th)

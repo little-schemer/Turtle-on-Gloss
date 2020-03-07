@@ -390,20 +390,19 @@ drawGraph :: (Float -> Float)   -- ^ 関数 y = f(x)
           -> Color              -- ^ グラフの色
           -> [Float]            -- ^ 定義域
           -> Command
-drawGraph fx c domain = drawGraph' id fx c domain
+drawGraph fx c domain = drawGraph' (id, fx) c domain
 
 --
 -- | 陰関数のグラフを描く
 --
-drawGraph' :: (Float -> Float)  -- ^ 関数 x = f(t)
-           -> (Float -> Float)  -- ^ 関数 y = g(t)
-           -> Color             -- ^ グラフの色
-           -> [Float]           -- ^ 定義域
+drawGraph' :: ((Float -> Float), (Float -> Float)) -- ^ (x = f(t), y = g(t))
+           -> Color                                -- ^ グラフの色
+           -> [Float]                              -- ^ 定義域
            -> Command
-drawGraph' fx fy c domain = concat $ cmd1 ++ cmd2
+drawGraph' (fx, fy) c domain = concat $ cmd1 ++ cmd2
   where
     cmd1 = let t = head domain in [pu, goto (fx t, fy t), pd]
-    cmd2 = setColor c : [goto (fx t, fy t) | t <- domain]
+    cmd2 = setColor c : [goto (fx t, fy t) | t <- tail domain]
 
 
 

@@ -7,8 +7,8 @@ import Graphics.Turtle
 
 
 -- | 外トロコイドまたは内トロコイド
-cmd :: Command
-cmd = hypotrochoid 220 85 60 rose rotationAngles
+func :: (Float -> Float, Float -> Float)
+func = hypotrochoid 220 85 60
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
@@ -18,6 +18,7 @@ rotationAngles = [0, 0.1 .. 40 * pi]
 -- | Main
 main :: IO ()
 main = runTurtle initDisp white 50 [(initST, [cmd])]
+  where cmd = drawGraph' func rose rotationAngles
 
 
 --
@@ -34,10 +35,8 @@ main = runTurtle initDisp white 50 [(initST, [cmd])]
 epitrochoid :: Float            -- ^ 定円の半径
             -> Float            -- ^ 動円の半径
             -> Float            -- ^ 描画点の半径
-            -> Color            -- ^ 線の色
-            -> [Float]          -- ^ 回転角のリスト
-            -> Command
-epitrochoid rc rm rd c domain = drawGraph' fx fy c domain
+            -> (Float -> Float, Float -> Float)
+epitrochoid rc rm rd = (fx, fy)
   where
     fx th = (rc + rm) * cos th - rd * cos ((rc + rm) / rm * th)
     fy th = (rc + rm) * sin th - rd * sin ((rc + rm) / rm * th)
@@ -56,10 +55,8 @@ epitrochoid rc rm rd c domain = drawGraph' fx fy c domain
 hypotrochoid :: Float           -- ^ 定円の半径
              -> Float           -- ^ 動円の半径
              -> Float           -- ^ 描画点の半径
-             -> Color           -- ^ 線の色
-             -> [Float]         -- ^ 回転角のリスト
-             -> Command
-hypotrochoid rc rm rd c domain = drawGraph' fx fy c domain
+             -> (Float -> Float, Float -> Float)
+hypotrochoid rc rm rd = (fx, fy)
   where
     fx th = (rc - rm) * cos th + rd * cos ((rc - rm) / rm * th)
     fy th = (rc - rm) * sin th - rd * sin ((rc - rm) / rm * th)
