@@ -413,16 +413,16 @@ drawGraph' (fx, fy) c domain = concat $ cmd1 ++ cmd2
 --
 -- | 方眼を表示する
 --
-grid :: Command
-grid = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
+grid :: Float -> Command
+grid size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
   where
     grid' lst = Pictures $ concat [[horizontal n, vertical n] | n <- lst]
       where
-        horizontal n = Line [(-500, n), (500, n)]
-        vertical n   = Line [(n, -500), (n, 500)]
+        horizontal n = Line [(-size, n), (size, n)]
+        vertical n   = Line [(n, -size), (n, size)]
     redLine   = Color (makeColor 1.0 0.5 0.5 0.6) $ grid' [0]
-    blueLine1 = Color (makeColor 0.5 0.5 1.0 0.3) $ grid' [-500, -400 .. 500]
-    blueLine2 = Color (makeColor 0.5 0.5 1.0 0.2) $ grid' [-500, -490 .. 500]
+    blueLine1 = Color (makeColor 0.5 0.5 1.0 0.3) $ grid' [-size, -size + 100 .. size]
+    blueLine2 = Color (makeColor 0.5 0.5 1.0 0.2) $ grid' [-size, -size +  10 .. size]
 
 --
 -- | 亀の向きを更新する

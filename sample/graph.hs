@@ -8,7 +8,7 @@ import Graphics.Turtle
 
 -- | 定義域
 domain :: [Float]
-domain = [-400.0, -399.5 .. 400.0]
+domain = [-500.0, -499.5 .. 500.0]
 
 -- | 二次関数の例
 graph1 :: Command
@@ -27,6 +27,6 @@ main = runTurtle disp white 100 [tData0, tData1, tData2]
   where
     disp   = InWindow "Graph" (800, 600) (10, 10)
     st     = initST
-    tData0 = (st, [grid])
+    tData0 = (st, [grid 500])
     tData1 = (st, [graph1])
     tData2 = (st, [graph2])

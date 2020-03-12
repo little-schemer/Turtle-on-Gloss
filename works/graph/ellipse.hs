@@ -10,7 +10,7 @@ import Graphics.Turtle
 main :: IO ()
 main = runTurtle initDisp white 20 [(initST, lst)]
   where
-    lst = [grid, drawGraph' (ellipse 200 150) rose domain]
+    lst = [grid 400, drawGraph' (ellipse 200 150) rose domain]
     domain = [0, 0.1 .. 2 * pi]
 
 
