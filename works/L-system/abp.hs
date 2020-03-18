@@ -11,7 +11,7 @@ import Graphics.L_system
 main :: IO ()
 main = runTurtle initDisp white 500 tData
 
-tData = [tData08 4]
+tData = [tData07 4]
 
 
 -- P.002
@@ -97,7 +97,7 @@ tData07 n = (st, [cmds])
 
 -- c (n = 4)
 tData08 :: Int -> (TurtleST, [Command])
-tData08 n = (st, [grid, cmds])
+tData08 n = (st, [grid 500, cmds])
   where
     st   = initST {point = (-200, 200), mark = False}
     cmds = l_system initiator generator n (400 / 3^n) 90

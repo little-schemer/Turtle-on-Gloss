@@ -9,10 +9,11 @@ import Graphics.Turtle
 -- | 外トロコイドまたは内トロコイド
 func :: (Float -> Float, Float -> Float)
 func = hypotrochoid 220 85 60
+-- func = epitrochoid 96 38 50
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
-rotationAngles = [0, 0.1 .. 40 * pi]
+rotationAngles = [0, 0.05 .. 40 * pi]
 
 
 -- | Main
