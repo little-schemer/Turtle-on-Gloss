@@ -397,10 +397,21 @@ drawGraph fx domain = drawGraph' (id, fx) domain
 drawGraph' :: ((Float -> Float), (Float -> Float)) -- ^ (x = f(t), y = g(t))
            -> [Float]                              -- ^ 定義域
            -> Command
-drawGraph' (fx, fy) domain = concat $ cmd1 ++ cmd2
+drawGraph' (fx, fy) (t : ts) = concat $ cmd1 ++ cmd2
   where
-    cmd1 = let t = head domain in [pu, goto (fx t, fy t), pd]
-    cmd2 = [goto (fx t, fy t) | t <- tail domain]
+    cmd1 = [pu, goto (fx t, fy t), pd]
+    cmd2 = [goto (fx t, fy t) | t <- ts]
+
+--
+-- | 極座標方程式のグラフを描く
+--
+drawPolarGraph :: (Float -> Float) -- ^ 関数 r = f(th)
+               -> [Float]          -- ^ 定義域
+               -> Command
+drawPolarGraph fp (t : ts) = concat $ cmd1 ++ cmd2
+  where
+    cmd1 = [pu, goto (polarToRectangular (fp t, t)), pd]
+    cmd2 = [goto $ polarToRectangular (fp t, t) | t <- ts]
 
 
 
