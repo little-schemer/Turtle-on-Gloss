@@ -9,7 +9,7 @@ import Graphics.Turtle
 -- | 外トロコイドまたは内トロコイド
 func :: (Float -> Float, Float -> Float)
 func = hypotrochoid 220 85 60
--- func = epitrochoid 96 38 50
+-- func = epitrochoid 100 85 110
 
 -- | 回転角のリスト
 rotationAngles :: [Float]
@@ -18,8 +18,8 @@ rotationAngles = [0, 0.05 .. 40 * pi]
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 50 [(initST, [cmd])]
-  where cmd = drawGraph' func rose rotationAngles
+main = runTurtle initDisp white 50 [(initST {penColor = rose}, [cmd])]
+  where cmd = drawGraph' func rotationAngles
 
 
 --

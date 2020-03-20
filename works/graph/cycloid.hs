@@ -17,8 +17,8 @@ rotationAngles = [0, 0.1 .. 40 * pi]
 
 -- Main
 main :: IO ()
-main = runTurtle initDisp black 50 [(initST, [cmd])]
-  where cmd = drawGraph' func cyan rotationAngles
+main = runTurtle initDisp black 50 [(initST {penColor = cyan}, [cmd])]
+  where cmd = drawGraph' func rotationAngles
 
 
 --

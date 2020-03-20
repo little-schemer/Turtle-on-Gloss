@@ -12,12 +12,12 @@ domain = [-500.0, -499.5 .. 500.0]
 
 -- | 二次関数の例
 graph1 :: Command
-graph1 = drawGraph f rose domain
+graph1 = drawGraph f domain
   where f x = 1 / 50 * x ^ 2 - 2 * x - 100
 
 -- | 一次関数の例
 graph2 :: Command
-graph2 = drawGraph f azure domain
+graph2 = drawGraph f domain
   where f x = (-1) / 3 * x - 50
 
 
@@ -28,5 +28,5 @@ main = runTurtle disp white 100 [tData0, tData1, tData2]
     disp   = InWindow "Graph" (800, 600) (10, 10)
     st     = initST
     tData0 = (st, [grid])
-    tData1 = (st, [graph1])
-    tData2 = (st, [graph2])
+    tData1 = (st, [setColor rose,  graph1])
+    tData2 = (st, [setColor azure, graph2])
