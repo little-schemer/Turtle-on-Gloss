@@ -9,7 +9,7 @@ import Graphics.Turtle
 -- | Main
 main :: IO ()
 main = runTurtle initDisp white 100 [(initST, lst)]
-  where lst = [grid 400, drawPolarGraph (roseCurve 5 2) rose 200 [0, 0.01 .. pi * 4]]
+  where lst = [grid, drawPolarGraph (roseCurve 5 2) rose 200 [0, 0.01 .. pi * 4]]
 
 
 -- | 極方程式のグラフを描く

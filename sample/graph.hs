@@ -27,6 +27,6 @@ main = runTurtle disp white 100 [tData0, tData1, tData2]
   where
     disp   = InWindow "Graph" (800, 600) (10, 10)
     st     = initST
-    tData0 = (st, [grid 500])
+    tData0 = (st, [grid])
     tData1 = (st, [graph1])
     tData2 = (st, [graph2])

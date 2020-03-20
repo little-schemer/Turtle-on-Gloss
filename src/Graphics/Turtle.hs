@@ -380,7 +380,7 @@ drawArcR th r
 
 
 ------------------------------------------------------------
--- * グラフを描く
+-- * グラフ
 ------------------------------------------------------------
 
 --
@@ -407,22 +407,42 @@ drawGraph' (fx, fy) c domain = concat $ cmd1 ++ cmd2
 
 
 ------------------------------------------------------------
--- * その他
+-- * 方眼
 ------------------------------------------------------------
+
+--
+-- | 方眼を表示する (描画範囲 : -500 ~ 500, 方眼サイズ = 10)
+--
+grid :: Command
+grid = grid' 500 10
 
 --
 -- | 方眼を表示する
 --
-grid :: Float -> Command
-grid size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
+grid' :: Float                  -- ^ 方眼を描く範囲
+      -> Float                  -- ^ 方眼の一目盛のサイズ
+      -> Command
+grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
   where
-    grid' lst = Pictures $ concat [[horizontal n, vertical n] | n <- lst]
+    blueLine1 = Color c $ f [-range, -range + size      .. range]
+      where c = makeColor 0.5 0.5 1.0 0.2
+
+    blueLine2 = Color c $ f [-range, -range + 10 * size .. range]
+      where c = makeColor 0.5 0.5 1.0 0.3
+
+    redLine   = Color c $ f [0]
+      where c = makeColor 1.0 0.5 0.5 0.6
+
+    f lst = Pictures $ concat [[horizontal n, vertical n] | n <- lst]
       where
-        horizontal n = Line [(-size, n), (size, n)]
-        vertical n   = Line [(n, -size), (n, size)]
-    redLine   = Color (makeColor 1.0 0.5 0.5 0.6) $ grid' [0]
-    blueLine1 = Color (makeColor 0.5 0.5 1.0 0.3) $ grid' [-size, -size + 100 .. size]
-    blueLine2 = Color (makeColor 0.5 0.5 1.0 0.2) $ grid' [-size, -size +  10 .. size]
+        horizontal n = Line [(-range, n), (range, n)]
+        vertical   n = Line [(n, -range), (n, range)]
+
+
+
+------------------------------------------------------------
+-- * 亀の状態の更新
+------------------------------------------------------------
 
 --
 -- | 亀の向きを更新する
@@ -447,6 +467,12 @@ updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
 updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
   where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
           where (r, g, b, a) = rgbaOfColor $ penColor st
+
+
+
+------------------------------------------------------------
+-- * その他
+------------------------------------------------------------
 
 --
 -- | 複数のコマンドの繰り返しを１つのコマンドにする
