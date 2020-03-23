@@ -8,25 +8,25 @@ import Graphics.Turtle
 
 -- | 定義域
 domain :: [Float]
-domain = [-500.0, -499.5 .. 500.0]
+domain = [-50.0, -49.9 .. 50.0]
 
 -- | 二次関数の例
 graph1 :: Command
 graph1 = drawGraph f domain
-  where f x = 1 / 50 * x ^ 2 - 2 * x - 100
+  where f x = x ^ 2 - 2 * x - 10
 
 -- | 一次関数の例
 graph2 :: Command
 graph2 = drawGraph f domain
-  where f x = (-1) / 3 * x - 50
+  where f x = (-1) / 3 * x - 5
 
 
 -- Main
 main :: IO ()
-main = runTurtle disp white 100 [tData0, tData1, tData2]
+main = runTurtle disp white 200 [tData0, tData1, tData2]
   where
-    disp   = InWindow "Graph" (800, 600) (10, 10)
+    disp   = initWindow {title = "Graph", zoom = 10, moveXY = (0, -10)}
     st     = initST
-    tData0 = (st, [grid])
+    tData0 = (st, [grid' 40 1])
     tData1 = (st, [setColor rose,  graph1])
     tData2 = (st, [setColor azure, graph2])

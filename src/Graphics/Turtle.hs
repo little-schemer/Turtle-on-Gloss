@@ -33,6 +33,14 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , stack    :: [(Float, Point, Color, Bool, Bool)]
                          } deriving Show
 
+-- | 画面の状態
+data WindowST = WindowST { title   :: String
+                         , winSize :: (Int, Int)
+                         , winPos  :: (Int, Int)
+                         , zoom    :: Float
+                         , shiftXY :: (Float, Float)
+                         } deriving Show
+
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 
 type Command           = [PrimitiveCommand]
@@ -65,15 +73,21 @@ initST = TurtleST { angle    = 0
                   }
 
 --
--- | Display の初期値を設定する
+-- | DispST の初期値を設定する
 --
 -- > 《初期値》
 -- >   + Window のタイトル   : "Turtle Graphics"
 -- >   + Window のサイズ     : (800, 600)
 -- >   + Window のポジション : (10, 10)
+-- >   + 拡大率              : 1 倍
 --
-initDisp :: Display
-initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
+initWindow :: WindowST
+initWindow = WindowST { title   = "Turtle Graphics"
+                      , winSize = (800, 600)
+                      , winPos  = (10, 10)
+                      , zoom    = 1
+                      , shiftXY = (0, 0)
+                      }
 
 
 
@@ -84,20 +98,29 @@ initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
 --
 -- | 亀に図形を描かせる
 --
-runTurtle :: Display                 -- ^ 描画モード
+runTurtle :: WindowST                -- ^ 画面の状態
           -> Color                   -- ^ 背景色
           -> Int                     -- ^ 1 秒あたりのステップ数
           -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
           -> IO ()
-runTurtle disp c step tds = simulate disp c step model drawModel simModel
+runTurtle winST c step tds = simulate disp c step model drawModel simModel
   where
+    -- 描画モード
+    disp = InWindow (title winST) (winSize winST) (winPos winST)
+
+    -- モデルの初期値
     model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
 
     -- モデルを描画する
-    drawModel (pic, ts) = pic <> (Pictures $ map (f . fst) ts)
+    drawModel (pic, ts) = Translate (sx * z) (sy * z) $ pic1 <> pic2
       where
+        (z, (sx, sy)) = (zoom winST, shiftXY winST)
+
+        pic1 = Scale z z pic
+        pic2 = Pictures $ map (f . fst) ts
+
         f st = if (mark st)
-               then Translate x y $ Rotate th $ Color c $ turtleMark
+               then Translate (x * z) (y * z) $ Rotate th $ Color c $ turtleMark
                else Blank
           where
             (th, c, (x, y)) = (360 - angle st, penColor st, point st)
@@ -117,12 +140,15 @@ runTurtle disp c step tds = simulate disp c step model drawModel simModel
 --
 -- | 最終結果だけを表示する
 --
-dispPicture :: Display                 -- ^ 描画モード
+dispPicture :: WindowST                -- ^ 画面の状態
             -> Color                   -- ^ 背景色
             -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
             -> IO ()
-dispPicture disp c tds = display disp c $ Pictures $ map makePicture tds
-  where makePicture (st, cmds) = fst $ foldl f (Blank, st) (concat cmds)
+dispPicture winST c tds = display disp c $ Scale z z $ Translate sx sy $ Pictures $ map makePicture tds
+  where
+    disp = InWindow (title winST) (winSize winST) (winPos winST)
+    (z, (sx, sy)) = (zoom winST, shiftXY winST)
+    makePicture (st, cmds) = fst $ foldl f (Blank, st) (concat cmds)
           where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
 
 
