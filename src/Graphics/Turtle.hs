@@ -19,6 +19,11 @@ import           Graphics.Gloss.Data.ViewPort
 import           Graphics.Gloss.Geometry.Angle
 
 
+
+------------------------------------------------------------
+-- * 型
+------------------------------------------------------------
+
 -- | 亀の状態
 data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , point    :: Point -- ^ 亀の位置
@@ -28,9 +33,10 @@ data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
                          , stack    :: [(Float, Point, Color, Bool, Bool)]
                          } deriving Show
 
-
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
+
 type Command           = [PrimitiveCommand]
+
 type Model             = (Picture, [(TurtleST, Command)])
 
 
