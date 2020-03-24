@@ -13,7 +13,7 @@ size  = 500 :: Float
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 500 [(st, [sierpinski level size])]
+main = runTurtle initWindow white 500 [(st, [sierpinski level size])]
   where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}
 
 

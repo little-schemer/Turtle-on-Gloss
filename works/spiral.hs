@@ -10,7 +10,7 @@ import Graphics.Turtle
 main :: IO ()
 main = runTurtle window black 100 [(st, spiral2 300)]
   where
-    window = InWindow "Spiral" (800, 600) (10, 10)
+    window = initWindow {title = "Spiral"}
     st = initST {point = (-1, 1), penColor = initColor}
     initColor = makeColor 0 1 0.5 0.1
 

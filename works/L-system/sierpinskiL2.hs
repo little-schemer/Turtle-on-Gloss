@@ -14,7 +14,7 @@ size  = 500 :: Float
 
 -- | Main : 結果のみを表示する
 main :: IO ()
-main = dispPicture initDisp white [(st, [sierpinski level size])]
+main = dispPicture initWindow white [(st, [sierpinski level size])]
   where st = initST {point = (-size / 2, -size / (2 * sqrt 2)), mark = False}
 
 

@@ -15,7 +15,7 @@ size  = 400 :: Float
 main :: IO ()
 main = runTurtle window white 100 [(s, cmd) | s <- [st1, st2, st3]]
   where
-    window = InWindow "Koch Curve" (800, 600) (10, 10)
+    window = initWindow {title = "Koch Curve"}
     st1 = initST {angle =    0, point = (-200,  200 / sqrt 3), mark = False}
     st2 = initST {angle = -120, point = ( 200,  200 / sqrt 3), mark = False}
     st3 = initST {angle =  120, point = (   0, -400 / sqrt 3), mark = False}

@@ -99,19 +99,20 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
     model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
 
     -- モデルを描画する
-    drawModel (pic, ts) = Translate (sx * z) (sy * z) $ pic1 <> pic2
+    drawModel (pic, ts) = pic' <> turtleMarks
       where
         (z, (sx, sy)) = (zoom window, shiftXY window)
 
-        pic1 = Scale z z pic
-        pic2 = Pictures $ map (dispMark . fst) ts
+        pic'        = Scale z z $ Translate sx sy pic
+        turtleMarks = Pictures $ map (dispMark . fst) ts
 
         dispMark st = if (mark st)
-                      then Translate (x * z) (y * z) $ Rotate th $ turtleMark
+                      then Translate x' y' $ Rotate th $ tMark
                       else Blank
           where
             (th, c, (x, y)) = (360 - angle st, penColor st, point st)
-            turtleMark = (Color white mark1) <> (Color c mark2)
+            (x', y') = ((x + sx) * z, (y + sy) * z)
+            tMark = (Color white mark1) <> (Color c mark2)
               where
                 mark1 = Polygon [(0, -5), (0, 5), (12, 0)]
                 mark2 = Polygon [(1, -4), (1, 4), (10, 0)]

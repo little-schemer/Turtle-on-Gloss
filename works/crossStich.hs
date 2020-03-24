@@ -13,7 +13,7 @@ level =   4
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 500 [(st, [lst])]
+main = runTurtle initWindow white 500 [(st, [lst])]
   where
     st  = initST {point = (-size / 2, size / 2), mark = False}
     lst = repCommand 4 [crossStich level size, qr 90]

@@ -7,12 +7,11 @@ import Graphics.Turtle
 
 
 func :: Float -> Float
-func = archimedeanSpiral 2
--- func = logarithmicSpiral 0.1 0.2
-
+func = logarithmicSpiral 0.1 0.2
+-- func = archimedeanSpiral 2
 
 main :: IO ()
-main = runTurtle initDisp white 100 [(initST, cmd)]
+main = runTurtle initWindow white 100 [(initST, cmd)]
   where
     cmd = [grid, drawPolarGraph func lst]
     lst = [0, 0.1 .. pi * 20]

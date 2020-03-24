@@ -10,7 +10,7 @@ import Graphics.Turtle
 main :: IO ()
 main = runTurtle window white 100 [(st, [fanFlower])]
   where
-    window = InWindow "test2" (800, 600) (10, 10)
+    window = initWindow {title = "Fan Flowar"}
     st = initST {mark = False, point = (125, 34)}
 
 

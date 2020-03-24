@@ -8,9 +8,9 @@ import Graphics.Turtle
 
 -- | Main
 main :: IO ()
-main = runTurtle winST white 100 [(initST {penColor = rose}, lst)]
+main = runTurtle window white 100 [(initST {penColor = rose}, lst)]
   where
-    winST = initWindow {zoom = 200}
+    window = initWindow {title = "Rose Curve", zoom = 200}
     lst = [grid' 2 0.1, drawPolarGraph (roseCurve 5 2) [0, 0.01 .. pi * 4]]
 
 

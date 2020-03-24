@@ -9,14 +9,14 @@ import Graphics.L_system
 
 -- | パラメータ
 level =  10 :: Int
-size  = 400 :: Float
+size  = 300 :: Float
 
 
 -- | Main
 main :: IO ()
 main = runTurtle window (greyN 0.3) 100 [(s, cmd) | s <- [st1, st2, st3, st4]]
   where
-    window = InWindow "Dragon Curve" (800, 800) (10, 10)
+    window = initWindow {title = "Dragon Curve by L-system"}
     st1 = initST {mark = False, penColor = red,    angle =  45}
     st2 = initST {mark = False, penColor = green,  angle = 135}
     st3 = initST {mark = False, penColor = blue,   angle = 225}

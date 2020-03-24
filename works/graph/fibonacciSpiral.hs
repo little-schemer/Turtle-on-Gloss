@@ -8,8 +8,10 @@ import Graphics.Turtle
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 100 [(st, [grid' 500 1, fibonacciSpiral 15])]
-  where st = initST {angle = -90}
+main = runTurtle window white 100 [(st, [grid' 100 1, fibonacciSpiral 10])]
+  where
+    window = initWindow {title = "Fibonacci Spiral", zoom = 10}
+    st = initST {angle = -90}
 
 
 -- | Fibonacci 数列

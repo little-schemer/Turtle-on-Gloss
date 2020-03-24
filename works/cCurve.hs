@@ -13,7 +13,7 @@ size  = 300 :: Float
 
 -- | Main
 main :: IO ()
-main = runTurtle initDisp white 200 [(st, [cCurve level size])]
+main = runTurtle initWindow white 200 [(st, [cCurve level size])]
   where st  = initST {point = (-size / 2, size / 4), mark = False}
 
 
