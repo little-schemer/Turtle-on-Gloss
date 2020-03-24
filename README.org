@@ -1,6 +1,6 @@
-#+TITLE: README.org : Turtle Graphics on Gloss
-#+AUTHOR: little Haskeller
-#+EMAIL:
+# #+TITLE: README.org : Turtle Graphics on Gloss
+# #+AUTHOR: little Haskeller
+# #+EMAIL:
 #+LANGUAGE: ja
 #+OPTIONS: toc:nil num:nil author:nil creator:nil LaTeX:t timestamp:nil
 # + see "http://www.geocities.jp/km_pp1/org-mode/org-mode-document.html"
@@ -61,10 +61,10 @@
 
    #+BEGIN_SRC haskell
      runTurtle :: WinConfig               -- ^ 画面の状態
-                -> Color                   -- ^ 背景色
-                -> Int                     -- ^ 1 秒あたりのステップ数
-                -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
-                -> IO ()
+               -> Color                   -- ^ 背景色
+               -> Int                     -- ^ 1 秒あたりのステップ数
+               -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
+               -> IO ()
    #+END_SRC
 
    ~Color~ は ~gloss~ の ~simulate~ 関数に渡すものです。詳しくは [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] を参照し
@@ -86,11 +86,11 @@
    #+BEGIN_SRC haskell
      initWindow :: WinConfig
      initWindow = WinConfig { title   = "Turtle Graphics"
-                             , winSize = (800, 600)
-                             , winPos  = (10, 10)
-                             , zoom    = 1
-                             , shiftXY = (0, 0)
-                             }
+                            , winSize = (800, 600)
+                            , winPos  = (10, 10)
+                            , zoom    = 1
+                            , shiftXY = (0, 0)
+                            }
    #+END_SRC
 
    ~TurtleST~ は亀の状態を保持します。
