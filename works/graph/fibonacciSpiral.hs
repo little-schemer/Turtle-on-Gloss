@@ -8,7 +8,7 @@ import Graphics.Turtle
 
 -- | Main
 main :: IO ()
-main = runTurtle window white 100 [(st, [grid' 100 1, fibonacciSpiral 10])]
+main = runTurtle window white 100 [(st, [grid' 100 1, fibonacciSpiral 12])]
   where
     window = initWindow {title = "Fibonacci Spiral", zoom = 10}
     st = initST {angle = -90}

@@ -1,3 +1,11 @@
+#+TITLE: README.org : Turtle Graphics on Gloss
+#+AUTHOR: little Haskeller
+#+EMAIL:
+#+LANGUAGE: ja
+#+OPTIONS: toc:nil num:nil author:nil creator:nil LaTeX:t timestamp:nil
+# + see "http://www.geocities.jp/km_pp1/org-mode/org-mode-document.html"
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../github_e.css">
+
 * Turtle Graphics on Gloss
 
   [[http://hackage.haskell.org/package/gloss][Gloss]] を使った [[https://en.wikipedia.org/wiki/Turtle_graphics][Turtle Graphics]] です。Gloss については [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] の記事が参考になる
@@ -29,6 +37,7 @@
    + ~stack build~ を実行することで sample ディレクトリ以下にあるファイルがコン
      パイルされ、 ~CircleDance, DragonCurve, KochCurve, Graph, Star, DragonCurveL,
      KochCurveL~ といったファイルが作られます。
+
    + ~stack exec CircleDance~ や ~stack exec DragonCurveL~ を実行すると図形が
      描画されます。
 
@@ -43,7 +52,7 @@
      main :: IO ()
      main = runTurtle window white 20 [(st, cmdLst)]
        where
-         window = initDisp
+         window = initWindow
          st     = initST
          cmdLst = [forward 200, left 120, forward 200, left 120, forward 200]
    #+END_SRC
@@ -51,42 +60,60 @@
    ~runTurtle~ の型は次のようになってます。
 
    #+BEGIN_SRC haskell
-     runTurtle :: Display                -- gloss の描画モード
-               -> Color                  -- gloss の背景色
-               -> Int                    -- 1 秒あたりのステップ数
-               -> [(TurtleST, [Command]) -- 亀のデータ
-               -> IO ()
+     runTurtle :: WinConfig               -- ^ 画面の状態
+                -> Color                   -- ^ 背景色
+                -> Int                     -- ^ 1 秒あたりのステップ数
+                -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
+                -> IO ()
    #+END_SRC
 
-   ~Display~ および ~Color~ は ~gloss~ の ~simulate~ 関数に渡すものです。
-   詳しくは [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] を参照してください。
+   ~Color~ は ~gloss~ の ~simulate~ 関数に渡すものです。詳しくは [[https://qiita.com/lotz/items/eb73e62a64bc208c2dd6][こちら]] を参照し
+   てください。
 
-   ~Display~ は ~initDisp~ で既定値に設定することが可能です。
+   ~WinConfig~ は画面の設定を保持しています。
 
    #+BEGIN_SRC haskell
-     initDisp :: Display
-     initDisp = InWindow "Turtle Graphics" (800, 600) (10, 10)
+     data WinConfig = WinConfig { title   :: String         -- ^ Window のタイトル
+                                , winSize :: (Int, Int)     -- ^ Window のサイズ
+                                , winPos  :: (Int, Int)     -- ^ Window の位置
+                                , zoom    :: Float          -- ^ 画像の拡大率
+                                , shiftXY :: (Float, Float) -- ^ 画像の移動量
+                                } deriving Show
    #+END_SRC
 
-   ~TurtleST~ は亀の初期値です。
+   ~initWindow~ で既定値に設定することが可能です。
+
+   #+BEGIN_SRC haskell
+     initWindow :: WinConfig
+     initWindow = WinConfig { title   = "Turtle Graphics"
+                             , winSize = (800, 600)
+                             , winPos  = (10, 10)
+                             , zoom    = 1
+                             , shiftXY = (0, 0)
+                             }
+   #+END_SRC
+
+   ~TurtleST~ は亀の状態を保持します。
 
     #+BEGIN_SRC haskell
-     data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
-                              , point    :: Point -- ^ 亀の位置
-                              , penColor :: Color -- ^ ペンの色
-                              , pen      :: Bool  -- ^ up or down
-                              , mark     :: Bool  -- ^ 亀のマーク
-                              } deriving Show
+      data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
+                               , point    :: Point -- ^ 亀の位置
+                               , penColor :: Color -- ^ ペンの色
+                               , pen      :: Bool  -- ^ up or down
+                               , mark     :: Bool  -- ^ 亀のマーク
+                               , stack    :: [(Float, Point, Color, Bool, Bool)]
+                               } deriving Show
    #+END_SRC
 
-   ~TurtleST~ は ~initST~ で既定値を設定できますが、自分で設定することも可能です。
+   ~TurtleST~ は ~initST~ で既定値を設定できます。
 
    #+BEGIN_SRC haskell
      initST = TurtleST { angle    = 0
                        , point    = (0, 0)
                        , penColor = black
                        , pen      = True
-                       , mark     = True }
+                       , mark     = True
+                       }
    #+END_SRC
 
    ~Command~ は亀に実行させる命令です。
@@ -97,15 +124,13 @@
 
    #+BEGIN_SRC haskell
      type PrimitiveCommand = TurtleST -> (Picture, TurtleST)
-
      type Command = [PrimitiveCommand]
    #+END_SRC
 
    ~PrimitiveCommand~ は ~TurtleST~ を受け取り、図形 (Picture) とコマンド実行後の
    ~TurtleST~ を返します。
 
-   ~Command~ は ~PrimitiveCommand~ のリストになっており、通常はこちらを使用しま
-   す。
+   ~Command~ は ~PrimitiveCommand~ のリストになっており、通常はこちらを使用します。
 
    | コマンド                | 省略形 | 動作                                                    |
    |-------------------------+--------+---------------------------------------------------------|
