@@ -25,7 +25,7 @@ graph2 = drawGraph f domain
 main :: IO ()
 main = runTurtle disp white 200 [tData0, tData1, tData2]
   where
-    disp   = initWindow {title = "Graph", zoom = 10, moveXY = (0, -10)}
+    disp   = initWindow {title = "Graph", zoom = 10, shiftXY = (0, -10)}
     st     = initST
     tData0 = (st, [grid' 40 1])
     tData1 = (st, [setColor rose,  graph1])
