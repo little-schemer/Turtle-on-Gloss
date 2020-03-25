@@ -88,7 +88,7 @@ initWindow = WinConfig { title   = "Turtle Graphics"
 runTurtle :: WinConfig               -- ^ 画面の状態
           -> Color                   -- ^ 背景色
           -> Int                     -- ^ 1 秒あたりのステップ数
-          -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
+          -> [(TurtleST, [Command])] -- ^ [ ( 亀の初期値, [ コマンド ] ) ]
           -> IO ()
 runTurtle window bc step tds = simulate disp bc step model drawModel simModel
   where
