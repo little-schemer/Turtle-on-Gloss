@@ -327,9 +327,7 @@ drawPolygonR :: Int             -- ^ 角数
              -> Command
 drawPolygonR = drawPolygon right
 
---
--- | 正多角形を描く
---
+-- 補助関数
 drawPolygon :: (Float -> Command) -> Int -> Float -> Command
 drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
   where
@@ -345,19 +343,19 @@ drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
 --
 -- | 亀の位置を中心に、半径 r の円を描く
 --
-drawCircle :: Float             -- ^ 半径
-           -> Command
-drawCircle r = [drawCircle' r]
-  where drawCircle' r st = (Color c $ Translate x y $ Circle r, st)
-          where ((x, y), c) = (point st, penColor st)
+drawCircle :: Float -> Command
+drawCircle r = drawCircle' Circle r
 
 --
 -- | 亀の位置を中心に、半径 r の solid な円を描く
 --
-drawCircleSolid :: Float        -- ^ 半径
-           -> Command
-drawCircleSolid r = [drawCircleSolid' r]
-  where drawCircleSolid' r st = (Color c $ Translate x y $ circleSolid r, st)
+drawCircleSolid :: Float -> Command
+drawCircleSolid r = drawCircle' circleSolid r
+
+-- 補助関数
+drawCircle' :: (Float -> Picture) -> Float -> Command
+drawCircle' func r = [circle' r]
+  where circle' r st = (Color c $ Translate x y $ func r, st)
           where ((x, y), c) = (point st, penColor st)
 
 
