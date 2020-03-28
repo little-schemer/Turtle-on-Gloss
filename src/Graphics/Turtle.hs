@@ -166,11 +166,10 @@ turn :: Float -> PrimitiveCommand
 turn th st = (Blank, st {angle = normalize $ th + angle st})
 
 -- | 角度を 0 <= th < 360 に正規化する
+--   + Graphics.Gloss.Geometry.Angle の normalizeAngle を流用
 normalize :: Float -> Float
-normalize th
-  | th >= 360 = normalize (th - 360)
-  | th <    0 = normalize (th + 360)
-  | otherwise = th
+normalize th = th - 360 * floor' (th / 360)
+  where floor' x = fromIntegral (floor x)
 
 -- | pen == True なら図形を描く
 isDraw :: TurtleST -> Picture -> Picture
