@@ -343,19 +343,18 @@ drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
 -- | 亀の位置を中心に、半径 r の円を描く
 --
 drawCircle :: Float -> Command
-drawCircle r = drawCircle' Circle r
+drawCircle r = [drawCircle' Circle r]
 
 --
 -- | 亀の位置を中心に、半径 r の solid な円を描く
 --
 drawCircleSolid :: Float -> Command
-drawCircleSolid r = drawCircle' circleSolid r
+drawCircleSolid r = [drawCircle' circleSolid r]
 
 -- 補助関数
-drawCircle' :: (Float -> Picture) -> Float -> Command
-drawCircle' func r = [circle' r]
-  where circle' r st = (Color c $ Translate x y $ func r, st)
-          where ((x, y), c) = (point st, penColor st)
+drawCircle' :: (Float -> Picture) -> Float -> PrimitiveCommand
+drawCircle' func r st = (Color c $ Translate x y $ func r, st)
+  where ((x, y), c) = (point st, penColor st)
 
 
 
@@ -372,13 +371,7 @@ drawArcL :: Float               -- ^ 中心角
 drawArcL th r
   | th <= 10  = [drawArcL' th r]
   | otherwise = drawArcL' 10 r : drawArcL (th - 10) r
-  where
-    drawArcL' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
-      where
-        a  = angle st
-        a' = a - 90
-        (ox, oy) = newPoint r (a + 90) (point st)
-        st' = st {angle = a + th, point = newPoint r (a' + th) (ox, oy)}
+  where drawArcL' th r st = drawArc' arc True th r st
 
 --
 -- | 中心角 th 半径 r の円弧を右回りに描く
@@ -389,13 +382,46 @@ drawArcR :: Float               -- ^ 中心角
 drawArcR th r
   | th <= 10  = [drawArcR' th r]
   | otherwise = drawArcR' 10 r : drawArcR (th - 10) r
+  where drawArcR' th r st = drawArc' arc False th r st
+
+--
+-- | 中心角 th 半径 r の Solid な円弧を左回りに描く
+--
+drawArcSolidL :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Command
+drawArcSolidL th r
+  | th <= 10  = [drawArcL' th r]
+  | otherwise = drawArcL' 10 r : drawArcSolidL (th - 10) r
+  where drawArcL' th r st = drawArc' arcSolid True th r st
+
+--
+-- | 中心角 th 半径 r の Solid な円弧を右回りに描く
+--
+drawArcSolidR :: Float          -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
+drawArcSolidR th r
+  | th <= 10  = [drawArcR' th r]
+  | otherwise = drawArcR' 10 r : drawArcSolidR (th - 10) r
+  where drawArcR' th r st = drawArc' arcSolid False th r st
+
+-- 補助関数
+drawArc' :: (Float -> Float -> Float -> Picture)
+     -> Bool                    -- 左 : True, 右 : False
+     -> Float                   -- 中心角
+     -> Float                   -- 半径
+     -> PrimitiveCommand
+drawArc' func b th r st = (pic, st')
   where
-    drawArcR' th r st = (Translate ox oy $ isDraw st $ Arc a' (a' + th) r, st')
-      where
-        a  = angle st
-        a' = 90 + a - th
-        (ox, oy) = newPoint r (a - 90) (point st)
-        st' = st {angle = a - th, point = newPoint r a' (ox, oy)}
+    pic = isDraw st (Color c $ Translate ox oy $ Rotate rot $ func 0 th r)
+    c = penColor st
+    a = angle st
+    (th', ra) = if b then (a + th, 90) else (a - th, -90)
+    (ox, oy) = newPoint r (a + ra) (point st)
+    p' = newPoint r (th' - ra) (ox, oy)
+    rot = ra - a + (if b then 0 else th)
+    st' = st {angle = th', point = p'}
 
 
 
