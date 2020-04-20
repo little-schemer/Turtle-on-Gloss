@@ -118,7 +118,7 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
                 mark2 = Polygon [(1, -4), (1, 4), (10, 0)]
 
     -- モデルを変化させる
-    simModel _ _ (pic, [])  = (pic, [])
+    simModel _ _ (pic, []) = (pic, [])
     simModel _ _ (pic, ts) = foldl f (pic, []) ts
       where
         f model (_, [])            = model
@@ -135,9 +135,7 @@ dispPicture :: WinConfig               -- ^ 画面の状態
 dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
   where
     disp = InWindow (title window) (winSize window) (winPos window)
-
     (z, (sx, sy)) = (zoom window, shiftXY window)
-
     pic = Pictures $ map makePicture tds
     makePicture (st, cmds) = fst $ foldl f (Blank, st) (concat cmds)
           where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
@@ -418,8 +416,8 @@ drawArc' func b th r st = (pic, st')
     c = penColor st
     a = angle st
     (th', ra) = if b then (a + th, 90) else (a - th, -90)
-    (ox, oy) = newPoint r (a + ra) (point st)
-    p' = newPoint r (th' - ra) (ox, oy)
+    (ox, oy)  = newPoint r (a + ra) (point st)
+    p'  = newPoint r (th' - ra) (ox, oy)
     rot = ra - a + (if b then 0 else th)
     st' = st {angle = th', point = p'}
 
@@ -443,6 +441,7 @@ drawGraph fx domain = drawGraph' (id, fx) domain
 drawGraph' :: ((Float -> Float), (Float -> Float)) -- ^ (x = f(t), y = g(t))
            -> [Float]                              -- ^ 定義域
            -> Command
+drawGraph' _        []       = [\st -> (Blank, st)]
 drawGraph' (fx, fy) (t : ts) = concat $ cmd1 ++ cmd2
   where
     cmd1 = [pu, goto (fx t, fy t), pd]
@@ -454,6 +453,7 @@ drawGraph' (fx, fy) (t : ts) = concat $ cmd1 ++ cmd2
 drawPolarGraph :: (Float -> Float) -- ^ 関数 r = f(th)
                -> [Float]          -- ^ 定義域
                -> Command
+drawPolarGraph _  []       = [\st -> (Blank, st)]
 drawPolarGraph fp (t : ts) = concat $ cmd1 ++ cmd2
   where
     cmd1 = [pu, goto (polarToRectangular (fp t, t)), pd]

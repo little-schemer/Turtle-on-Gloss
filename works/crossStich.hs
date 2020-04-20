@@ -7,8 +7,8 @@ import Graphics.Turtle
 
 
 -- | パラメータ
-size  = 300
-level =   4
+size  = 300 :: Float
+level =   4 :: Int
 
 
 -- | Main
