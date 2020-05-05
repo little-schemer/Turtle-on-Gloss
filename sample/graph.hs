@@ -2,8 +2,8 @@
 -- | 関数のグラフを描く
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
 
 
 -- | 定義域
@@ -13,7 +13,7 @@ domain = [-50.0, -49.9 .. 50.0]
 -- | 二次関数の例
 graph1 :: Command
 graph1 = drawGraph f domain
-  where f x = x ^ 2 - 2 * x - 10
+  where f x = (1 / 8) * x ^ 2 - 2 * x - 5
 
 -- | 一次関数の例
 graph2 :: Command

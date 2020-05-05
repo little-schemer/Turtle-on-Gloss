@@ -15,7 +15,7 @@ module Graphics.Turtle where
 import           Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as PA
 import           Graphics.Gloss.Data.Vector
-import           Graphics.Gloss.Data.ViewPort
+-- import           Graphics.Gloss.Data.ViewPort
 import           Graphics.Gloss.Geometry.Angle
 
 
@@ -25,21 +25,23 @@ import           Graphics.Gloss.Geometry.Angle
 ------------------------------------------------------------
 
 -- | 亀の状態
-data TurtleST = TurtleST { angle    :: Float -- ^ 亀の向き
-                         , point    :: Point -- ^ 亀の位置
-                         , penColor :: Color -- ^ ペンの色
-                         , pen      :: Bool  -- ^ up or down
-                         , mark     :: Bool  -- ^ 亀のマーク
-                         , stack    :: [(Float, Point, Color, Bool, Bool)]
-                         } deriving Show
+data TurtleST = TurtleST
+    { angle    :: Float         -- ^ 亀の向き
+    , point    :: Point         -- ^ 亀の位置
+    , penColor :: Color         -- ^ ペンの色
+    , pen      :: Bool          -- ^ up or down
+    , mark     :: Bool          -- ^ 亀のマーク
+    , stack    :: [(Float, Point, Color, Bool, Bool)]
+    } deriving Show
 
 -- | 画面の設定
-data WinConfig = WinConfig { title   :: String         -- ^ Window のタイトル
-                           , winSize :: (Int, Int)     -- ^ Window のサイズ
-                           , winPos  :: (Int, Int)     -- ^ Window の位置
-                           , zoom    :: Float          -- ^ 画像の拡大率
-                           , shiftXY :: (Float, Float) -- ^ 画像の移動量
-                           } deriving Show
+data WinConfig = WinConfig
+    { title   :: String         -- ^ Window のタイトル
+    , winSize :: (Int, Int)     -- ^ Window のサイズ
+    , winPos  :: (Int, Int)     -- ^ Window の位置
+    , zoom    :: Float          -- ^ 画像の拡大率
+    , shiftXY :: (Float, Float) -- ^ 画像の移動量
+    } deriving Show
 
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
 
@@ -57,24 +59,26 @@ type Model             = (Picture, [(TurtleST, Command)])
 -- | TurtleST の初期値を設定する
 --
 initST :: TurtleST
-initST = TurtleST { angle    = 0
-                  , point    = (0, 0)
-                  , penColor = black
-                  , pen      = True
-                  , mark     = True
-                  , stack    = []
-                  }
+initST = TurtleST
+  { angle    = 0
+  , point    = (0, 0)
+  , penColor = black
+  , pen      = True
+  , mark     = True
+  , stack    = []
+  }
 
 --
 -- | WinConfig の初期値を設定する
 --
 initWindow :: WinConfig
-initWindow = WinConfig { title   = "Turtle Graphics"
-                       , winSize = (800, 600)
-                       , winPos  = (10, 10)
-                       , zoom    = 1
-                       , shiftXY = (0, 0)
-                       }
+initWindow = WinConfig
+  { title   = "Turtle Graphics"
+  , winSize = (800, 600)
+  , winPos  = (10, 10)
+  , zoom    = 1
+  , shiftXY = (0, 0)
+  }
 
 
 

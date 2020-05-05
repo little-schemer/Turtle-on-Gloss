@@ -2,24 +2,33 @@
 -- | Koch 曲線 (再帰版)
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
+import           Options.Applicative
 
 
 -- | パラメータ
-level =   4 :: Int
 size  = 400 :: Float
+
+
+-- | コマンドオプション
+data Option = Option { kochLevel :: Int }
+
+opt :: Parser Option
+opt = Option <$> option auto (short 'L' <> value 4)
 
 
 -- | Main
 main :: IO ()
-main = runTurtle window white 100 [(s, cmd) | s <- [st1, st2, st3]]
+main = do
+  Option level <- execParser (info opt mempty)
+  runTurtle window white 100 [(s, cmd level) | s <- [st1, st2, st3]]
   where
     window = initWindow {title = "Koch Curve"}
     st1 = initST {angle =    0, point = (-200,  200 / sqrt 3), mark = False}
     st2 = initST {angle = -120, point = ( 200,  200 / sqrt 3), mark = False}
     st3 = initST {angle =  120, point = (   0, -400 / sqrt 3), mark = False}
-    cmd = [kochCurve level size]
+    cmd level = [kochCurve level size]
 
 
 -- | 再帰による Koch 曲線
