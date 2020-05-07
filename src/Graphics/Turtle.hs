@@ -15,7 +15,6 @@ module Graphics.Turtle where
 import           Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as PA
 import           Graphics.Gloss.Data.Vector
--- import           Graphics.Gloss.Data.ViewPort
 import           Graphics.Gloss.Geometry.Angle
 
 
