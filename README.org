@@ -155,7 +155,7 @@
    | drawCircleSolid r       | --     | 亀の位置を中心に、半径 r の Solid な円を描く。          |
    | drawArcL th r           | --     | 中心角 th , 半径 r の円弧を左回りに描く。               |
    | drawArcR th r           | --     | 中心角 th , 半径 r の円弧を右回りに描く。               |
-   | drawPolygon             | --     | 亀の描いた線を元に solid な Polygon を描く。            |
+   | drawPolygon [Command]   | --     | 亀の描いた線を元に solid な Polygon を描く。            |
    | drawGraph fx domain     | --     | 陽関数のグラフを描く。                                  |
    | drawGraph' fx fy domain | --     | 陰関数のグラフを描く。                                  |
    | grid                    | --     | grid' 500 10                                            |
