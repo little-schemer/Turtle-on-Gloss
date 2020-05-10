@@ -2,12 +2,11 @@
 -- | サイクロイド曲線を描く
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
 
 
 -- | drawGraph' に与える関数
-func :: (Float -> Float, Float -> Float)
 func = epicycloid 100 85
 -- func = astroid 200
 -- func = cardioid 100

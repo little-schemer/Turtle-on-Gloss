@@ -2,8 +2,8 @@
 -- | トロコイド曲線を描く
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
 
 
 -- | drawGraph' に与える関数

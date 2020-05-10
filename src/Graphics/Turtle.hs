@@ -95,7 +95,7 @@ initWindow = WinConfig
 runTurtle :: WinConfig               -- ^ 画面の状態
           -> Color                   -- ^ 背景色
           -> Int                     -- ^ 1 秒あたりのステップ数
-          -> [(TurtleST, [Command])] -- ^ [ ( 亀の初期値, [ コマンド ] ) ]
+          -> [(TurtleST, [Command])]
           -> IO ()
 runTurtle window bc step tds = simulate disp bc step model drawModel simModel
   where
@@ -137,7 +137,7 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
 --
 dispPicture :: WinConfig               -- ^ 画面の状態
             -> Color                   -- ^ 背景色
-            -> [(TurtleST, [Command])] -- ^ (亀の初期値とコマンド) のリスト
+            -> [(TurtleST, [Command])]
             -> IO ()
 dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
   where
@@ -255,6 +255,7 @@ quickRight th = [turn (-th)]
 goto :: Point -> Command
 goto (x, y) = [goto']
   where goto' st = toPoint (x, y) st {angle = radToDeg $ argV (x - x', y - y')}
+          where (x', y') = point st
 
 --
 -- | 亀の向きを設定する
@@ -331,22 +332,31 @@ drawPicture pic = [\st -> (pic, st)]
 -- * Alias
 ------------------------------------------------------------
 
+-- | forward
 fd = forward
 
+-- | quickForward
 qf = quickForward
 
+-- | backward
 bk = backward
 
+-- | left
 lt = left
 
+-- | right
 rt = right
 
+-- | quickLeft
 ql = quickLeft
 
+-- | quickRight
 qr = quickRight
 
+-- | penUp
 pu = penUp
 
+-- | penDown
 pd = penDown
 
 
@@ -357,26 +367,84 @@ pd = penDown
 
 -- ** 円
 
+--
+-- | 亀の位置を中心に、半径 r の円を描く
+--
+--   - 色は亀のペンの色になる
+--
+drawCircle :: Float             -- ^ 半径
+           -> Command
+drawCircle r = [drawCircle' Circle r]
+
+--
+-- | 亀の位置を中心に、半径 r の solid な円を描く
+--
+--   - 色は亀のペンの色になる
+--
+drawCircleSolid :: Float        -- ^ 半径
+                -> Command
+drawCircleSolid r = [drawCircle' circleSolid r]
+
 -- 補助関数
 drawCircle' :: (Float -> Picture) -> Float -> PrimitiveCommand
 drawCircle' func r st = (Color col $ Translate x y $ func r, st)
   where ((x, y), col) = (point st, penColor st)
 
--- | 亀の位置を中心に、半径 r の円を描く
---   + 色は亀のペンの色になる
-drawCircle :: Float             -- ^ 半径
-           -> Command
-drawCircle r = [drawCircle' Circle r]
-
--- | 亀の位置を中心に、半径 r の solid な円を描く
---   + 色は亀のペンの色になる
-drawCircleSolid :: Float        -- ^ 半径
-                -> Command
-drawCircleSolid r = [drawCircle' circleSolid r]
-
 
 
 -- ** 円弧
+
+--
+-- | 中心角 th 半径 r の円弧を左回りに描く
+--
+--   - 色は亀のペンの色になる
+--
+drawArcL :: Float               -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
+drawArcL th r
+  | th <= 10  = [drawArcL' th r]
+  | otherwise = drawArcL' 10 r : drawArcL (th - 10) r
+  where drawArcL' th r st = drawArc' arc True th r st
+
+--
+-- | 中心角 th 半径 r の円弧を右回りに描く
+--
+--   - 色は亀のペンの色になる
+--
+drawArcR :: Float               -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
+drawArcR th r
+  | th <= 10  = [drawArcR' th r]
+  | otherwise = drawArcR' 10 r : drawArcR (th - 10) r
+  where drawArcR' th r st = drawArc' arc False th r st
+
+--
+-- | 中心角 th 半径 r の Solid な円弧を左回りに描く
+--
+--   - 色は亀のペンの色になる
+--
+drawArcSolidL :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Command
+drawArcSolidL th r
+  | th <= 10  = [drawArcL' th r]
+  | otherwise = drawArcL' 10 r : drawArcSolidL (th - 10) r
+  where drawArcL' th r st = drawArc' arcSolid True th r st
+
+--
+-- | 中心角 th 半径 r の Solid な円弧を右回りに描く
+--
+--   - 色は亀のペンの色になる
+--
+drawArcSolidR :: Float          -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
+drawArcSolidR th r
+  | th <= 10  = [drawArcR' th r]
+  | otherwise = drawArcR' 10 r : drawArcSolidR (th - 10) r
+  where drawArcR' th r st = drawArc' arcSolid False th r st
 
 -- 補助関数
 drawArc' :: (Float -> Float -> Float -> Picture)
@@ -395,57 +463,20 @@ drawArc' func b th r st = (pic, st')
     rot = ra - a + (if b then 0 else th)
     st' = st {angle = th', point = p'}
 
--- | 中心角 th 半径 r の円弧を左回りに描く
-drawArcL :: Float               -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
-drawArcL th r
-  | th <= 10  = [drawArcL' th r]
-  | otherwise = drawArcL' 10 r : drawArcL (th - 10) r
-  where drawArcL' th r st = drawArc' arc True th r st
-
---
--- | 中心角 th 半径 r の円弧を右回りに描く
---
-drawArcR :: Float               -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
-drawArcR th r
-  | th <= 10  = [drawArcR' th r]
-  | otherwise = drawArcR' 10 r : drawArcR (th - 10) r
-  where drawArcR' th r st = drawArc' arc False th r st
-
---
--- | 中心角 th 半径 r の Solid な円弧を左回りに描く
---
-drawArcSolidL :: Float          -- ^ 中心角
-              -> Float          -- ^ 半径
-              -> Command
-drawArcSolidL th r
-  | th <= 10  = [drawArcL' th r]
-  | otherwise = drawArcL' 10 r : drawArcSolidL (th - 10) r
-  where drawArcL' th r st = drawArc' arcSolid True th r st
-
---
--- | 中心角 th 半径 r の Solid な円弧を右回りに描く
---
-drawArcSolidR :: Float          -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
-drawArcSolidR th r
-  | th <= 10  = [drawArcR' th r]
-  | otherwise = drawArcR' 10 r : drawArcSolidR (th - 10) r
-  where drawArcR' th r st = drawArc' arcSolid False th r st
-
 
 
 -- ** ポリゴン
 
+--
 -- | 亀の描いた線を元に solid な Polygon を描く
-drawPolygon :: Color -> [Command] -> Command
-drawPolygon col cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
+--
+--   - 色は亀のペンの色になる
+--
+drawPolygon :: [Command]        -- ^ Polygon を描くための亀の動き
+            -> Command
+drawPolygon cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
   where
-    drawPolygon' st = (Color col $ Polygon ps, st')
+    drawPolygon' st = (Color (penColor st') $ Polygon ps, st')
       where
         (ps, st') = makePoints [] (concat cs) st
         makePoints ps []       st = (reverse (point st : ps), st)
@@ -460,8 +491,8 @@ drawPolygon col cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
 --
 -- | 陽関数のグラフを描く
 --
-drawGraph :: (Float -> Float)   -- ^ 関数 y = f(x)
-          -> [Float]            -- ^ 定義域
+drawGraph :: (Float -> Float)                      -- ^ 関数 y = f(x)
+          -> [Float]                               -- ^ 定義域
           -> Command
 drawGraph fx domain = drawGraph' (id, fx) domain
 
@@ -480,8 +511,8 @@ drawGraph' (fx, fy) (t : ts) = concat $ cmd1 ++ cmd2
 --
 -- | 極座標方程式のグラフを描く
 --
-drawPolarGraph :: (Float -> Float) -- ^ 関数 r = f(th)
-               -> [Float]          -- ^ 定義域
+drawPolarGraph :: (Float -> Float)                 -- ^ 関数 r = f(th)
+               -> [Float]                          -- ^ 定義域
                -> Command
 drawPolarGraph _  []       = [\st -> (Blank, st)]
 drawPolarGraph fp (t : ts) = concat $ cmd1 ++ cmd2
