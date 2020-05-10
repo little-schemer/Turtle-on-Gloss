@@ -308,35 +308,6 @@ pd = penDown
 ------------------------------------------------------------
 
 ----------------------------------------
--- ** 正多角形
-----------------------------------------
-
---
--- | 一辺の長さが m の正 n 角形を左回りに描く
---
-drawPolygonL :: Int             -- ^ 角数
-             -> Float           -- ^ 一辺の長さ
-             -> Command
-drawPolygonL = drawPolygon left
-
---
--- | 一辺の長さが m の正 n 角形を右回りに描く
---
-drawPolygonR :: Int             -- ^ 角数
-             -> Float           -- ^ 一辺の長さ
-             -> Command
-drawPolygonR = drawPolygon right
-
--- 補助関数
-drawPolygon :: (Float -> Command) -> Int -> Float -> Command
-drawPolygon cmd n m = concat $ cs ++ [cmd (- th / 2)]
-  where
-    th = 360 / (fromIntegral n)
-    cs = [cmd (th / 2), (repCommand n [forward m, cmd th])]
-
-
-
-----------------------------------------
 -- ** 円
 ----------------------------------------
 
@@ -545,3 +516,25 @@ repCommand n cLst = concat $ concat $ replicate n cLst
 --
 polarToRectangular :: (Float, Float) -> (Float, Float)
 polarToRectangular (r, th) = (r * cos th, r * sin th)
+
+
+-------------------------------------------------------------
+
+drawPicture :: Picture -> Command
+drawPicture pic = [\st -> drawPicture' pic st]
+
+drawPicture' :: Picture -> PrimitiveCommand
+drawPicture' pic st = (pic, st)
+
+------------------------------------------------
+
+makePolygon :: Color -> [Command] -> PrimitiveCommand
+makePolygon col cs st = (Color col $ Polygon ps, st')
+  where
+    (ps, st') = makePoints [] (concat cs) st
+    makePoints ps []       st = (reverse (point st : ps), st)
+    makePoints ps (c : cs) st = makePoints (point st : ps) cs (snd $ c st)
+
+drawPolygon :: Color -> [Command] -> Command
+drawPolygon col cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
+  where drawPolygon' st = makePolygon col cs st
