@@ -23,7 +23,9 @@ import           Graphics.Gloss.Geometry.Angle
 -- * 型
 ------------------------------------------------------------
 
+--
 -- | 亀の状態
+--
 data TurtleST = TurtleST
     { angle    :: Float         -- ^ 亀の向き
     , point    :: Point         -- ^ 亀の位置
@@ -33,7 +35,9 @@ data TurtleST = TurtleST
     , stack    :: [(Float, Point, Color, Bool, Bool)]
     } deriving Show
 
+--
 -- | 画面の設定
+--
 data WinConfig = WinConfig
     { title   :: String         -- ^ Window のタイトル
     , winSize :: (Int, Int)     -- ^ Window のサイズ
@@ -149,30 +153,43 @@ dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
 -- * 補助関数
 ------------------------------------------------------------
 
+--
 -- | 移動先のポイントを求める
+--
 newPoint :: Float -> Float -> Point -> Point
 newPoint n th p = p PA.+ n PA.* (unitVectorAtAngle $ degToRad th)
 
+--
 -- | p の位置へ移動する（亀の向きは不変。 pen == True なら線を描く）
+--
 toPoint :: Point -> PrimitiveCommand
 toPoint p st = (isDraw st $ Line [point st, p], st {point = p})
 
+--
 -- | n だけ前進する (pen == True なら線を描く)
+--
 move :: Float -> PrimitiveCommand
 move n st = toPoint (newPoint n th p) st
   where (th, p) = (angle st, point st)
 
+--
 -- | th 度旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
+--
 turn :: Float -> PrimitiveCommand
 turn th st = (Blank, st {angle = normalize $ th + angle st})
 
+--
 -- | 角度を 0 <= th < 360 に正規化する
---   + Graphics.Gloss.Geometry.Angle の normalizeAngle を流用
+--
+--   - Graphics.Gloss.Geometry.Angle の normalizeAngle を流用
+--
 normalize :: Float -> Float
 normalize th = th - 360 * floor' (th / 360)
   where floor' x = fromIntegral (floor x)
 
--- | pen == True なら図形を描く
+--
+-- | pen が down していれば図形を描く
+--
 isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st then Color (penColor st) $ pic else Blank
 
@@ -182,74 +199,103 @@ isDraw st pic = if pen st then Color (penColor st) $ pic else Blank
 -- * 基本コマンド
 ------------------------------------------------------------
 
+--
 -- | n だけ前進する (pen == True なら線を描く)
+--
 forward :: Float -> Command
 forward n
   | n <= 50   = [move n]
   | otherwise = move 50 : forward (n - 50)
 
+--
 -- | 高速に前進する
+--
 quickForward :: Float -> Command
 quickForward n = [move n]
 
+--
 -- | n だけ後退する (pen == True なら線を描く)
+--
 backward :: Float -> Command
 backward n
   | n <= 50   = [move (- n)]
   | otherwise = move (-50) : backward (n - 50)
 
+--
 -- | th 度だけ左旋回する
+--
 left :: Float -> Command
 left th
   | th <= 30  = [turn th]
   | otherwise = turn 30 : left (th - 30)
 
+--
 -- | th 度だけ右旋回する
+--
 right :: Float -> Command
 right th
   | th <= 30  = [turn (-th)]
   | otherwise = turn (-30) : right (th - 30)
 
+--
 -- | 高速に左旋回する
+--
 quickLeft :: Float -> Command
 quickLeft th = [turn th]
 
+--
 -- | 高速に右旋回する
+--
 quickRight :: Float -> Command
 quickRight th = [turn (-th)]
 
--- | p の位置へ移動する（pen == True なら線を描く）
+--
+-- | Point (x, y) の位置へ移動する (pen == True なら線を描く)
+--
 goto :: Point -> Command
 goto (x, y) = [goto']
   where goto' st = toPoint (x, y) st {angle = radToDeg $ argV (x - x', y - y')}
-          where (x', y') = point st
 
+--
 -- | 亀の向きを設定する
+--
 setAngle :: Float -> Command
 setAngle th = [\st -> (Blank, st {angle = normalize th})]
 
+--
 -- | 亀の位置を設定する
+--
 setPoint :: Point -> Command
-setPoint p = [\st -> (Blank, st {point = p})]
+setPoint (x, y) = [\st -> (Blank, st {point = (x, y)})]
 
+--
 -- | 色を設定する
+--
 setColor :: Color -> Command
-setColor c = [\st -> (Blank, st {penColor = c})]
+setColor col = [\st -> (Blank, st {penColor = col})]
 
+--
 -- | 移動時に線を描く
+--
 penDown :: Command
 penDown = [\st -> (Blank, st {pen = True})]
 
+--
 -- | 移動時に線を描かない
+--
 penUp :: Command
 penUp = [\st -> (Blank, st {pen = False})]
 
+--
 -- | 亀の状態を Push する
+--
 push :: Command
 push = [\st -> (Blank, st {stack = f st : stack st})]
   where f st = (angle st, point st, penColor st, pen st, mark st)
 
+--
 -- | 亀の状態を Pop する
+--
 pop :: Command
 pop = [\st -> (Blank, f (stack st))]
   where
@@ -261,12 +307,23 @@ pop = [\st -> (Blank, f (stack st))]
                                          , stack    = sk
                                          }
 
+--
 -- | 何もしない
+--
 nop :: Command
 nop = [\st -> (Blank, st)]
 
+--
+-- | nop を n 回繰り返す
+--
 nopN :: Int -> Command
 nopN n = concat $ replicate n nop
+
+--
+-- | Picture を表示する
+--
+drawPicture :: Picture -> Command
+drawPicture pic = [\st -> (pic, st)]
 
 
 
@@ -274,31 +331,22 @@ nopN n = concat $ replicate n nop
 -- * Alias
 ------------------------------------------------------------
 
--- | forward
 fd = forward
 
--- | quickForward
 qf = quickForward
 
--- | backward
 bk = backward
 
--- | left
 lt = left
 
--- | right
 rt = right
 
--- | quickLeft
 ql = quickLeft
 
--- | quickRight
 qr = quickRight
 
--- | penUp
 pu = penUp
 
--- | penDown
 pd = penDown
 
 
@@ -307,36 +355,47 @@ pd = penDown
 -- * 図形を描くコマンド
 ------------------------------------------------------------
 
-----------------------------------------
 -- ** 円
-----------------------------------------
-
---
--- | 亀の位置を中心に、半径 r の円を描く
---
-drawCircle :: Float -> Command
-drawCircle r = [drawCircle' Circle r]
-
---
--- | 亀の位置を中心に、半径 r の solid な円を描く
---
-drawCircleSolid :: Float -> Command
-drawCircleSolid r = [drawCircle' circleSolid r]
 
 -- 補助関数
 drawCircle' :: (Float -> Picture) -> Float -> PrimitiveCommand
-drawCircle' func r st = (Color c $ Translate x y $ func r, st)
-  where ((x, y), c) = (point st, penColor st)
+drawCircle' func r st = (Color col $ Translate x y $ func r, st)
+  where ((x, y), col) = (point st, penColor st)
+
+-- | 亀の位置を中心に、半径 r の円を描く
+--   + 色は亀のペンの色になる
+drawCircle :: Float             -- ^ 半径
+           -> Command
+drawCircle r = [drawCircle' Circle r]
+
+-- | 亀の位置を中心に、半径 r の solid な円を描く
+--   + 色は亀のペンの色になる
+drawCircleSolid :: Float        -- ^ 半径
+                -> Command
+drawCircleSolid r = [drawCircle' circleSolid r]
 
 
 
-----------------------------------------
 -- ** 円弧
-----------------------------------------
 
---
+-- 補助関数
+drawArc' :: (Float -> Float -> Float -> Picture)
+     -> Bool                    -- 左 : True, 右 : False
+     -> Float                   -- 中心角
+     -> Float                   -- 半径
+     -> PrimitiveCommand
+drawArc' func b th r st = (pic, st')
+  where
+    pic = isDraw st (Color c $ Translate ox oy $ Rotate rot $ func 0 th r)
+    c = penColor st
+    a = angle st
+    (th', ra) = if b then (a + th, 90) else (a - th, -90)
+    (ox, oy)  = newPoint r (a + ra) (point st)
+    p'  = newPoint r (th' - ra) (ox, oy)
+    rot = ra - a + (if b then 0 else th)
+    st' = st {angle = th', point = p'}
+
 -- | 中心角 th 半径 r の円弧を左回りに描く
---
 drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
@@ -378,22 +437,19 @@ drawArcSolidR th r
   | otherwise = drawArcR' 10 r : drawArcSolidR (th - 10) r
   where drawArcR' th r st = drawArc' arcSolid False th r st
 
--- 補助関数
-drawArc' :: (Float -> Float -> Float -> Picture)
-     -> Bool                    -- 左 : True, 右 : False
-     -> Float                   -- 中心角
-     -> Float                   -- 半径
-     -> PrimitiveCommand
-drawArc' func b th r st = (pic, st')
+
+
+-- ** ポリゴン
+
+-- | 亀の描いた線を元に solid な Polygon を描く
+drawPolygon :: Color -> [Command] -> Command
+drawPolygon col cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
   where
-    pic = isDraw st (Color c $ Translate ox oy $ Rotate rot $ func 0 th r)
-    c = penColor st
-    a = angle st
-    (th', ra) = if b then (a + th, 90) else (a - th, -90)
-    (ox, oy)  = newPoint r (a + ra) (point st)
-    p'  = newPoint r (th' - ra) (ox, oy)
-    rot = ra - a + (if b then 0 else th)
-    st' = st {angle = th', point = p'}
+    drawPolygon' st = (Color col $ Polygon ps, st')
+      where
+        (ps, st') = makePoints [] (concat cs) st
+        makePoints ps []       st = (reverse (point st : ps), st)
+        makePoints ps (c : cs) st = makePoints (point st : ps) cs (snd $ c st)
 
 
 
@@ -516,25 +572,3 @@ repCommand n cLst = concat $ concat $ replicate n cLst
 --
 polarToRectangular :: (Float, Float) -> (Float, Float)
 polarToRectangular (r, th) = (r * cos th, r * sin th)
-
-
--------------------------------------------------------------
-
-drawPicture :: Picture -> Command
-drawPicture pic = [\st -> drawPicture' pic st]
-
-drawPicture' :: Picture -> PrimitiveCommand
-drawPicture' pic st = (pic, st)
-
-------------------------------------------------
-
-makePolygon :: Color -> [Command] -> PrimitiveCommand
-makePolygon col cs st = (Color col $ Polygon ps, st')
-  where
-    (ps, st') = makePoints [] (concat cs) st
-    makePoints ps []       st = (reverse (point st : ps), st)
-    makePoints ps (c : cs) st = makePoints (point st : ps) cs (snd $ c st)
-
-drawPolygon :: Color -> [Command] -> Command
-drawPolygon col cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
-  where drawPolygon' st = makePolygon col cs st
