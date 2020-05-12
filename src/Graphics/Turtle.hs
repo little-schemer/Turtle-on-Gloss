@@ -420,7 +420,8 @@ drawArc' :: (Float -> Float -> Float -> Picture)
 drawArc' func bool th r st = (pic, st {angle = th', point = p'})
   where
     pic = isDraw st (Color col $ Translate ox oy $ Rotate rot $ func 0 th r)
-    (a, col)  = (angle st, penColor st)
+    col = penColor st
+    a   = angle st
     (th', ra) = if bool then (a + th, 90) else (a - th, -90)
     (ox, oy)  = newPoint r (a + ra) (point st)
     p'        = newPoint r (th' - ra) (ox, oy)
