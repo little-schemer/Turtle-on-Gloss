@@ -61,26 +61,13 @@ type Model             = (Picture, [(TurtleST, Command)])
 -- | TurtleST の初期値を設定する
 --
 initST :: TurtleST
-initST = TurtleST
-  { angle    = 0
-  , point    = (0, 0)
-  , penColor = black
-  , pen      = True
-  , mark     = True
-  , stack    = []
-  }
+initST = TurtleST 0 (0, 0) black True True []
 
 --
 -- | WinConfig の初期値を設定する
 --
 initWindow :: WinConfig
-initWindow = WinConfig
-  { title   = "Turtle Graphics"
-  , winSize = (800, 600)
-  , winPos  = (10, 10)
-  , zoom    = 1
-  , shiftXY = (0, 0)
-  }
+initWindow = WinConfig "Turtle Graphics" (800, 600) (10, 10) 1 (0, 0)
 
 
 ------------------------------------------------------------
@@ -95,20 +82,17 @@ runTurtle :: WinConfig               -- ^ 画面の状態
           -> Int                     -- ^ 1 秒あたりのステップ数
           -> [(TurtleST, [Command])]
           -> IO ()
-runTurtle window bc step tds = do
-  let disp  = InWindow (title window) (winSize window) (winPos window)
-  let model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
-  simulate disp bc step model drawModel simModel
+runTurtle window bc step tds = simulate disp bc step model drawModel simModel
   where
+    disp  = InWindow (title window) (winSize window) (winPos window)
+    model = (Blank, [(st, concat lst) | (st, lst) <- tds])
+
     -- モデルを描画する
-    drawModel (pic, ts) = pic' <> turtleMarks
+    drawModel (pic, ts) = (Scale z z $ Translate sx sy pic) <> turtleMarks
       where
         (z, (sx, sy)) = (zoom window, shiftXY window)
-
-        pic'        = Scale z z $ Translate sx sy pic
         turtleMarks = Pictures $ map (dispMark . fst) ts
-
-        dispMark st = if (mark st)
+        dispMark st = if mark st
                       then Translate x' y' $ Rotate th $ tMark
                       else Blank
           where
@@ -293,13 +277,7 @@ push = [\st -> (Blank, st {stack = f st : stack st})]
 pop :: Command
 pop = [\st -> (Blank, f (stack st))]
   where
-    f ((a, p, c, p', m) : sk) = TurtleST { angle    = a
-                                         , point    = p
-                                         , penColor = c
-                                         , pen      = p'
-                                         , mark     = m
-                                         , stack    = sk
-                                         }
+    f ((a, p, c, p', m) : sk) = TurtleST a p c p' m sk
 
 --
 -- | 何もしない
