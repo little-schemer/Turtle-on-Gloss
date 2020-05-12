@@ -25,14 +25,14 @@ import           Graphics.Gloss.Geometry.Angle
 --
 -- | 亀の状態
 --
-data TurtleST = TurtleST
-    { angle    :: Float         -- ^ 亀の向き
-    , point    :: Point         -- ^ 亀の位置
-    , penColor :: Color         -- ^ ペンの色
-    , pen      :: Bool          -- ^ up or down
-    , mark     :: Bool          -- ^ 亀のマーク
-    , stack    :: [(Float, Point, Color, Bool, Bool)]
-    } deriving Show
+data TurtleST = Non | TurtleST
+                      { angle    :: Float         -- ^ 亀の向き
+                      , point    :: Point         -- ^ 亀の位置
+                      , penColor :: Color         -- ^ ペンの色
+                      , pen      :: Bool          -- ^ up or down
+                      , mark     :: Bool          -- ^ 亀のマーク
+                      , stack    :: TurtleST
+                      } deriving Show
 
 --
 -- | 画面の設定
@@ -61,7 +61,7 @@ type Model             = (Picture, [(TurtleST, Command)])
 -- | TurtleST の初期値を設定する
 --
 initST :: TurtleST
-initST = TurtleST 0 (0, 0) black True True []
+initST = TurtleST 0 (0, 0) black True True Non
 
 --
 -- | WinConfig の初期値を設定する
@@ -268,16 +268,13 @@ penUp = [\st -> (Blank, st {pen = False})]
 -- | 亀の状態を Push する
 --
 push :: Command
-push = [\st -> (Blank, st {stack = f st : stack st})]
-  where f st = (angle st, point st, penColor st, pen st, mark st)
+push = [\st -> (Blank, st {stack = st})]
 
 --
 -- | 亀の状態を Pop する
 --
 pop :: Command
-pop = [\st -> (Blank, f (stack st))]
-  where
-    f ((a, p, c, p', m) : sk) = TurtleST a p c p' m sk
+pop = [\st -> (Blank, stack st)]
 
 --
 -- | 何もしない
@@ -420,16 +417,14 @@ drawArc' :: (Float -> Float -> Float -> Picture)
      -> Float                   -- 中心角
      -> Float                   -- 半径
      -> PrimitiveCommand
-drawArc' func b th r st = (pic, st')
+drawArc' func bool th r st = (pic, st {angle = th', point = p'})
   where
-    pic = isDraw st (Color c $ Translate ox oy $ Rotate rot $ func 0 th r)
-    c = penColor st
-    a = angle st
-    (th', ra) = if b then (a + th, 90) else (a - th, -90)
+    pic = isDraw st (Color col $ Translate ox oy $ Rotate rot $ func 0 th r)
+    (a, col)  = (angle st, penColor st)
+    (th', ra) = if bool then (a + th, 90) else (a - th, -90)
     (ox, oy)  = newPoint r (a + ra) (point st)
-    p'  = newPoint r (th' - ra) (ox, oy)
-    rot = ra - a + (if b then 0 else th)
-    st' = st {angle = th', point = p'}
+    p'        = newPoint r (th' - ra) (ox, oy)
+    rot       = ra - a + (if bool then 0 else th)
 
 
 -- ** ポリゴン
