@@ -18,7 +18,6 @@ import           Graphics.Gloss.Data.Vector
 import           Graphics.Gloss.Geometry.Angle
 
 
-
 ------------------------------------------------------------
 -- * 型
 ------------------------------------------------------------
@@ -46,12 +45,12 @@ data WinConfig = WinConfig
     , shiftXY :: (Float, Float) -- ^ 画像の移動量
     } deriving Show
 
+--
+-- | その他
+--
 type PrimitiveCommand  = TurtleST -> (Picture, TurtleST)
-
 type Command           = [PrimitiveCommand]
-
 type Model             = (Picture, [(TurtleST, Command)])
-
 
 
 ------------------------------------------------------------
@@ -84,7 +83,6 @@ initWindow = WinConfig
   }
 
 
-
 ------------------------------------------------------------
 -- * 画像表示
 ------------------------------------------------------------
@@ -97,14 +95,11 @@ runTurtle :: WinConfig               -- ^ 画面の状態
           -> Int                     -- ^ 1 秒あたりのステップ数
           -> [(TurtleST, [Command])]
           -> IO ()
-runTurtle window bc step tds = simulate disp bc step model drawModel simModel
+runTurtle window bc step tds = do
+  let disp  = InWindow (title window) (winSize window) (winPos window)
+  let model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
+  simulate disp bc step model drawModel simModel
   where
-    -- 描画モード
-    disp = InWindow (title window) (winSize window) (winPos window)
-
-    -- モデルの初期値
-    model = (Blank, map (\(st, lst) -> (st, concat lst)) tds)
-
     -- モデルを描画する
     drawModel (pic, ts) = pic' <> turtleMarks
       where
@@ -146,7 +141,6 @@ dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
     pic = Pictures $ map makePicture tds
     makePicture (st, cmds) = fst $ foldl f (Blank, st) (concat cmds)
           where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
-
 
 
 ------------------------------------------------------------
@@ -192,7 +186,6 @@ normalize th = th - 360 * floor' (th / 360)
 --
 isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st then Color (penColor st) $ pic else Blank
-
 
 
 ------------------------------------------------------------
@@ -327,7 +320,6 @@ drawPicture :: Picture -> Command
 drawPicture pic = [\st -> (pic, st)]
 
 
-
 ------------------------------------------------------------
 -- * Alias
 ------------------------------------------------------------
@@ -360,7 +352,6 @@ pu = penUp
 pd = penDown
 
 
-
 ------------------------------------------------------------
 -- * 図形を描くコマンド
 ------------------------------------------------------------
@@ -389,7 +380,6 @@ drawCircleSolid r = [drawCircle' circleSolid r]
 drawCircle' :: (Float -> Picture) -> Float -> PrimitiveCommand
 drawCircle' func r st = (Color col $ Translate x y $ func r, st)
   where ((x, y), col) = (point st, penColor st)
-
 
 
 -- ** 円弧
@@ -464,7 +454,6 @@ drawArc' func b th r st = (pic, st')
     st' = st {angle = th', point = p'}
 
 
-
 -- ** ポリゴン
 
 --
@@ -481,7 +470,6 @@ drawPolygon cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
         (ps, st') = makePoints [] (concat cs) st
         makePoints ps []       st = (reverse (point st : ps), st)
         makePoints ps (c : cs) st = makePoints (point st : ps) cs (snd $ c st)
-
 
 
 ------------------------------------------------------------
@@ -521,7 +509,6 @@ drawPolarGraph fp (t : ts) = concat $ cmd1 ++ cmd2
     cmd2 = [goto $ polarToRectangular (fp t, t) | t <- ts]
 
 
-
 ------------------------------------------------------------
 -- * 方眼
 ------------------------------------------------------------
@@ -540,20 +527,19 @@ grid' :: Float                  -- ^ 方眼を描く範囲
       -> Command
 grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
   where
-    blueLine1 = Color c $ f [-range, -range + size      .. range]
+    blueLine1 = f c [-range, -range + size .. range]
       where c = makeColor 0.5 0.5 1.0 0.2
 
-    blueLine2 = Color c $ f [-range, -range + 10 * size .. range]
+    blueLine2 = f c [-range, -range + 10 * size .. range]
       where c = makeColor 0.5 0.5 1.0 0.3
 
-    redLine   = Color c $ f [0]
+    redLine   = f c [0]
       where c = makeColor 1.0 0.5 0.5 0.6
 
-    f lst = Pictures $ concat [[horizontal n, vertical n] | n <- lst]
+    f c lst = Color c $ Pictures $ concat [[horLine n, vertLine n] | n <- lst]
       where
-        horizontal n = Line [(-range, n), (range, n)]
-        vertical   n = Line [(n, -range), (n, range)]
-
+        horLine n  = Line [(-range, n), (range, n)]
+        vertLine n = Line [(n, -range), (n, range)]
 
 
 ------------------------------------------------------------
@@ -583,7 +569,6 @@ updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
 updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
   where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
           where (r, g, b, a) = rgbaOfColor $ penColor st
-
 
 
 ------------------------------------------------------------
