@@ -15,7 +15,7 @@ size  = 300 :: Float
 data Option = Option { dLevel :: Int }
 
 opt :: Parser Option
-opt = Option <$> option auto (short 'L' <> value 8)
+opt = Option <$> option auto (short 'L' <> value 8 <> metavar "Int")
 
 
 -- | Main

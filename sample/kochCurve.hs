@@ -15,7 +15,7 @@ size  = 400 :: Float
 data Option = Option { kochLevel :: Int }
 
 opt :: Parser Option
-opt = Option <$> option auto (short 'L' <> value 4)
+opt = Option <$> option auto (short 'L' <> value 4 <> metavar "Int")
 
 
 -- | Main
