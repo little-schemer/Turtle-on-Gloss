@@ -328,7 +328,7 @@ pd = penDown
 
 
 ------------------------------------------------------------
--- * 図形を描くコマンド
+-- * 拡張コマンド
 ------------------------------------------------------------
 
 -- ** 円
@@ -340,7 +340,15 @@ pd = penDown
 --
 drawCircle :: Float             -- ^ 半径
            -> Command
-drawCircle r = [drawCircle' Circle r]
+drawCircle r = [drawCircle' r 0]
+
+--
+-- | 亀の位置を中心に、半径 r 線の太さ t の円を描く
+--
+drawThickCircle :: Float        -- ^ 半径
+                -> Float        -- ^ 線の太さ
+                -> Command
+drawThickCircle r t = [drawCircle' r t]
 
 --
 -- | 亀の位置を中心に、半径 r の solid な円を描く
@@ -349,11 +357,11 @@ drawCircle r = [drawCircle' Circle r]
 --
 drawCircleSolid :: Float        -- ^ 半径
                 -> Command
-drawCircleSolid r = [drawCircle' circleSolid r]
+drawCircleSolid r = [drawCircle' (r / 2) r]
 
 -- 補助関数
-drawCircle' :: (Float -> Picture) -> Float -> PrimitiveCommand
-drawCircle' func r st = (Color col $ Translate x y $ func r, st)
+drawCircle' :: Float -> Float -> PrimitiveCommand
+drawCircle' r t st = (Color col $ Translate x y $ ThickCircle r t, st)
   where ((x, y), col) = (point st, penColor st)
 
 
