@@ -147,8 +147,7 @@ toPoint p st = (isDraw st $ Line [point st, p], st {point = p})
 -- | n だけ前進する (pen == True なら線を描く)
 --
 move :: Float -> PrimitiveCommand
-move n st = toPoint (newPoint n th p) st
-  where (th, p) = (angle st, point st)
+move n st = toPoint (newPoint n (angle st) (point st)) st
 
 --
 -- | th 度旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
@@ -400,7 +399,7 @@ drawArcL th r = drawThickArcL th r 0
 --
 -- | 中心角 th 半径 r の円弧を右回りに描く
 --
-drawArcR :: Float              -- ^ 中心角
+drawArcR :: Float               -- ^ 中心角
           -> Float              -- ^ 半径
           -> Command
 drawArcR th r = drawThickArcR th r 0
@@ -408,7 +407,9 @@ drawArcR th r = drawThickArcR th r 0
 --
 -- | 中心角 th 半径 r の Solid な円弧を左回りに描く
 --
-drawArcSolidL :: Float -> Float -> Command
+drawArcSolidL :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Command
 drawArcSolidL th r
   | th <= 10 = [drawArc' True False th r r]
   | otherwise = drawArc' True False 10 r r : drawArcSolidL (th - 10) r
@@ -416,9 +417,9 @@ drawArcSolidL th r
 --
 -- | 中心角 th 半径 r の Solid な円弧を右回りに描く
 --
-drawArcSolidR :: Float         -- ^ 中心角
-               -> Float         -- ^ 半径
-               -> Command
+drawArcSolidR :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Command
 drawArcSolidR th r
   | th <= 10 = [drawArc' False False th r r]
   | otherwise = drawArc' False False 10 r r : drawArcSolidR (th - 10) r
@@ -458,6 +459,29 @@ drawPolygon cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
         (ps, st') = makePoints [] (concat cs) st
         makePoints ps []       st = (reverse (point st : ps), st)
         makePoints ps (c : cs) st = makePoints (point st : ps) cs (snd $ c st)
+
+
+-- ** 直線
+
+--
+-- | 長さ n 太さ t の直線を描く
+--
+drawThickLine :: Float          -- ^ 長さ
+              -> Float          -- ^ 太さ
+              -> Command
+drawThickLine n t
+  | n <= 50 = [drawLine' n t]
+  | otherwise = drawLine' 50 t : drawThickLine (n - 50) t
+
+-- 補助関数
+drawLine' :: Float -> Float -> PrimitiveCommand
+drawLine' n t st = (isDraw st pic, st {point = (x', y')})
+  where
+    pic = Color col $ Translate x'' y'' $ Rotate (360 - a) $ rectangleSolid n t
+    (col, a) = (penColor st, angle st)
+    (x, y) = point st
+    (x', y') = newPoint n (angle st) (x, y)
+    (x'', y'') = ((x + x') / 2, (y + y') / 2)
 
 
 ------------------------------------------------------------
