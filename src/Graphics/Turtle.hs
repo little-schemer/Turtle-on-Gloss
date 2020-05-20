@@ -368,72 +368,78 @@ drawCircle' r t st = (Color col $ Translate x y $ ThickCircle r t, st)
 -- ** 円弧
 
 --
--- | 中心角 th 半径 r の円弧を左回りに描く
+-- | 中心角 th 半径 r 太さ t の円弧を左回りに描く
 --
---   - 色は亀のペンの色になる
+drawThickArcL :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Float          -- ^ 線の太さ
+              -> Command
+drawThickArcL th r t
+  | th <= 10 = [drawArc' True True th r t]
+  | otherwise = drawArc' True True 10 r t : drawThickArcL (th - 10) r t
+
+--
+-- | 中心角 th 半径 r 太さ t の円弧を右回りに描く
+--
+drawThickArcR :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Float          -- ^ 線の太さ
+              -> Command
+drawThickArcR th r t
+  | th <= 10 = [drawArc' False True th r t]
+  | otherwise = drawArc' False True 10 r t : drawThickArcR (th - 10) r t
+
+--
+-- | 中心角 th 半径 r の円弧を左回りに描く
 --
 drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
-drawArcL th r
-  | th <= 10  = [drawArcL' th r]
-  | otherwise = drawArcL' 10 r : drawArcL (th - 10) r
-  where drawArcL' th r st = drawArc' arc True th r st
+drawArcL th r = drawThickArcL th r 0
 
 --
 -- | 中心角 th 半径 r の円弧を右回りに描く
 --
---   - 色は亀のペンの色になる
---
-drawArcR :: Float               -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
-drawArcR th r
-  | th <= 10  = [drawArcR' th r]
-  | otherwise = drawArcR' 10 r : drawArcR (th - 10) r
-  where drawArcR' th r st = drawArc' arc False th r st
+drawArcR :: Float              -- ^ 中心角
+          -> Float              -- ^ 半径
+          -> Command
+drawArcR th r = drawThickArcR th r 0
 
 --
 -- | 中心角 th 半径 r の Solid な円弧を左回りに描く
 --
---   - 色は亀のペンの色になる
---
-drawArcSolidL :: Float          -- ^ 中心角
-              -> Float          -- ^ 半径
-              -> Command
+drawArcSolidL :: Float -> Float -> Command
 drawArcSolidL th r
-  | th <= 10  = [drawArcL' th r]
-  | otherwise = drawArcL' 10 r : drawArcSolidL (th - 10) r
-  where drawArcL' th r st = drawArc' arcSolid True th r st
+  | th <= 10 = [drawArc' True False th r r]
+  | otherwise = drawArc' True False 10 r r : drawArcSolidL (th - 10) r
 
 --
 -- | 中心角 th 半径 r の Solid な円弧を右回りに描く
 --
---   - 色は亀のペンの色になる
---
-drawArcSolidR :: Float          -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
+drawArcSolidR :: Float         -- ^ 中心角
+               -> Float         -- ^ 半径
+               -> Command
 drawArcSolidR th r
-  | th <= 10  = [drawArcR' th r]
-  | otherwise = drawArcR' 10 r : drawArcSolidR (th - 10) r
-  where drawArcR' th r st = drawArc' arcSolid False th r st
+  | th <= 10 = [drawArc' False False th r r]
+  | otherwise = drawArc' False False 10 r r : drawArcSolidR (th - 10) r
 
 -- 補助関数
-drawArc' :: (Float -> Float -> Float -> Picture)
-     -> Bool                    -- 左 : True, 右 : False
-     -> Float                   -- 中心角
-     -> Float                   -- 半径
-     -> PrimitiveCommand
-drawArc' func bool th r st = (pic, st {angle = th', point = p'})
+drawArc' :: Bool                -- True == 左,    False == 右
+         -> Bool                -- True == Thick, False == Solid
+         -> Float               -- 中心角
+         -> Float               -- 半径
+         -> Float               -- 線の太さ
+         -> PrimitiveCommand
+drawArc' b1 b2 th r t st = (isDraw st pic, st {angle = th', point = p'})
   where
-    pic = isDraw st (Color col $ Translate ox oy $ Rotate rot $ func 0 th r)
+    pic = Color col $ Translate ox oy $ Rotate rot $ ThickArc 0 th r' t
+    r' = if b2 then r else r / 2
     col = penColor st
     a   = angle st
-    (th', ra) = if bool then (a + th, 90) else (a - th, -90)
+    (th', ra) = if b1 then (a + th, 90) else (a - th, -90)
     (ox, oy)  = newPoint r (a + ra) (point st)
     p'        = newPoint r (th' - ra) (ox, oy)
-    rot       = ra - a + (if bool then 0 else th)
+    rot       = ra - a + (if b1 then 0 else th)
 
 
 -- ** ポリゴン
