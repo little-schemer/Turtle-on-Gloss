@@ -30,13 +30,23 @@ library:
 executables:
   Turtle:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         sandbox
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
     - Turtle-on-Gloss
+
+  # Turtle:
+  #   main:                Main.hs
+  #   source-dirs:         app
+  #   ghc-options:
+  #   - -threaded
+  #   - -rtsopts
+  #   - -with-rtsopts=-N
+  #   dependencies:
+  #   - Turtle-on-Gloss
 
   # CircleDance:
   #   main:                circleDance.hs
