@@ -2,8 +2,8 @@
 -- | Circle Dance
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
 
 
 -- | Main
@@ -13,14 +13,12 @@ main = runTurtle window black 50 (zip (repeat initST) cmds)
     window = initWindow {title = "Circle Dance"}
     cmds   = [[setColor a, setAngle b, circleDance] | (a, b) <- colorAndAngle]
 
-
 -- | 色を変化させながら、複数の円を同時に描く
 circleDance :: Command
-circleDance = repCommand 6 [circle', lt 10]
+circleDance = repCommand 6 [repCommand 36 cmds, lt 10]
   where
-    circle' = repCommand 36 [drawArcL 10 100, updateColor f f f id]
+    cmds = [drawArcL 10 100, updateColor f f f id, updateThickness (+ 0.05)]
     f x = x * 1.015
-
 
 -- | 色と初期角度の設定
 colorAndAngle :: [(Color, Float)]
