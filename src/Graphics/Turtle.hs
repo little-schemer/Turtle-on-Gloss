@@ -39,12 +39,12 @@ data TurtleST = Non | TurtleST
 -- | 画面の設定
 --
 data WinConfig = WinConfig
-    { title   :: String         -- ^ Window のタイトル
-    , winSize :: (Int, Int)     -- ^ Window のサイズ
-    , winPos  :: (Int, Int)     -- ^ Window の位置
-    , zoom    :: Float          -- ^ 画像の拡大率
-    , shiftXY :: (Float, Float) -- ^ 画像の移動量
-    } deriving Show
+                 { title   :: String         -- ^ Window のタイトル
+                 , winSize :: (Int, Int)     -- ^ Window のサイズ
+                 , winPos  :: (Int, Int)     -- ^ Window の位置
+                 , zoom    :: Float          -- ^ 画像の拡大率
+                 , shiftXY :: (Float, Float) -- ^ 画像の移動量
+                 } deriving Show
 
 --
 -- | その他
@@ -91,15 +91,16 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
     -- モデルを描画する
     drawModel (pic, ts) = (Scale z z $ Translate sx sy pic) <> turtleMarks
       where
-        (z, (sx, sy)) = (zoom window, shiftXY window)
+        z           = zoom window
+        (sx, sy)    = shiftXY window
         turtleMarks = Pictures $ map (dispMark . fst) ts
         dispMark st = if mark st
-                      then Translate x' y' $ Rotate th $ tMark
+                      then Translate x' y' $ Rotate (- angle st) $ tMark
                       else Blank
           where
-            (th, c, (x, y)) = (360 - angle st, penColor st, point st)
+            (x, y)   = point st
             (x', y') = ((x + sx) * z, (y + sy) * z)
-            tMark = (Color white mark1) <> (Color c mark2)
+            tMark    = (Color white mark1) <> (Color (penColor st) mark2)
               where
                 mark1 = Polygon [(0, -5), (0, 5), (12, 0)]
                 mark2 = Polygon [(1, -4), (1, 4), (10, 0)]
@@ -108,7 +109,7 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
     simModel _ _ (pic, []) = (pic, [])
     simModel _ _ (pic, ts) = foldl f (pic, []) ts
       where
-        f model (_, [])            = model
+        f model     (_, [])        = model
         f (pic, ts) (st, cmd : cs) = (pic <> pic', (st', cs) : ts)
           where (pic', st') = cmd st
 
@@ -121,11 +122,12 @@ dispPicture :: WinConfig               -- ^ 画面の状態
             -> IO ()
 dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
   where
-    disp = InWindow (title window) (winSize window) (winPos window)
-    (z, (sx, sy)) = (zoom window, shiftXY window)
-    pic = Pictures $ map makePicture tds
+    disp     = InWindow (title window) (winSize window) (winPos window)
+    z        = zoom window
+    (sx, sy) = shiftXY window
+    pic      = Pictures $ map makePicture tds
     makePicture (st, cmds) = fst $ foldl f (Blank, st) (concat cmds)
-          where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
+      where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
 
 
 ------------------------------------------------------------
@@ -139,13 +141,6 @@ isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st then Color (penColor st) $ pic else Blank
 
 --
--- | 太さのある線を描く
---
-thickLine :: Float -> Float -> Float -> Point -> Point -> Picture
-thickLine n a t p1 p2 = Translate x y $ Rotate (360 - a) $ rectangleSolid n t
-  where (x, y) = 0.5 PA.* (p1 PA.+ p2)
-
---
 -- | n だけ移動した先のポイントを求める
 --
 newPoint :: Float -> Float -> Point -> Point
@@ -155,26 +150,37 @@ newPoint n th p = p PA.+ n PA.* (unitVectorAtAngle $ degToRad th)
 -- | n だけ前進する (pen == True なら線を描く)
 --
 forward' :: Float -> PrimitiveCommand
-forward' n st = (isDraw st pic, st {point = p2})
+forward' n st = (isDraw st pic, st { point = p2 })
   where
-    (p1, p2, t) = (point st, newPoint n (angle st) (point st), thickness st)
+    p1  = point st
+    p2  = newPoint n (angle st) p1
+    t   = thickness st
     pic = if t == 0 then Line [p1, p2] else thickLine n (angle st) t p1 p2
 
 --
 -- | Point p2 の位置へ移動する (pen == True なら線を描く, 亀は進行方向へ向く)
 --
 goto' :: Point -> PrimitiveCommand
-goto' p2 st = (isDraw st pic, st {angle = a, point = p2})
+goto' p2 st = (isDraw st pic, st { angle = a, point = p2 })
   where
-    (p1, t) = (point st, thickness st)
-    (a,  n) = (radToDeg $ argV $ p2 PA.- p1, magV (p2 PA.- p1))
+    p1  = point st
+    a   = radToDeg $ argV $ p2 PA.- p1
+    t   = thickness st
     pic = if t == 0 then Line [p1, p2] else thickLine n a t p1 p2
+      where n = magV (p2 PA.- p1)
+
+--
+-- | 太さのある線を描く
+--
+thickLine :: Float -> Float -> Float -> Point -> Point -> Picture
+thickLine n a t p1 p2 = Translate x y $ Rotate (- a) $ rectangleSolid n t
+  where (x, y) = 0.5 PA.* (p1 PA.+ p2)
 
 --
 -- | th 度だけ旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
 --
 turn :: Float -> PrimitiveCommand
-turn th st = (Blank, st {angle = normalize $ th + angle st})
+turn th st = (Blank, st { angle = normalize $ th + angle st })
 
 --
 -- | 角度を 0 <= th < 360 に正規化する
@@ -236,14 +242,14 @@ quickLeft th = [turn th]
 --
 right :: Float -> Command
 right th
-  | th <= 30  = [turn (-th)]
+  | th <= 30  = [turn (- th)]
   | otherwise = turn (-30) : right (th - 30)
 
 --
 -- | 高速に右旋回する
 --
 quickRight :: Float -> Command
-quickRight th = [turn (-th)]
+quickRight th = [turn (- th)]
 
 --
 -- | Point (x, y) の位置へ移動する (pen == True なら線を描く)
@@ -255,43 +261,43 @@ goto p = [goto' p]
 -- | 亀の向きを設定する
 --
 setAngle :: Float -> Command
-setAngle th = [\st -> (Blank, st {angle = normalize th})]
+setAngle th = [\st -> (Blank, st { angle = normalize th })]
 
 --
 -- | 亀の位置を設定する
 --
 setPoint :: Point -> Command
-setPoint (x, y) = [\st -> (Blank, st {point = (x, y)})]
+setPoint (x, y) = [\st -> (Blank, st { point = (x, y) })]
 
 --
 -- | ペンの太さを設定する
 --
 setThickness :: Float -> Command
-setThickness t = [\st -> (Blank, st {thickness = t})]
+setThickness t = [\st -> (Blank, st { thickness = t })]
 
 --
 -- | ペンの色を設定する
 --
 setColor :: Color -> Command
-setColor col = [\st -> (Blank, st {penColor = col})]
+setColor col = [\st -> (Blank, st { penColor = col })]
 
 --
 -- | 移動時に線を描く
 --
 penDown :: Command
-penDown = [\st -> (Blank, st {pen = True})]
+penDown = [\st -> (Blank, st { pen = True })]
 
 --
 -- | 移動時に線を描かない
 --
 penUp :: Command
-penUp = [\st -> (Blank, st {pen = False})]
+penUp = [\st -> (Blank, st { pen = False })]
 
 --
 -- | 亀の状態を Push する
 --
 push :: Command
-push = [\st -> (Blank, st {stack = st})]
+push = [\st -> (Blank, st { stack = st })]
 
 --
 -- | 亀の状態を Pop する
@@ -387,8 +393,8 @@ drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
 drawArcL th r
-  | th <= 30  = [drawArc True True th r]
-  | otherwise = drawArc True True 30 r : drawArcL (th - 30) r
+  | th <= 30  = [drawArc' True True th r]
+  | otherwise = drawArc' True True 30 r : drawArcL (th - 30) r
 
 --
 -- | 中心角 th 半径 r の Solid な円弧を左回りに描く
@@ -397,8 +403,8 @@ drawArcSolidL :: Float          -- ^ 中心角
               -> Float          -- ^ 半径
               -> Command
 drawArcSolidL th r
-  | th <= 30  = [drawArc True False th r]
-  | otherwise = drawArc True False 30 r : drawArcSolidL (th - 30) r
+  | th <= 30  = [drawArc' True False th r]
+  | otherwise = drawArc' True False 30 r : drawArcSolidL (th - 30) r
 
 --
 -- | 中心角 th 半径 r の円弧を右回りに描く
@@ -407,8 +413,8 @@ drawArcR :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
 drawArcR th r
-  | th <= 30  = [drawArc False True th r]
-  | otherwise = drawArc False True 30 r : drawArcR (th - 30) r
+  | th <= 30  = [drawArc' False True th r]
+  | otherwise = drawArc' False True 30 r : drawArcR (th - 30) r
 
 --
 -- | 中心角 th 半径 r の Solid な円弧を右回りに描く
@@ -417,18 +423,18 @@ drawArcSolidR :: Float          -- ^ 中心角
               -> Float          -- ^ 半径
               -> Command
 drawArcSolidR th r
-  | th <= 30  = [drawArc False False th r]
-  | otherwise = drawArc False False 30 r : drawArcSolidR (th - 30) r
-
+  | th <= 30  = [drawArc' False False th r]
+  | otherwise = drawArc' False False 30 r : drawArcSolidR (th - 30) r
 
 -- 補助関数
-drawArc :: Bool -> Bool -> Float -> Float -> PrimitiveCommand
-drawArc b1 b2 th r st = (pic, st { angle = a', point = p' })
+drawArc' :: Bool -> Bool -> Float -> Float -> PrimitiveCommand
+drawArc' b1 b2 th r st = (pic, st { angle = a', point = p' })
   where
-    (a, p) = (angle st, point st)
-    po@(xo, yo) = newPoint r (if b1 then a + 90 else a - 90) p
-    (a', p') = let th' = if b1 then th else (-th) in (a + th', rotate' p po th')
-    (r', t) = if b2 then (r, thickness st) else (r / 2, r)
+    (a, p)   = (angle st, point st)
+    (xo, yo) = newPoint r (if b1 then a + 90 else a - 90) p
+    (r', t)  = if b2 then (r, thickness st) else (r / 2, r)
+    (a', p') = (a + th', rotate' p (xo, yo) th')
+      where th' = if b1 then th else (- th)
     rot = if b1 then 90 - a else th - a - 90
     pic = isDraw st $ Translate xo yo $ Rotate rot $ ThickArc 0 th r' t
 
@@ -506,19 +512,19 @@ grid' :: Float                  -- ^ 方眼を描く範囲
       -> Command
 grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
   where
-    blueLine1 = f c [-range, -range + size .. range]
-      where c = makeColor 0.5 0.5 1.0 0.2
+    blueLine1 = f col [-range, -range + size .. range]
+      where col = makeColor 0.5 0.5 1.0 0.2
 
-    blueLine2 = f c [-range, -range + 10 * size .. range]
-      where c = makeColor 0.5 0.5 1.0 0.3
+    blueLine2 = f col [-range, -range + 10 * size .. range]
+      where col = makeColor 0.5 0.5 1.0 0.3
 
-    redLine   = f c [0]
-      where c = makeColor 1.0 0.5 0.5 0.6
+    redLine   = f col [0]
+      where col = makeColor 1.0 0.5 0.5 0.6
 
-    f c lst = Color c $ Pictures $ concat [[horLine n, vertLine n] | n <- lst]
+    f col lst = Color col $ Pictures $ concat [[hLine n, vLine n] | n <- lst]
       where
-        horLine n  = Line [(-range, n), (range, n)]
-        vertLine n = Line [(n, -range), (n, range)]
+        hLine n = Line [(-range, n), (range, n)]
+        vLine n = Line [(n, -range), (n, range)]
 
 
 ------------------------------------------------------------
@@ -529,7 +535,7 @@ grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
 -- | 亀の向きを更新する
 --
 updateAngle :: (Float -> Float) -> Command
-updateAngle f = [\st -> (Blank, st {angle = f (angle st)})]
+updateAngle f = [\st -> (Blank, st { angle = f (angle st) })]
 
 --
 -- | 位置を更新する
@@ -545,7 +551,7 @@ updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
             -> (Float -> Float) -- ^ 青成分を変化させる関数
             -> (Float -> Float) -- ^ アルファ成分を変化させる関数
             -> Command
-updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
+updateColor fr fg fb fa = [\st -> (Blank, st { penColor = newColor st })]
   where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
           where (r, g, b, a) = rgbaOfColor $ penColor st
 
@@ -553,7 +559,7 @@ updateColor fr fg fb fa = [\st -> (Blank, st {penColor = newColor st})]
 -- | 線の太さを更新する
 --
 updateThickness :: (Float -> Float) -> Command
-updateThickness f = [\st -> (Blank, st {thickness = f (thickness st)})]
+updateThickness f = [\st -> (Blank, st { thickness = f (thickness st) })]
 
 
 ------------------------------------------------------------

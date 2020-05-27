@@ -2,7 +2,7 @@ import           Graphics.Gloss
 import           Graphics.Turtle
 
 main :: IO ()
-main = runTurtle initWindow black 50 [(st, [flower 100])]
+main = runTurtle initWindow black 30 [(st, [flower 100])]
   where st = initST {point = (0, -250), angle = 90}
 
 
