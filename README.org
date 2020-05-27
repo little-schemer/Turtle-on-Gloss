@@ -96,14 +96,14 @@
    ~TurtleST~ は亀の状態を保持します。
 
     #+BEGIN_SRC haskell
-      data TurtleST = TurtleST { angle     :: Float -- ^ 亀の向き
-                               , point     :: Point -- ^ 亀の位置
-                               , penColor  :: Color -- ^ ペンの色
-                               , thickness :: Float -- ^ 線の太さ
-                               , pen       :: Bool  -- ^ up or down
-                               , mark      :: Bool  -- ^ 亀のマーク
-                               , stack     :: TurtleST
-                               } deriving Show
+      data TurtleST = Non | TurtleST { angle     :: Float -- ^ 亀の向き
+                                     , point     :: Point -- ^ 亀の位置
+                                     , penColor  :: Color -- ^ ペンの色
+                                     , thickness :: Float -- ^ 線の太さ
+                                     , pen       :: Bool  -- ^ up or down
+                                     , mark      :: Bool  -- ^ 亀のマーク
+                                     , stack     :: TurtleST
+                                     } deriving Show
    #+END_SRC
 
    ~TurtleST~ は ~initST~ で既定値を設定できます。
