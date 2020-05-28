@@ -180,7 +180,10 @@ thickLine n a t p1 p2 = Translate x y $ Rotate (-a) $ rectangleSolid n t
 -- | th 度だけ旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
 --
 turn :: Float -> PrimitiveCommand
-turn th st = (Blank, st { angle = normalize $ th + angle st })
+turn th st
+  | thickness st == 0 = (Blank, st { angle = normalize $ th + angle st })
+  | th > 0 = drawArc' True True th (thickness st / 2) st
+  | otherwise = drawArc' False True (-th) (thickness st / 2) st
 
 --
 -- | 角度を 0 <= th < 360 に正規化する
@@ -195,6 +198,27 @@ normalize th = th - 360 * (fromIntegral $ floor $ th / 360)
 --
 rotate' :: Point -> Point -> Float -> Point
 rotate' p1 p0 th = rotateV (degToRad th) (p1 PA.- p0) PA.+ p0
+
+--
+-- | 亀の位置を中心に円を描く
+--
+drawCircle' :: Float -> Float -> PrimitiveCommand
+drawCircle' r t st = (isDraw st $ Translate x y $ ThickCircle r t, st)
+  where (x, y) = point st
+
+--
+-- | 円弧を描く
+--
+drawArc' :: Bool -> Bool -> Float -> Float -> PrimitiveCommand
+drawArc' b1 b2 th r st = (pic, st { angle = a', point = p' })
+  where
+    (a, p)   = (angle st, point st)
+    (xo, yo) = newPoint r (if b1 then a + 90 else a - 90) p
+    (r', t)  = if b2 then (r, thickness st) else (r / 2, r)
+    (a', p') = (a + th', rotate' p (xo, yo) th')
+      where th' = if b1 then th else (-th)
+    rot = if b1 then 90 - a else th - a - 90
+    pic = isDraw st $ Translate xo yo $ Rotate rot $ ThickArc 0 th r' t
 
 
 ------------------------------------------------------------
@@ -389,11 +413,6 @@ drawCircleSolid :: Float        -- ^ 半径
                 -> Command
 drawCircleSolid r = [drawCircle' (r / 2) r]
 
--- 補助関数
-drawCircle' :: Float -> Float -> PrimitiveCommand
-drawCircle' r t st = (isDraw st $ Translate x y $ ThickCircle r t, st)
-  where (x, y) = point st
-
 
 -- ** 円弧
 
@@ -436,18 +455,6 @@ drawArcSolidR :: Float          -- ^ 中心角
 drawArcSolidR th r
   | th <= 30  = [drawArc' False False th r]
   | otherwise = drawArc' False False 30 r : drawArcSolidR (th - 30) r
-
--- 補助関数
-drawArc' :: Bool -> Bool -> Float -> Float -> PrimitiveCommand
-drawArc' b1 b2 th r st = (pic, st { angle = a', point = p' })
-  where
-    (a, p)   = (angle st, point st)
-    (xo, yo) = newPoint r (if b1 then a + 90 else a - 90) p
-    (r', t)  = if b2 then (r, thickness st) else (r / 2, r)
-    (a', p') = (a + th', rotate' p (xo, yo) th')
-      where th' = if b1 then th else (-th)
-    rot = if b1 then 90 - a else th - a - 90
-    pic = isDraw st $ Translate xo yo $ Rotate rot $ ThickArc 0 th r' t
 
 
 -- ** ポリゴン
