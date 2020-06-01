@@ -12,11 +12,11 @@
 module Graphics.Turtle where
 
 
+import           Data.List
 import           Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as PA
 import           Graphics.Gloss.Data.Vector
 import           Graphics.Gloss.Geometry.Angle
-
 
 ------------------------------------------------------------
 -- * 型
@@ -134,17 +134,46 @@ dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
 -- * 補助関数
 ------------------------------------------------------------
 
---
--- | pen が down していれば図形を描く
---
+-- pen が down していれば図形を描く
 isDraw :: TurtleST -> Picture -> Picture
 isDraw st pic = if pen st then Color (penColor st) $ pic else Blank
 
---
--- | n だけ移動した先のポイントを求める
---
+-- n だけ移動した先のポイントを求める
 newPoint :: Float -> Float -> Point -> Point
 newPoint n th p = p PA.+ n PA.* (unitVectorAtAngle $ degToRad th)
+
+-- 太さのある線を描く
+thickLine :: Float -> Float -> Float -> Point -> Point -> Picture
+thickLine n a t p1 p2 = tLine <> edge p1 p2 t
+  where
+    (x, y) = 0.5 PA.* (p1 PA.+ p2)
+    tLine   = Translate x  y  $ Rotate (-a) $ rectangleSolid n t
+
+-- 太さのある線の両端の処理
+edge :: Point -> Point -> Float -> Picture
+edge (x1, y1) (x2, y2) t = circle1 <> circle2
+  where
+    circle1 = Translate x1 y1 $ ThickCircle (t / 4) (t / 2)
+    circle2 = Translate x2 y2 $ ThickCircle (t / 4) (t / 2)
+
+-- 角度を 0 <= th < 360 に正規化する
+--   - Graphics.Gloss.Geometry.Angle の normalizeAngle を流用
+normalize :: Float -> Float
+normalize th = th - 360 * (fromIntegral $ floor $ th / 360)
+
+-- Point p0 を中心に、 Point p を th 度回転させた Point p'
+rotate' :: Point -> Point -> Float -> Point
+
+rotate' p1 p0 th = rotateV (degToRad th) (p1 PA.- p0) PA.+ p0
+
+-- 極座標 -> 直交座標
+polarToRectangular :: (Float, Float) -> (Float, Float)
+polarToRectangular (r, th) = (r * cos th, r * sin th)
+
+
+------------------------------------------------------------
+-- * PrimitiveCommand
+------------------------------------------------------------
 
 --
 -- | n だけ前進する (pen == True なら線を描く)
@@ -170,34 +199,10 @@ goto' p2 st = (isDraw st pic, st { angle = a, point = p2 })
       where n = magV (p2 PA.- p1)
 
 --
--- | 太さのある線を描く
---
-thickLine :: Float -> Float -> Float -> Point -> Point -> Picture
-thickLine n a t p1 p2 = Translate x y $ Rotate (-a) $ rectangleSolid n t
-  where (x, y) = 0.5 PA.* (p1 PA.+ p2)
-
---
 -- | th 度だけ旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
 --
 turn :: Float -> PrimitiveCommand
-turn th st
-  | thickness st == 0 = (Blank, st { angle = normalize $ th + angle st })
-  | th > 0 = drawArc' True True th (thickness st / 2) st
-  | otherwise = drawArc' False True (-th) (thickness st / 2) st
-
---
--- | 角度を 0 <= th < 360 に正規化する
---
---   - Graphics.Gloss.Geometry.Angle の normalizeAngle を流用
---
-normalize :: Float -> Float
-normalize th = th - 360 * (fromIntegral $ floor $ th / 360)
-
---
--- | Point p0 を中心に、 Point p を th 度回転させた Point p'
---
-rotate' :: Point -> Point -> Float -> Point
-rotate' p1 p0 th = rotateV (degToRad th) (p1 PA.- p0) PA.+ p0
+turn th st = (Blank, st { angle = normalize $ th + angle st })
 
 --
 -- | 亀の位置を中心に円を描く
@@ -209,16 +214,15 @@ drawCircle' r t st = (isDraw st $ Translate x y $ ThickCircle r t, st)
 --
 -- | 円弧を描く
 --
-drawArc' :: Bool -> Bool -> Float -> Float -> PrimitiveCommand
-drawArc' b1 b2 th r st = (pic, st { angle = a', point = p' })
+drawArc' :: Float -> Float -> PrimitiveCommand
+drawArc' th r st = (isDraw st pic', st { angle = a', point = p' })
   where
-    (a, p)   = (angle st, point st)
-    (xo, yo) = newPoint r (if b1 then a + 90 else a - 90) p
-    (r', t)  = if b2 then (r, thickness st) else (r / 2, r)
-    (a', p') = (a + th', rotate' p (xo, yo) th')
-      where th' = if b1 then th else (-th)
-    rot = if b1 then 90 - a else th - a - 90
-    pic = isDraw st $ Translate xo yo $ Rotate rot $ ThickArc 0 th r' t
+    (a, p, t) = (angle st, point st, thickness st)
+    (xo, yo) = newPoint r (if th > 0 then a + 90 else a - 90) p
+    (a', p') = (a + th, rotate' p (xo, yo) th)
+    pic = Translate xo yo $ Rotate rol $ ThickArc 0 (abs th) r t
+      where rol = if th > 0 then 90 - a else 270 - a'
+    pic' = if t > 0 then pic <> edge p p' t else pic
 
 
 ------------------------------------------------------------
@@ -394,10 +398,8 @@ pd = penDown
 
 
 ------------------------------------------------------------
--- * 拡張コマンド
+-- * 図形を描くコマンド
 ------------------------------------------------------------
-
--- ** 円
 
 --
 -- | 亀の位置を中心に円を描く
@@ -413,9 +415,6 @@ drawCircleSolid :: Float        -- ^ 半径
                 -> Command
 drawCircleSolid r = [drawCircle' (r / 2) r]
 
-
--- ** 円弧
-
 --
 -- | 左回りに円弧を描く
 --
@@ -423,18 +422,18 @@ drawArcL :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
 drawArcL th r
-  | th <= 30  = [drawArc' True True th r]
-  | otherwise = drawArc' True True 30 r : drawArcL (th - 30) r
+  | th <= 30  = [drawArc' th r]
+  | otherwise = drawArc' 30 r : drawArcL (th - 30) r
 
---
--- | 左回りに Solid な円弧を描く
---
-drawArcSolidL :: Float          -- ^ 中心角
-              -> Float          -- ^ 半径
-              -> Command
-drawArcSolidL th r
-  | th <= 30  = [drawArc' True False th r]
-  | otherwise = drawArc' True False 30 r : drawArcSolidL (th - 30) r
+-- --
+-- -- | 左回りに Solid な円弧を描く
+-- --
+-- drawArcSolidL :: Float          -- ^ 中心角
+--               -> Float          -- ^ 半径
+--               -> Command
+-- drawArcSolidL th r
+--   | th <= 30  = [drawArc' True False th r]
+--   | otherwise = drawArc' True False 30 r : drawArcSolidL (th - 30) r
 
 --
 -- | 右回りに円弧を描く
@@ -443,21 +442,18 @@ drawArcR :: Float               -- ^ 中心角
          -> Float               -- ^ 半径
          -> Command
 drawArcR th r
-  | th <= 30  = [drawArc' False True th r]
-  | otherwise = drawArc' False True 30 r : drawArcR (th - 30) r
+  | th <= 30  = [drawArc' (-th) r]
+  | otherwise = drawArc' (-30) r : drawArcR (th - 30) r
 
---
--- | 右回りに Solid な円弧を描く
---
-drawArcSolidR :: Float          -- ^ 中心角
-              -> Float          -- ^ 半径
-              -> Command
-drawArcSolidR th r
-  | th <= 30  = [drawArc' False False th r]
-  | otherwise = drawArc' False False 30 r : drawArcSolidR (th - 30) r
-
-
--- ** ポリゴン
+-- --
+-- -- | 右回りに Solid な円弧を描く
+-- --
+-- drawArcSolidR :: Float          -- ^ 中心角
+--               -> Float          -- ^ 半径
+--               -> Command
+-- drawArcSolidR th r
+--   | th <= 30  = [drawArc' False False th r]
+--   | otherwise = drawArc' False False 30 r : drawArcSolidR (th - 30) r
 
 --
 -- | 亀の描いた線を元に solid な Polygon を描く
@@ -474,7 +470,7 @@ drawPolygon cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
 
 
 ------------------------------------------------------------
--- * グラフ
+-- * グラフを描くコマンド
 ------------------------------------------------------------
 
 --
@@ -509,13 +505,9 @@ drawPolarGraph fp (t : ts) = concat $ cmd1 ++ cmd2
     cmd1 = [pu, goto (polarToRectangular (fp t, t)), pd]
     cmd2 = [goto $ polarToRectangular (fp t, t) | t <- ts]
 
--- 補助関数
-polarToRectangular :: (Float, Float) -> (Float, Float)
-polarToRectangular (r, th) = (r * cos th, r * sin th)
-
 
 ------------------------------------------------------------
--- * 方眼
+-- * 方眼を表示するコマンド
 ------------------------------------------------------------
 
 --
@@ -596,3 +588,11 @@ repCommand :: Int               -- ^ 繰り返す回数
            -> [Command]         -- ^ 繰り返すコマンド
            -> Command
 repCommand n cLst = concat $ concat $ replicate n cLst
+
+
+dot :: Command
+dot = [dot']
+
+dot' :: PrimitiveCommand
+dot' st = (isDraw st $ Translate x y $ ThickCircle 0 0, st)
+  where (x, y) = point st
