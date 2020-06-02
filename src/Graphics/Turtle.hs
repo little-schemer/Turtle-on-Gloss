@@ -26,7 +26,7 @@ import           Graphics.Gloss.Geometry.Angle
 -- | 亀の状態
 --
 data TurtleST = Non | TurtleST
-                      { angle     :: Float -- ^ 亀の向き
+                      { heading   :: Float -- ^ 亀の向き
                       , point     :: Point -- ^ 亀の位置
                       , thickness :: Float -- ^ 線の太さ
                       , penColor  :: Color -- ^ ペンの色
@@ -95,7 +95,7 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
         (sx, sy)    = shiftXY window
         turtleMarks = Pictures $ map (dispMark . fst) ts
         dispMark st = if mark st
-                      then Translate x' y' $ Rotate (- angle st) $ tMark
+                      then Translate x' y' $ Rotate (- heading st) $ tMark
                       else Blank
           where
             (x, y)   = point st
@@ -182,15 +182,15 @@ forward' :: Float -> PrimitiveCommand
 forward' n st = (isDraw st pic, st { point = p2 })
   where
     p1  = point st
-    p2  = newPoint n (angle st) p1
+    p2  = newPoint n (heading st) p1
     t   = thickness st
-    pic = if t == 0 then Line [p1, p2] else thickLine n (angle st) t p1 p2
+    pic = if t == 0 then Line [p1, p2] else thickLine n (heading st) t p1 p2
 
 --
 -- | Point p2 の位置へ移動する (pen == True なら線を描く, 亀は進行方向へ向く)
 --
 goto' :: Point -> PrimitiveCommand
-goto' p2 st = (isDraw st pic, st { angle = a, point = p2 })
+goto' p2 st = (isDraw st pic, st { heading = a, point = p2 })
   where
     p1  = point st
     a   = radToDeg $ argV $ p2 PA.- p1
@@ -202,7 +202,7 @@ goto' p2 st = (isDraw st pic, st { angle = a, point = p2 })
 -- | th 度だけ旋回する (th > 0 : 左旋回, th < 0 : 右旋回)
 --
 turn :: Float -> PrimitiveCommand
-turn th st = (Blank, st { angle = normalize $ th + angle st })
+turn th st = (Blank, st { heading = normalize $ th + heading st })
 
 --
 -- | 亀の位置を中心に円を描く
@@ -215,9 +215,9 @@ drawCircle' r t st = (isDraw st $ Translate x y $ ThickCircle r t, st)
 -- | 円弧を描く
 --
 drawArc' :: Float -> Float -> PrimitiveCommand
-drawArc' th r st = (isDraw st pic', st { angle = a', point = p' })
+drawArc' th r st = (isDraw st pic', st { heading = a', point = p' })
   where
-    (a, p, t) = (angle st, point st, thickness st)
+    (a, p, t) = (heading st, point st, thickness st)
     (xo, yo) = newPoint r (if th > 0 then a + 90 else a - 90) p
     (a', p') = (a + th, rotate' p (xo, yo) th)
     pic = Translate xo yo $ Rotate rol $ ThickArc 0 (abs th) r t
@@ -296,9 +296,9 @@ goto p = [goto' p]
 --
 -- | 亀の向きを設定する
 --
-setAngle :: Float               -- ^ 新しい亀の向き (degree)
+setHeading :: Float               -- ^ 新しい亀の向き (degree)
          -> Command
-setAngle th = [\st -> (Blank, st { angle = normalize th })]
+setHeading th = [\st -> (Blank, st { heading = normalize th })]
 
 --
 -- | 亀の位置を設定する
@@ -418,42 +418,38 @@ drawCircleSolid r = [drawCircle' (r / 2) r]
 --
 -- | 左回りに円弧を描く
 --
-drawArcL :: Float               -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
+drawArcL :: Float                 -- ^ 中心角
+       -> Float                 -- ^ 半径
+       -> Command
 drawArcL th r
   | th <= 30  = [drawArc' th r]
   | otherwise = drawArc' 30 r : drawArcL (th - 30) r
 
--- --
--- -- | 左回りに Solid な円弧を描く
--- --
--- drawArcSolidL :: Float          -- ^ 中心角
---               -> Float          -- ^ 半径
---               -> Command
--- drawArcSolidL th r
---   | th <= 30  = [drawArc' True False th r]
---   | otherwise = drawArc' True False 30 r : drawArcSolidL (th - 30) r
+--
+-- | 高速に左回りに円弧を描く
+--
+quickDrawArcL :: Float
+            -> Float
+            -> Command
+quickDrawArcL th r = [drawArc' th r]
 
 --
 -- | 右回りに円弧を描く
 --
-drawArcR :: Float               -- ^ 中心角
-         -> Float               -- ^ 半径
-         -> Command
+drawArcR :: Float                 -- ^ 中心角
+       -> Float                 -- ^ 半径
+       -> Command
 drawArcR th r
   | th <= 30  = [drawArc' (-th) r]
   | otherwise = drawArc' (-30) r : drawArcR (th - 30) r
 
--- --
--- -- | 右回りに Solid な円弧を描く
--- --
--- drawArcSolidR :: Float          -- ^ 中心角
---               -> Float          -- ^ 半径
---               -> Command
--- drawArcSolidR th r
---   | th <= 30  = [drawArc' False False th r]
---   | otherwise = drawArc' False False 30 r : drawArcSolidR (th - 30) r
+--
+-- | 高速に右回りに円弧を描く
+--
+quickDrawArcR :: Float
+            -> Float
+            -> Command
+quickDrawArcR th r = [drawArc' (-th) r]
 
 --
 -- | 亀の描いた線を元に solid な Polygon を描く
@@ -546,9 +542,9 @@ grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
 --
 -- | 亀の向きを更新する
 --
-updateAngle :: (Float -> Float) -- ^ 亀の向きを変化させる関数
+updateHeading :: (Float -> Float) -- ^ 亀の向きを変化させる関数
             -> Command
-updateAngle f = [\st -> (Blank, st { angle = f (angle st) })]
+updateHeading f = [\st -> (Blank, st { heading = f (heading st) })]
 
 --
 -- | 亀の位置を更新する

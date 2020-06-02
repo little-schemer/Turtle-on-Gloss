@@ -3,7 +3,7 @@ import           Graphics.Turtle
 
 main :: IO ()
 main = runTurtle initWindow black 30 [(st, [flower 100])]
-  where st = initST {point = (0, -250), angle = 90}
+  where st = initST {point = (0, -250), heading = 90}
 
 
 flower :: Float -> Command

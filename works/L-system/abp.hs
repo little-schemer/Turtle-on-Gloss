@@ -2,9 +2,9 @@
 -- | 『 The Algorithmic Beauty of Plants 』の Figure
 --------------------------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
-import Graphics.L_system
+import           Graphics.Gloss
+import           Graphics.L_system
+import           Graphics.Turtle
 
 
 -- | Main
@@ -54,7 +54,7 @@ tData03 n = (st, [cmds])
 tData04 :: Int -> (TurtleST, [Command])
 tData04 n = (st, [cmds])
   where
-    st   = initST {angle = 90, point = (-300, 0), mark = False}
+    st   = initST {heading = 90, point = (-300, 0), mark = False}
     cmds = l_system initiator generator n (600 / 3^n) 90
       where
         initiator = "-F"

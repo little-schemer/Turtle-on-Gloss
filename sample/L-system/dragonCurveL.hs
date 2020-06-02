@@ -2,9 +2,9 @@
 -- | Dragon 曲線 (L-system 版)
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
-import Graphics.L_system
+import           Graphics.Gloss
+import           Graphics.L_system
+import           Graphics.Turtle
 
 
 -- | パラメータ
@@ -17,10 +17,10 @@ main :: IO ()
 main = runTurtle window (greyN 0.3) 100 [(s, cmd) | s <- [st1, st2, st3, st4]]
   where
     window = initWindow {title = "Dragon Curve by L-system"}
-    st1 = initST {mark = False, penColor = red,    angle =  45}
-    st2 = initST {mark = False, penColor = green,  angle = 135}
-    st3 = initST {mark = False, penColor = blue,   angle = 225}
-    st4 = initST {mark = False, penColor = yellow, angle = 315}
+    st1 = initST {mark = False, penColor = red,    heading =  45}
+    st2 = initST {mark = False, penColor = green,  heading = 135}
+    st3 = initST {mark = False, penColor = blue,   heading = 225}
+    st4 = initST {mark = False, penColor = yellow, heading = 315}
     cmd = [dragonCurve level size]
 
 

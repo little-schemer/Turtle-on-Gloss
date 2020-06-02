@@ -11,7 +11,7 @@ main :: IO ()
 main = runTurtle window black 50 (zip (repeat initST) cmds)
   where
     window = initWindow {title = "Circle Dance"}
-    cmds   = [[setColor a, setAngle b, circleDance] | (a, b) <- colorAndAngle]
+    cmds   = [[setColor a, setHeading b, circleDance] | (a, b) <- colorAndAngle]
 
 -- | 色を変化させながら、複数の円を同時に描く
 circleDance :: Command

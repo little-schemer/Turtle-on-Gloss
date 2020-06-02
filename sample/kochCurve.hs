@@ -25,9 +25,9 @@ main = do
   runTurtle window white 100 [(s, cmd level) | s <- [st1, st2, st3]]
   where
     window = initWindow {title = "Koch Curve"}
-    st1 = initST {angle =    0, point = (-200,  200 / sqrt 3), mark = False}
-    st2 = initST {angle = -120, point = ( 200,  200 / sqrt 3), mark = False}
-    st3 = initST {angle =  120, point = (   0, -400 / sqrt 3), mark = False}
+    st1 = initST {heading =    0, point = (-200,  200 / sqrt 3), mark = False}
+    st2 = initST {heading = -120, point = ( 200,  200 / sqrt 3), mark = False}
+    st3 = initST {heading =  120, point = (   0, -400 / sqrt 3), mark = False}
     cmd level = [kochCurve level size]
 
 
