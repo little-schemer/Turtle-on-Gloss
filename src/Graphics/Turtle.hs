@@ -12,11 +12,11 @@
 module Graphics.Turtle where
 
 
-import           Data.List
 import           Graphics.Gloss
 import qualified Graphics.Gloss.Data.Point.Arithmetic as PA
 import           Graphics.Gloss.Data.Vector
 import           Graphics.Gloss.Geometry.Angle
+
 
 ------------------------------------------------------------
 -- * 型
@@ -102,8 +102,8 @@ runTurtle window bc step tds = simulate disp bc step model drawModel simModel
             (x', y') = ((x + sx) * z, (y + sy) * z)
             tMark    = (Color white mark1) <> (Color (penColor st) mark2)
               where
-                mark1 = Polygon [(0, -5), (0, 5), (12, 0)]
-                mark2 = Polygon [(1, -4), (1, 4), (10, 0)]
+                mark1 = Polygon [(0, -8), (0, 8), (24, 0)]
+                mark2 = Polygon [(1, -6), (1, 6), (18, 0)]
 
     -- モデルを変化させる
     simModel _ _ (pic, []) = (pic, [])
@@ -208,7 +208,7 @@ turn th st = (Blank, st { heading = normalize $ th + heading st })
 -- | 亀の位置を中心に円を描く
 --
 drawCircle' :: Float -> Float -> PrimitiveCommand
-drawCircle' r t st = (isDraw st $ Translate x y $ ThickCircle r t, st)
+drawCircle' r t st = (Translate x y $ ThickCircle r t, st)
   where (x, y) = point st
 
 --
@@ -296,7 +296,7 @@ goto p = [goto' p]
 --
 -- | 亀の向きを設定する
 --
-setHeading :: Float               -- ^ 新しい亀の向き (degree)
+setHeading :: Float             -- ^ 新しい亀の向き (degree)
          -> Command
 setHeading th = [\st -> (Blank, st { heading = normalize th })]
 
@@ -364,6 +364,12 @@ nopN n = concat $ replicate n nop
 drawPicture :: Picture -> Command
 drawPicture pic = [\st -> (pic, st)]
 
+--
+-- | 亀の位置に点を打つ
+--
+dot :: Command
+dot = [\st -> let (x, y) = point st in (Translate x y $ ThickCircle 0 0, st)]
+
 
 ------------------------------------------------------------
 -- * Alias
@@ -418,9 +424,9 @@ drawCircleSolid r = [drawCircle' (r / 2) r]
 --
 -- | 左回りに円弧を描く
 --
-drawArcL :: Float                 -- ^ 中心角
-       -> Float                 -- ^ 半径
-       -> Command
+drawArcL :: Float               -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
 drawArcL th r
   | th <= 30  = [drawArc' th r]
   | otherwise = drawArc' 30 r : drawArcL (th - 30) r
@@ -428,17 +434,17 @@ drawArcL th r
 --
 -- | 高速に左回りに円弧を描く
 --
-quickDrawArcL :: Float
-            -> Float
-            -> Command
+quickDrawArcL :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Command
 quickDrawArcL th r = [drawArc' th r]
 
 --
 -- | 右回りに円弧を描く
 --
-drawArcR :: Float                 -- ^ 中心角
-       -> Float                 -- ^ 半径
-       -> Command
+drawArcR :: Float               -- ^ 中心角
+         -> Float               -- ^ 半径
+         -> Command
 drawArcR th r
   | th <= 30  = [drawArc' (-th) r]
   | otherwise = drawArc' (-30) r : drawArcR (th - 30) r
@@ -446,9 +452,9 @@ drawArcR th r
 --
 -- | 高速に右回りに円弧を描く
 --
-quickDrawArcR :: Float
-            -> Float
-            -> Command
+quickDrawArcR :: Float          -- ^ 中心角
+              -> Float          -- ^ 半径
+              -> Command
 quickDrawArcR th r = [drawArc' (-th) r]
 
 --
@@ -458,7 +464,7 @@ drawPolygon :: [Command]        -- ^ Polygon を描くための亀の動き
             -> Command
 drawPolygon cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
   where
-    drawPolygon' st = (Color (penColor st') $ Polygon ps, st')
+    drawPolygon' st = (Color (penColor st) $  Polygon ps, st')
       where
         (ps, st') = makePoints [] (concat cs) st
         makePoints ps []       st = (reverse (point st : ps), st)
@@ -542,14 +548,14 @@ grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
 --
 -- | 亀の向きを更新する
 --
-updateHeading :: (Float -> Float) -- ^ 亀の向きを変化させる関数
+updateHeading :: (Float -> Float)   -- ^ 亀の向きを変化させる関数
             -> Command
 updateHeading f = [\st -> (Blank, st { heading = f (heading st) })]
 
 --
 -- | 亀の位置を更新する
 --
-updatePoint :: (Point -> Point) -- ^ 亀の位置を変化させる関数
+updatePoint :: (Point -> Point)     -- ^ 亀の位置を変化させる関数
             -> Command
 updatePoint f = [\st -> goto' (f $ point st) st]
 
@@ -563,10 +569,10 @@ updateThickness f = [\st -> (Blank, st { thickness = f (thickness st) })]
 --
 -- | pen の色を更新する
 --
-updateColor :: (Float -> Float) -- ^ 赤成分を変化させる関数
-            -> (Float -> Float) -- ^ 緑成分を変化させる関数
-            -> (Float -> Float) -- ^ 青成分を変化させる関数
-            -> (Float -> Float) -- ^ アルファ成分を変化させる関数
+updateColor :: (Float -> Float)     -- ^ 赤成分を変化させる関数
+            -> (Float -> Float)     -- ^ 緑成分を変化させる関数
+            -> (Float -> Float)     -- ^ 青成分を変化させる関数
+            -> (Float -> Float)     -- ^ アルファ成分を変化させる関数
             -> Command
 updateColor fr fg fb fa = [\st -> (Blank, st { penColor = newColor st })]
   where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
@@ -584,11 +590,3 @@ repCommand :: Int               -- ^ 繰り返す回数
            -> [Command]         -- ^ 繰り返すコマンド
            -> Command
 repCommand n cLst = concat $ concat $ replicate n cLst
-
-
-dot :: Command
-dot = [dot']
-
-dot' :: PrimitiveCommand
-dot' st = (isDraw st $ Translate x y $ ThickCircle 0 0, st)
-  where (x, y) = point st

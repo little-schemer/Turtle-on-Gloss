@@ -38,75 +38,75 @@ executables:
     dependencies:
     - Turtle-on-Gloss
 
-  # CircleDance:
-  #   main:                circleDance.hs
-  #   source-dirs:         sample
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  CircleDance:
+    main:                circleDance.hs
+    source-dirs:         sample
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
-  # DragonCurve:
-  #   main:                dragonCurve.hs
-  #   source-dirs:         sample
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  DragonCurve:
+    main:                dragonCurve.hs
+    source-dirs:         sample
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
-  # KochCurve:
-  #   main:                kochCurve.hs
-  #   source-dirs:         sample
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  KochCurve:
+    main:                kochCurve.hs
+    source-dirs:         sample
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
-  # Graph:
-  #   main:                graph.hs
-  #   source-dirs:         sample
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  Graph:
+    main:                graph.hs
+    source-dirs:         sample
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
-  # Star:
-  #   main:                star.hs
-  #   source-dirs:         sample
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  Star:
+    main:                star.hs
+    source-dirs:         sample
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
-  # DragonCurveL:
-  #   main:                dragonCurveL.hs
-  #   source-dirs:         sample/L-system
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  DragonCurveL:
+    main:                dragonCurveL.hs
+    source-dirs:         sample/L-system
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
-  # KochCurveL:
-  #   main:                kochCurveL.hs
-  #   source-dirs:         sample/L-system
-  #   ghc-options:
-  #   - -threaded
-  #   - -rtsopts
-  #   - -with-rtsopts=-N
-  #   dependencies:
-  #   - Turtle-on-Gloss
+  KochCurveL:
+    main:                kochCurveL.hs
+    source-dirs:         sample/L-system
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Turtle-on-Gloss
 
 tests:
   Turtle-on-Gloss-test:
