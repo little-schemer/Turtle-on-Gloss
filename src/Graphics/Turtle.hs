@@ -229,6 +229,8 @@ drawArc' th r st = (isDraw st pic', st { heading = a', point = p' })
 -- * 基本コマンド
 ------------------------------------------------------------
 
+-- ** 移動
+
 --
 -- | 前進する (pen == True なら線を描く)
 --
@@ -293,6 +295,9 @@ goto :: Point                   -- ^ 移動先の Point
      -> Command
 goto p = [goto' p]
 
+
+-- ** 亀の状態の設定
+
 --
 -- | 亀の向きを設定する
 --
@@ -332,6 +337,9 @@ penDown = [\st -> (Blank, st { pen = True })]
 --
 penUp :: Command
 penUp = [\st -> (Blank, st { pen = False })]
+
+
+-- ** その他
 
 --
 -- | 亀の状態を Push する
@@ -407,6 +415,8 @@ pd = penDown
 -- * 図形を描くコマンド
 ------------------------------------------------------------
 
+-- ** 円
+
 --
 -- | 亀の位置を中心に円を描く
 --
@@ -420,6 +430,9 @@ drawCircle r = [\st -> drawCircle' r (thickness st) st]
 drawCircleSolid :: Float        -- ^ 半径
                 -> Command
 drawCircleSolid r = [drawCircle' (r / 2) r]
+
+
+-- ** 円弧
 
 --
 -- | 左回りに円弧を描く
@@ -456,6 +469,9 @@ quickDrawArcR :: Float          -- ^ 中心角
               -> Float          -- ^ 半径
               -> Command
 quickDrawArcR th r = [drawArc' (-th) r]
+
+
+-- ** ポリゴン
 
 --
 -- | 亀の描いた線を元に solid な Polygon を描く
