@@ -2,8 +2,8 @@
 -- | 再帰的多角形
 ------------------------------------------------------------
 
-import Graphics.Gloss
-import Graphics.Turtle
+import           Graphics.Gloss
+import           Graphics.Turtle
 
 
 level =   6 :: Int
@@ -18,7 +18,8 @@ main :: IO ()
 main = runTurtle window white 100 [(st, lst)]
   where
     window = initWindow
-    st     = initST {point = (-size / 2, -size / 2), mark = False}
+    p      = -size / 2
+    st     = initST { point = (p, p), mark = False, penColor = rose }
     lst    = [recursivePolygon n level size]
 
 
@@ -28,5 +29,5 @@ recursivePolygon n lev size = cmd lev size
   where
     n' = fromIntegral n
     angle = 360 / n'
-    cmd 1   size = repCommand n [qf size, ql angle]
+    cmd 1   size = drawPolygon [repCommand n [qf size, ql angle]]
     cmd lev size = repCommand n [cmd (lev - 1) (size / divN), qf size, ql angle]

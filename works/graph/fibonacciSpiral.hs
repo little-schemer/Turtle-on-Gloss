@@ -11,7 +11,7 @@ main :: IO ()
 main = runTurtle window white 100 [(st, [grid' 200 1, fibonacciSpiral 12])]
   where
     window = initWindow {title = "Fibonacci Spiral", zoom = 10}
-    st = initST {angle = -90}
+    st = initST {heading = -90}
 
 
 -- | Fibonacci 数列

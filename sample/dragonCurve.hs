@@ -25,10 +25,10 @@ main = do
   runTurtle window (greyN 0.3) 100 [(s, cmd level) | s <- [st1, st2, st3, st4]]
   where
     window = initWindow {title = "Dragon Curve", winSize = (600, 600)}
-    st1 = initST {mark = False, penColor = red,    angle =  45}
-    st2 = initST {mark = False, penColor = green,  angle = 135}
-    st3 = initST {mark = False, penColor = blue,   angle = 225}
-    st4 = initST {mark = False, penColor = yellow, angle = 315}
+    st1 = initST {mark = False, penColor = red,    heading =  45}
+    st2 = initST {mark = False, penColor = green,  heading = 135}
+    st3 = initST {mark = False, penColor = blue,   heading = 225}
+    st4 = initST {mark = False, penColor = yellow, heading = 315}
     cmd level = [dragonCurve level size]
 
 
