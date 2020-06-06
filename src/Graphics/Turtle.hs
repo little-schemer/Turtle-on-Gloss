@@ -18,6 +18,7 @@ import           Graphics.Gloss.Data.Vector
 import           Graphics.Gloss.Geometry.Angle
 
 
+
 ------------------------------------------------------------
 -- * 型
 ------------------------------------------------------------
@@ -31,7 +32,7 @@ data TurtleST = Non | TurtleST
                       , thickness :: Float -- ^ 線の太さ
                       , penColor  :: Color -- ^ ペンの色
                       , pen       :: Bool  -- ^ up or down
-                      , mark      :: Bool  -- ^ 亀のマーク
+                      , mark      :: Bool  -- ^ 表示 or 非表示
                       , stack     :: TurtleST
                       } deriving Show
 
@@ -54,6 +55,7 @@ type Command           = [PrimitiveCommand]
 type Model             = (Picture, [(TurtleST, Command)])
 
 
+
 ------------------------------------------------------------
 -- * 初期値の雛形
 ------------------------------------------------------------
@@ -69,6 +71,7 @@ initST = TurtleST 0 (0, 0) 0 black True True Non
 --
 initWindow :: WinConfig
 initWindow = WinConfig "Turtle Graphics" (800, 600) (10, 10) 1 (0, 0)
+
 
 
 ------------------------------------------------------------
@@ -130,6 +133,7 @@ dispPicture window c tds = display disp c $ Scale z z $ Translate sx sy pic
       where f (pic, st) cmd = let (pic', st') = cmd st in (pic <> pic', st')
 
 
+
 ------------------------------------------------------------
 -- * 補助関数
 ------------------------------------------------------------
@@ -169,6 +173,7 @@ rotate' p1 p0 th = rotateV (degToRad th) (p1 PA.- p0) PA.+ p0
 -- 極座標 -> 直交座標
 polarToRectangular :: (Float, Float) -> (Float, Float)
 polarToRectangular (r, th) = (r * cos th, r * sin th)
+
 
 
 ------------------------------------------------------------
@@ -223,6 +228,7 @@ drawArc' th r st = (isDraw st pic', st { heading = a', point = p' })
     pic = Translate xo yo $ Rotate rol $ ThickArc 0 (abs th) r t
       where rol = if th > 0 then 90 - a else 270 - a'
     pic' = if t > 0 then pic <> edge p p' t else pic
+
 
 
 ------------------------------------------------------------
@@ -296,6 +302,7 @@ goto :: Point                   -- ^ 移動先の Point
 goto p = [goto' p]
 
 
+
 -- ** 亀の状態の設定
 
 --
@@ -338,6 +345,19 @@ penDown = [\st -> (Blank, st { pen = True })]
 penUp :: Command
 penUp = [\st -> (Blank, st { pen = False })]
 
+--
+-- | 亀のマークを表示するように設定する
+--
+showMark :: Command
+showMark = [\st -> (Blank, st { mark = True })]
+
+--
+-- | 亀のマークを表示しないように設定する
+--
+hydeMark :: Command
+hydeMark = [\st -> (Blank, st { mark = False })]
+
+
 
 -- ** その他
 
@@ -379,6 +399,7 @@ dot :: Command
 dot = [\st -> let (x, y) = point st in (Translate x y $ ThickCircle 0 0, st)]
 
 
+
 ------------------------------------------------------------
 -- * Alias
 ------------------------------------------------------------
@@ -411,6 +432,7 @@ pu = penUp
 pd = penDown
 
 
+
 ------------------------------------------------------------
 -- * 図形を描くコマンド
 ------------------------------------------------------------
@@ -430,6 +452,7 @@ drawCircle r = [\st -> drawCircle' r (thickness st) st]
 drawCircleSolid :: Float        -- ^ 半径
                 -> Command
 drawCircleSolid r = [drawCircle' (r / 2) r]
+
 
 
 -- ** 円弧
@@ -471,6 +494,7 @@ quickDrawArcR :: Float          -- ^ 中心角
 quickDrawArcR th r = [drawArc' (-th) r]
 
 
+
 -- ** ポリゴン
 
 --
@@ -485,6 +509,7 @@ drawPolygon cs = concat [push, concat cs, pop, [\st -> drawPolygon' st]]
         (ps, st') = makePoints [] (concat cs) st
         makePoints ps []       st = (reverse (point st : ps), st)
         makePoints ps (c : cs) st = makePoints (point st : ps) cs (snd $ c st)
+
 
 
 ------------------------------------------------------------
@@ -524,6 +549,7 @@ drawPolarGraph fp (t : ts) = concat $ cmd1 ++ cmd2
     cmd2 = [goto $ polarToRectangular (fp t, t) | t <- ts]
 
 
+
 ------------------------------------------------------------
 -- * 方眼を表示するコマンド
 ------------------------------------------------------------
@@ -555,6 +581,7 @@ grid' range size = [\st -> (blueLine1 <> blueLine2 <> redLine, st)]
       where
         hLine n = Line [(-range, n), (range, n)]
         vLine n = Line [(n, -range), (n, range)]
+
 
 
 ------------------------------------------------------------
@@ -593,6 +620,7 @@ updateColor :: (Float -> Float)     -- ^ 赤成分を変化させる関数
 updateColor fr fg fb fa = [\st -> (Blank, st { penColor = newColor st })]
   where newColor st = makeColor (fr r) (fg g) (fb b) (fa a)
           where (r, g, b, a) = rgbaOfColor $ penColor st
+
 
 
 ------------------------------------------------------------
